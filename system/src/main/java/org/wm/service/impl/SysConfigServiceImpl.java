@@ -3,6 +3,7 @@ package org.wm.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.wm.constants.Constants;
 import org.wm.constants.UserConstants;
@@ -206,18 +207,18 @@ public class SysConfigServiceImpl implements ISysConfigService {
     @Override
     public void testInsertA() {
         SysConfig sysConfig = new SysConfig();
-        sysConfig.setConfigKey("testA");
-        sysConfig.setConfigValue("testA");
+        sysConfig.setConfigKey("testA2");
+        sysConfig.setConfigValue("testA2");
         configMapper.insertConfig(sysConfig);
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRED)
     @Override
     public void testInsertB() throws Exception {
         SysConfig sysConfig = new SysConfig();
-        sysConfig.setConfigKey("testB");
-        sysConfig.setConfigValue("testB");
+        sysConfig.setConfigKey("testB2");
+        sysConfig.setConfigValue("testB2");
         configMapper.insertConfig(sysConfig);
-        // throw new Exception("撤回事务");
+        throw new RuntimeException("撤回事务");
     }
 }

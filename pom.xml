@@ -25,7 +25,7 @@
         <jjwt.version>0.9.1</jjwt.version>
         <commons-fileupload.version>1.4</commons-fileupload.version>
         <druid-spring-boot.version>1.2.8</druid-spring-boot.version>
-        <pagehelper.version>1.2.12</pagehelper.version>
+        <pagehelper.version>1.4.1</pagehelper.version>
     </properties>
 
 
