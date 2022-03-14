@@ -32,7 +32,7 @@ public class SysLoginService {
     @Autowired
     private TokenService tokenService;
 
-    @Resource
+    // @Resource
     private AuthenticationManager authenticationManager;
 
     @Autowired

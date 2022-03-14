@@ -42,7 +42,7 @@ spring:
             multi-statement-allow: true
 
 mybatis:
-  typeAliasesPackage: org.wm.**.domain
+  typeAliasesPackage: org.wm.**.domain,org.wm.**.entity
   mapperLocations: classpath*:mapper/**/*Mapper.xml
   configLocation: classpath:mybatis/mybatis-config.xml
 
@@ -52,3 +52,12 @@ task:
     max-pool-size: 15
     keep-alive-seconds: 5000
     queue-capacity: 5
+
+# token配置
+token:
+  # 令牌自定义标识
+  header: Authorization
+  # 令牌密钥
+  secret: abcdefghijklmnopqrstuvwxyz
+  # 令牌有效期（默认30分钟）
+  expireTime: 30
