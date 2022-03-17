@@ -28,4 +28,8 @@ public class LoginBody {
      * 唯一标识
      */
     private String uuid = "";
+
+    private Boolean autoLogin = false;
+
+    private String type = "account";
 }

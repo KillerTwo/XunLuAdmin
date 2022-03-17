@@ -16,10 +16,11 @@ import org.wm.constants.Constants;
 import org.wm.entity.SysMenu;
 import org.wm.entity.SysUser;
 import org.wm.entity.vo.LoginBody;
-import org.wm.entity.vo.RouterVo;
+import org.wm.entity.vo.RouterReactVo;
 import org.wm.response.ResponseResult;
 import org.wm.service.ISysMenuService;
 import org.wm.utils.SecurityUtils;
+import org.wm.utils.StringUtils;
 
 
 /**
@@ -47,9 +48,13 @@ public class SysLoginController {
     @PostMapping("/login")
     public ResponseResult<Map<String, Object>> login(@RequestBody LoginBody loginBody) {
         // 生成令牌
-        String token = loginService.login(loginBody.getUsername(), loginBody.getPassword(), loginBody.getCode(),
-                loginBody.getUuid());
-
+        String token;
+        if(StringUtils.isEmpty(loginBody.getCode())) {
+            token = loginService.login(loginBody.getUsername(), loginBody.getPassword());
+        } else {
+            token = loginService.login(loginBody.getUsername(), loginBody.getPassword(), loginBody.getCode(),
+                    loginBody.getUuid());
+        }
         Map<String, Object> map = new HashMap<>();
         map.put(Constants.TOKEN, token);
         return ResponseResult.success(map);
@@ -80,9 +85,10 @@ public class SysLoginController {
      * @return 路由信息
      */
     @GetMapping("getRouters")
-    public ResponseResult<List<RouterVo>> getRouters() {
+    public ResponseResult<List<RouterReactVo>> getRouters() {
         Long userId = SecurityUtils.getUserId();
         List<SysMenu> menus = menuService.selectMenuTreeByUserId(userId);
-        return ResponseResult.success(menuService.buildMenus(menus));
+        // return ResponseResult.success(menuService.buildMenus(menus));
+        return ResponseResult.success(menuService.buildMenusReact(menus));
     }
 }

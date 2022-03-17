@@ -2,6 +2,7 @@ package org.wm.service;
 
 
 import org.wm.entity.SysMenu;
+import org.wm.entity.vo.RouterReactVo;
 import org.wm.entity.vo.RouterVo;
 import org.wm.entity.vo.TreeSelect;
 
@@ -54,6 +55,14 @@ public interface ISysMenuService {
      * @return 选中菜单列表
      */
     List<Long> selectMenuListByRoleId(Long roleId);
+
+    /**
+     * 构建前端路由所需要的菜单
+     *
+     * @param menus 菜单列表
+     * @return 路由列表
+     */
+    List<RouterReactVo> buildMenusReact(List<SysMenu> menus);
 
     /**
      * 构建前端路由所需要的菜单

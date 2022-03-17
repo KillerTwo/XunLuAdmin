@@ -12,13 +12,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class FileProperties {
 
-    private WmPath path;
+    private WmPath path = new WmPath();
 
     @Data
     public static class WmPath {
-        private String avatar;
+        private String avatar = "/User/lwt2710/avatar";
 
-        private String path;
+        private String path = "/User/lwt2710/avatar";
     }
 
 }

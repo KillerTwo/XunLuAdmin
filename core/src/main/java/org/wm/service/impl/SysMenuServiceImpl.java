@@ -17,6 +17,7 @@ import org.wm.entity.SysMenu;
 import org.wm.entity.SysRole;
 import org.wm.entity.SysUser;
 import org.wm.entity.vo.MetaVo;
+import org.wm.entity.vo.RouterReactVo;
 import org.wm.entity.vo.RouterVo;
 import org.wm.entity.vo.TreeSelect;
 import org.wm.mapper.SysMenuMapper;
@@ -117,6 +118,52 @@ public class SysMenuServiceImpl implements ISysMenuService {
     public List<Long> selectMenuListByRoleId(Long roleId) {
         SysRole role = roleMapper.selectRoleById(roleId);
         return menuMapper.selectMenuListByRoleId(roleId, role.isMenuCheckStrictly());
+    }
+
+    /**
+     * 构建前端路由所需要的菜单
+     *
+     * @param menus 菜单列表
+     * @return 路由列表
+     */
+    @Override
+    public List<RouterReactVo> buildMenusReact(List<SysMenu> menus) {
+        List<RouterReactVo> routers = new LinkedList<>();
+        for (SysMenu menu : menus) {
+            RouterReactVo router = new RouterReactVo();
+            router.setHideInMenu("1".equals(menu.getVisible()));
+            router.setName(menu.getMenuName());
+            router.setPath(getRouterPath(menu));
+            router.setComponent(getComponent(menu));
+            router.setIconName(menu.getIcon());
+            List<SysMenu> cMenus = menu.getChildren();
+            if (!cMenus.isEmpty() && cMenus.size() > 0 && UserConstants.TYPE_DIR.equals(menu.getMenuType())) {
+                router.setRedirect("noRedirect");
+                router.setRoutes(buildMenusReact(cMenus));
+            } else if (isMenuFrame(menu)) {
+                List<RouterReactVo> childrenList = new ArrayList<>();
+                RouterReactVo children = new RouterReactVo();
+                children.setPath(menu.getPath());
+                children.setComponent(menu.getComponent());
+                children.setName(menu.getMenuName());
+                children.setIconName(menu.getIcon());
+                childrenList.add(children);
+                router.setRoutes(childrenList);
+            } else if (menu.getParentId().intValue() == 0 && isInnerLink(menu)) {
+                router.setPath("/inner");
+                List<RouterReactVo> childrenList = new ArrayList<>();
+                RouterReactVo children = new RouterReactVo();
+                String routerPath = innerLinkReplaceEach(menu.getPath());
+                children.setPath(routerPath);
+                children.setComponent(UserConstants.INNER_LINK);
+                children.setName(menu.getMenuName());
+                children.setIconName(menu.getIcon());
+                childrenList.add(children);
+                router.setRoutes(childrenList);
+            }
+            routers.add(router);
+        }
+        return routers;
     }
 
     /**
