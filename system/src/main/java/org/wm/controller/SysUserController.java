@@ -53,7 +53,7 @@ public class SysUserController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:user:list')")
     @GetMapping("/list")
-    public ResponseResult<PageResult<SysUser>> list(SysUser user) {
+    public PageResult<SysUser> list(SysUser user) {
         startPage();
         List<SysUser> list = userService.selectUserList(user);
         return getDataTable(list);

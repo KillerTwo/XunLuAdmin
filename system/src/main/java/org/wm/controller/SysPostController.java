@@ -37,7 +37,7 @@ public class SysPostController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:post:list')")
     @GetMapping("/list")
-    public ResponseResult<PageResult<SysPost>> list(SysPost post) {
+    public PageResult<SysPost> list(SysPost post) {
         startPage();
         List<SysPost> list = postService.selectPostList(post);
         return getDataTable(list);

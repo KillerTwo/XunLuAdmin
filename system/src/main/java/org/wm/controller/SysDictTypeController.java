@@ -32,7 +32,7 @@ public class SysDictTypeController extends BaseController {
 
     @PreAuthorize("@ss.hasPermi('system:dict:list')")
     @GetMapping("/list")
-    public ResponseResult<PageResult<SysDictType>> list(SysDictType dictType) {
+    public PageResult<SysDictType> list(SysDictType dictType) {
         startPage();
         List<SysDictType> list = dictTypeService.selectDictTypeList(dictType);
         return getDataTable(list);

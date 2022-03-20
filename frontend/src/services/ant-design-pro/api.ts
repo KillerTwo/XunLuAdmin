@@ -40,18 +40,18 @@ export async function getNotices(options?: { [key: string]: any }) {
   });
 }
 
-/** 获取规则列表 GET /api/rule */
+/** 获取用户列表 GET /api/rule */
 export async function rule(
   params: {
     // query
     /** 当前的页码 */
-    current?: number;
+    pageNum?: number;
     /** 页面的容量 */
     pageSize?: number;
   },
   options?: { [key: string]: any },
 ) {
-  return request<API.RuleList>('/api/rule', {
+  return request<API.RuleList>('/api/system/user/list', {
     method: 'GET',
     params: {
       ...params,

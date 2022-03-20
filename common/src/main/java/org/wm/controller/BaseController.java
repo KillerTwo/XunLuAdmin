@@ -46,7 +46,7 @@ public class BaseController {
 
 
     protected void startPage() {
-        int pageNum = ServletUtils.getParameterToInt("pageNum", 0);
+        int pageNum = ServletUtils.getParameterToInt("current", 0);
         int pageSize = ServletUtils.getParameterToInt("pageSize", 10);
         PageHelper.startPage(pageNum, pageSize);
     }
@@ -54,11 +54,8 @@ public class BaseController {
     /**
      * 响应请求分页数据
      */
-    protected <T> ResponseResult<PageResult<T>> getDataTable(List<T> list) {
-        PageResult<T> rspData = new PageResult();
-        rspData.setRows(list);
-        rspData.setTotal(new PageInfo(list).getTotal());
-        return ResponseResult.success(rspData);
+    protected <T> PageResult<T> getDataTable(List<T> list) {
+        return PageResult.success(list, new PageInfo(list).getTotal());
     }
 
 

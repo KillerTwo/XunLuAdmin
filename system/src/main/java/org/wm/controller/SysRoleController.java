@@ -48,7 +48,7 @@ public class SysRoleController extends BaseController {
 
     @PreAuthorize("@ss.hasPermi('system:role:list')")
     @GetMapping("/list")
-    public ResponseResult<PageResult<SysRole>> list(SysRole role) {
+    public PageResult<SysRole> list(SysRole role) {
         startPage();
         List<SysRole> list = roleService.selectRoleList(role);
         return getDataTable(list);
@@ -154,7 +154,7 @@ public class SysRoleController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:role:list')")
     @GetMapping("/authUser/allocatedList")
-    public ResponseResult<PageResult<SysUser>> allocatedList(SysUser user) {
+    public PageResult<SysUser> allocatedList(SysUser user) {
         startPage();
         List<SysUser> list = userService.selectAllocatedList(user);
         return getDataTable(list);
@@ -165,7 +165,7 @@ public class SysRoleController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:role:list')")
     @GetMapping("/authUser/unallocatedList")
-    public ResponseResult<PageResult<SysUser>> unallocatedList(SysUser user) {
+    public PageResult<SysUser> unallocatedList(SysUser user) {
         startPage();
         List<SysUser> list = userService.selectUnallocatedList(user);
         return getDataTable(list);

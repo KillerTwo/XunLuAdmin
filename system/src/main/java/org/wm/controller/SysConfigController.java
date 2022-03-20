@@ -38,7 +38,7 @@ public class SysConfigController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:config:list')")
     @GetMapping("/list")
-    public ResponseResult<PageResult<SysConfig>> list(SysConfig config) {
+    public PageResult<SysConfig> list(SysConfig config) {
         startPage();
         List<SysConfig> list = configService.selectConfigList(config);
         return getDataTable(list);

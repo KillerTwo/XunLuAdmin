@@ -32,4 +32,51 @@ declare namespace SYSTEM {
     autoLogin?: boolean;
     type?: string;
   };
+
+  type SysUser = {
+    userId?: number;
+    userName?: string;
+    nickName?: string;
+    email?: string;
+    phonenumber?: string;
+    sex?: string;
+    status?: string;
+    createTime?: string;
+    dept?: SysDept;
+    remark?: string;
+    deptId?: any;
+    postId?: any;
+    roleId?: any;
+    roleIds?: number[];
+    postIds?: number[];
+  }
+
+  type SysDept = {
+    deptId?: number;
+    deptName?: string;
+    leader?: string;
+    phone?: string;
+    email?: string;
+    status: string;
+    parentName?: string;
+  }
+
+  type SysRole = {
+    roleId: number;
+    roleName: string;
+    roleKey: string;
+    status: string;
+  };
+
+  type PageParams = {
+    current?: number;
+    pageSize?: number;
+  };
+
+  type ResponseResult = {
+    msg: string;
+    code: number;
+    data?: any
+  }
+
 }
