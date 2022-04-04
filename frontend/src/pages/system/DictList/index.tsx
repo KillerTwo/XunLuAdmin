@@ -1,32 +1,34 @@
-import { PlusOutlined } from '@ant-design/icons';
-import { Button, message, Input, Drawer } from 'antd';
+import {DeleteOutlined, EditOutlined, PlusOutlined} from '@ant-design/icons';
+import {Button, message, Drawer, Tag, Popconfirm, Space} from 'antd';
 import React, { useState, useRef } from 'react';
-import { useIntl, FormattedMessage } from 'umi';
-import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
+import { PageContainer } from '@ant-design/pro-layout';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { ModalForm, ProFormText, ProFormTextArea } from '@ant-design/pro-form';
+import {ModalForm, ProFormRadio, ProFormText, ProFormTextArea} from '@ant-design/pro-form';
 import type { ProDescriptionsItemProps } from '@ant-design/pro-descriptions';
 import ProDescriptions from '@ant-design/pro-descriptions';
 import type { FormValueType } from './components/UpdateForm';
 import UpdateForm from './components/UpdateForm';
-import { rule, addRule, updateRule, removeRule } from '@/services/ant-design-pro/api';
+import {addSysDictType, removeSysDictType, sysDictTypeList, updateSysDictType} from "@/services/system/sysDict";
+import {SYSTEM} from "@/services/system/typings";
+import {history} from "umi";
+import {useModel} from "@@/plugin-model/useModel";
 
 /**
  * @en-US Add node
  * @zh-CN 添加节点
  * @param fields
  */
-const handleAdd = async (fields: API.RuleListItem) => {
+const handleAdd = async (fields: SYSTEM.SysDictType) => {
   const hide = message.loading('正在添加');
   try {
-    await addRule({ ...fields });
+    await addSysDictType({ ...fields });
     hide();
-    message.success('Added successfully');
+    message.success('添加成功！');
     return true;
   } catch (error) {
     hide();
-    message.error('Adding failed, please try again!');
+    message.error('添加失败，请稍后重试!');
     return false;
   }
 };
@@ -38,20 +40,16 @@ const handleAdd = async (fields: API.RuleListItem) => {
  * @param fields
  */
 const handleUpdate = async (fields: FormValueType) => {
-  const hide = message.loading('Configuring');
+  const hide = message.loading('修改中');
   try {
-    await updateRule({
-      name: fields.name,
-      desc: fields.desc,
-      key: fields.key,
-    });
+    await updateSysDictType({...fields});
     hide();
 
-    message.success('Configuration is successful');
+    message.success('修改成功！');
     return true;
   } catch (error) {
     hide();
-    message.error('Configuration failed, please try again!');
+    message.error('修改失败，请稍后重试!');
     return false;
   }
 };
@@ -62,19 +60,18 @@ const handleUpdate = async (fields: FormValueType) => {
  *
  * @param selectedRows
  */
-const handleRemove = async (selectedRows: API.RuleListItem[]) => {
+const handleRemove = async (selectedRows: SYSTEM.SysDictType[]) => {
   const hide = message.loading('正在删除');
   if (!selectedRows) return true;
   try {
-    await removeRule({
-      key: selectedRows.map((row) => row.key),
-    });
+    await removeSysDictType([...selectedRows.map((row) => row.dictId),
+    ]);
     hide();
-    message.success('Deleted successfully and will refresh soon');
+    message.success('删除成功！');
     return true;
   } catch (error) {
     hide();
-    message.error('Delete failed, please try again');
+    message.error('删除失败，请稍后重试！');
     return false;
   }
 };
@@ -94,25 +91,16 @@ const DictList: React.FC = () => {
   const [showDetail, setShowDetail] = useState<boolean>(false);
 
   const actionRef = useRef<ActionType>();
-  const [currentRow, setCurrentRow] = useState<API.RuleListItem>();
-  const [selectedRowsState, setSelectedRows] = useState<API.RuleListItem[]>([]);
+  const [currentRow, setCurrentRow] = useState<SYSTEM.SysDictType>();
+  const [selectedRowsState, setSelectedRows] = useState<SYSTEM.SysDictType[]>([]);
 
-  /**
-   * @en-US International configuration
-   * @zh-CN 国际化配置
-   * */
-  const intl = useIntl();
-
-  const columns: ProColumns<API.RuleListItem>[] = [
+  const {setDictType} = useModel("dict", model => {return {setDictType: model.setDictType}});
+  const columns: ProColumns<SYSTEM.SysDictType>[] = [
     {
-      title: (
-        <FormattedMessage
-          id="pages.searchTable.updateForm.ruleName.nameLabel"
-          defaultMessage="Rule name"
-        />
-      ),
-      dataIndex: 'name',
-      tip: 'The rule name is the unique key',
+      title: "字典编号",
+      dataIndex: 'dictId',
+      hideInSearch: true,
+      key: "dictId",
       render: (dom, entity) => {
         return (
           <a
@@ -127,96 +115,72 @@ const DictList: React.FC = () => {
       },
     },
     {
-      title: <FormattedMessage id="pages.searchTable.titleDesc" defaultMessage="Description" />,
-      dataIndex: 'desc',
-      valueType: 'textarea',
+      title: "字典名称",
+      dataIndex: 'dictName',
+      key: "dictName",
     },
     {
-      title: (
-        <FormattedMessage
-          id="pages.system.user.searchTable.username"
-          defaultMessage="username"
-        />
-      ),
-      dataIndex: 'callNo',
-      sorter: true,
-      hideInForm: true,
-      renderText: (val: string) =>
-        `${val}${intl.formatMessage({
-          id: 'pages.searchTable.tenThousand',
-          defaultMessage: ' 万 ',
-        })}`,
+      title: "字典类型",
+      dataIndex: 'dictType',
+      key: "dictType",
+      render: (dom, entity) => {
+        return (
+          <a
+            onClick={() => {
+              setCurrentRow(entity);
+              setShowDetail(true);
+              setDictType(entity.dictType || "")
+              history.push(`/system/dictData`)
+            }}
+          >
+            {dom}
+          </a>
+        );
+      },
     },
     {
-      title: <FormattedMessage id="pages.system.user.searchTable.nickname" defaultMessage="NickName" />,
+      title: "状态",
       dataIndex: 'status',
       hideInForm: true,
+      key: "status",
       valueEnum: {
-        0: {
+        "0": {
           text: (
-            <FormattedMessage
-              id="pages.searchTable.nameStatus.default"
-              defaultMessage="Shut down"
-            />
+            <Tag color={"green"}>
+              正常
+            </Tag>
           ),
           status: 'Default',
         },
-        1: {
+        "1": {
           text: (
-            <FormattedMessage id="pages.searchTable.nameStatus.running" defaultMessage="Running" />
+            <Tag color={"red"}>
+              停用
+            </Tag>
           ),
           status: 'Processing',
         },
-        2: {
-          text: (
-            <FormattedMessage id="pages.searchTable.nameStatus.online" defaultMessage="Online" />
-          ),
-          status: 'Success',
-        },
-        3: {
-          text: (
-            <FormattedMessage
-              id="pages.searchTable.nameStatus.abnormal"
-              defaultMessage="Abnormal"
-            />
-          ),
-          status: 'Error',
-        },
       },
     },
     {
-      title: (
-        <FormattedMessage
-          id="pages.searchTable.titleUpdatedAt"
-          defaultMessage="Last scheduled time"
-        />
-      ),
+      title: "备注",
+      dataIndex: 'remark',
+      hideInSearch: true,
+      key: "remark",
+    },
+    {
+      title: "创建时间",
       sorter: true,
-      dataIndex: 'updatedAt',
+      dataIndex: 'createTime',
+      hideInSearch: true,
       valueType: 'dateTime',
-      renderFormItem: (item, { defaultRender, ...rest }, form) => {
-        const status = form.getFieldValue('status');
-        if (`${status}` === '0') {
-          return false;
-        }
-        if (`${status}` === '3') {
-          return (
-            <Input
-              {...rest}
-              placeholder={intl.formatMessage({
-                id: 'pages.searchTable.exception',
-                defaultMessage: 'Please enter the reason for the exception!',
-              })}
-            />
-          );
-        }
-        return defaultRender(item);
-      },
+      key: "createTime",
     },
     {
-      title: <FormattedMessage id="pages.searchTable.titleOption" defaultMessage="Operating" />,
+      title: "操作",
       dataIndex: 'option',
       valueType: 'option',
+      key: "option",
       render: (_, record) => [
         <a
           key="config"
@@ -225,27 +189,33 @@ const DictList: React.FC = () => {
             setCurrentRow(record);
           }}
         >
-          <FormattedMessage id="pages.searchTable.config" defaultMessage="Configuration" />
+          <EditOutlined />修改
         </a>,
-        <a key="subscribeAlert" href="https://procomponents.ant.design/">
-          <FormattedMessage
-            id="pages.searchTable.subscribeAlert"
-            defaultMessage="Subscribe to alerts"
-          />
-        </a>,
+        <Popconfirm
+          title="确定要删除字典类型?"
+          onConfirm={async () => {
+            await handleRemove([record]);
+            actionRef.current?.reloadAndRest?.();
+          }}
+          onCancel={() => {
+          }}
+          okText="确定"
+          cancelText="取消"
+        >
+          <a>
+            <DeleteOutlined />删除
+          </a>
+        </Popconfirm>,
       ],
     },
   ];
 
   return (
     <PageContainer>
-      <ProTable<API.RuleListItem, API.PageParams>
-        headerTitle={intl.formatMessage({
-          id: 'pages.searchTable.title',
-          defaultMessage: 'Enquiry form',
-        })}
+      <ProTable<SYSTEM.SysDictType, SYSTEM.PageParams>
+        headerTitle="字典类型列表"
         actionRef={actionRef}
-        rowKey="key"
+        rowKey="dictId"
         search={{
           labelWidth: 120,
         }}
@@ -257,66 +227,57 @@ const DictList: React.FC = () => {
               handleModalVisible(true);
             }}
           >
-            <PlusOutlined /> <FormattedMessage id="pages.searchTable.new" defaultMessage="New" />
+            <PlusOutlined /> 新增
           </Button>,
         ]}
-        request={rule}
+        request={sysDictTypeList}
         columns={columns}
         rowSelection={{
           onChange: (_, selectedRows) => {
             setSelectedRows(selectedRows);
           },
         }}
+        tableAlertRender={({ selectedRowKeys, onCleanSelected }) => (
+          <Space size={24}>
+          <span>
+            已选 {selectedRowKeys.length} 项
+            <a style={{ marginLeft: 8 }} onClick={onCleanSelected}>
+              取消选择
+            </a>
+          </span>
+          </Space>
+        )}
+        tableAlertOptionRender={() => {
+          return (
+            <Space size={16}>
+              <Popconfirm
+                title="确定要删除字典配置?"
+                onConfirm={async () => {
+                  await handleRemove(selectedRowsState);
+                  setSelectedRows([]);
+                  actionRef.current?.reloadAndRest?.();
+                }}
+                onCancel={() => {
+                }}
+                okText="确定"
+                cancelText="取消"
+              >
+                <Button>
+                  批量删除
+                </Button>
+              </Popconfirm>
+
+            </Space>
+          );
+        }}
       />
-      {selectedRowsState?.length > 0 && (
-        <FooterToolbar
-          extra={
-            <div>
-              <FormattedMessage id="pages.searchTable.chosen" defaultMessage="Chosen" />{' '}
-              <a style={{ fontWeight: 600 }}>{selectedRowsState.length}</a>{' '}
-              <FormattedMessage id="pages.searchTable.item" defaultMessage="项" />
-              &nbsp;&nbsp;
-              <span>
-                <FormattedMessage
-                  id="pages.searchTable.totalServiceCalls"
-                  defaultMessage="Total number of service calls"
-                />{' '}
-                {selectedRowsState.reduce((pre, item) => pre + item.callNo!, 0)}{' '}
-                <FormattedMessage id="pages.searchTable.tenThousand" defaultMessage="万" />
-              </span>
-            </div>
-          }
-        >
-          <Button
-            onClick={async () => {
-              await handleRemove(selectedRowsState);
-              setSelectedRows([]);
-              actionRef.current?.reloadAndRest?.();
-            }}
-          >
-            <FormattedMessage
-              id="pages.searchTable.batchDeletion"
-              defaultMessage="Batch deletion"
-            />
-          </Button>
-          <Button type="primary">
-            <FormattedMessage
-              id="pages.searchTable.batchApproval"
-              defaultMessage="Batch approval"
-            />
-          </Button>
-        </FooterToolbar>
-      )}
       <ModalForm
-        title={intl.formatMessage({
-          id: 'pages.searchTable.createForm.newRule',
-          defaultMessage: 'New rule',
-        })}
-        width="400px"
+        title="新增字典类型"
+        width="600px"
         visible={createModalVisible}
         onVisibleChange={handleModalVisible}
         onFinish={async (value) => {
-          const success = await handleAdd(value as API.RuleListItem);
+          const success = await handleAdd(value as SYSTEM.SysDictType);
           if (success) {
             handleModalVisible(false);
             if (actionRef.current) {
@@ -329,22 +290,45 @@ const DictList: React.FC = () => {
           rules={[
             {
               required: true,
-              message: (
-                <FormattedMessage
-                  id="pages.searchTable.ruleName"
-                  defaultMessage="Rule name is required"
-                />
-              ),
+              message: "字典名称不能为空",
             },
           ]}
           width="md"
-          name="name"
+          name="dictName"
+          label="字典名称"
         />
-        <ProFormTextArea width="md" name="desc" />
+        <ProFormText
+          rules={[
+            {
+              required: true,
+              message: "字典类型不能为空",
+            },
+          ]}
+          width="md"
+          name="dictType"
+          label="字典类型"
+        />
+        <ProFormRadio.Group
+          width={"md"}
+          initialValue={"0"}
+          name="status"
+          label="状态"
+          options={[
+            {
+              label: '正常',
+              value: '0',
+            },
+            {
+              label: '停用',
+              value: '1',
+            }
+          ]}
+        />
+        <ProFormTextArea width="md" name="remark" label="备注" />
       </ModalForm>
       <UpdateForm
         onSubmit={async (value) => {
-          const success = await handleUpdate(value);
+          const success = await handleUpdate({...currentRow, ...value});
           if (success) {
             handleUpdateModalVisible(false);
             setCurrentRow(undefined);
@@ -353,11 +337,14 @@ const DictList: React.FC = () => {
             }
           }
         }}
-        onCancel={() => {
-          handleUpdateModalVisible(false);
-          if (!showDetail) {
-            setCurrentRow(undefined);
+        onCancel={(value) => {
+          if (!value) {
+            handleUpdateModalVisible(false);
+            if (!showDetail) {
+              setCurrentRow(undefined);
+            }
           }
+
         }}
         updateModalVisible={updateModalVisible}
         values={currentRow || {}}
@@ -372,17 +359,17 @@ const DictList: React.FC = () => {
         }}
         closable={false}
       >
-        {currentRow?.name && (
-          <ProDescriptions<API.RuleListItem>
+        {currentRow?.dictName && (
+          <ProDescriptions<SYSTEM.SysDictType>
             column={2}
-            title={currentRow?.name}
+            title={currentRow?.dictName}
             request={async () => ({
               data: currentRow || {},
             })}
             params={{
-              id: currentRow?.name,
+              id: currentRow?.dictId,
             }}
-            columns={columns as ProDescriptionsItemProps<API.RuleListItem>[]}
+            columns={columns as ProDescriptionsItemProps<SYSTEM.SysDictType>[]}
           />
         )}
       </Drawer>

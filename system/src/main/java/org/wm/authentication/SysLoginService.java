@@ -18,14 +18,12 @@ import org.wm.exception.user.CaptchaExpireException;
 import org.wm.exception.user.UserPasswordNotMatchException;
 import org.wm.service.ISysConfigService;
 import org.wm.service.ISysUserService;
-import org.wm.threads.factory.AsyncFactory;
+import org.wm.threads.AsyncFactory;
 import org.wm.utils.*;
 import org.wm.utils.ip.IpUtils;
 
 /**
  * 登录校验方法
- *
- * @author ruoyi
  */
 @Component
 public class SysLoginService {

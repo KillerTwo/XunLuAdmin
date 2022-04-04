@@ -1,3 +1,4 @@
+
 spring:
   # 资源信息
   messages:
@@ -100,3 +101,27 @@ pagehelper:
   helperDialect: mysql
   supportMethodsArguments: true
   params: count=countSql
+springdoc:
+  version: v1.0.0
+  swagger-ui:
+    # path: /swagger-ui.html
+    display-request-duration: true
+    groups-order: DESC
+    operationsSorter: method
+    disable-swagger-default-url: true
+    use-root-path: true
+    csrf:
+      enabled: true
+    enabled: true
+  show-actuator: true
+  group-configs:
+    - group: systems
+      paths-to-match: /system/**
+      packages-to-scan: org.wm.controller
+  api-docs:
+    path: /v3/api-docs
+    enabled: true
+  packages-to-scan: org.wm.controller
+  paths-to-match: /system/**
+server:
+  port: 8001

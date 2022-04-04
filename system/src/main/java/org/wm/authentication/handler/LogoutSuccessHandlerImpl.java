@@ -16,7 +16,7 @@ import org.wm.constants.Constants;
 import org.wm.constants.HttpStatus;
 import org.wm.entity.vo.LoginUser;
 import org.wm.response.ResponseResult;
-import org.wm.threads.factory.AsyncFactory;
+import org.wm.threads.AsyncFactory;
 import org.wm.utils.ServletUtils;
 import org.wm.utils.StringUtils;
 

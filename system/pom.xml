@@ -18,6 +18,12 @@
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.wm</groupId>
+            <artifactId>logging</artifactId>
+            <version>2022.01.20-SNAPSHOT</version>
+        </dependency>
+
     </dependencies>
 
 </project>

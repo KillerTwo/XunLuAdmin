@@ -1,11 +1,19 @@
 import { PlusOutlined } from '@ant-design/icons';
 import {Button, message, Drawer, Tag, TreeSelect, Space } from 'antd';
-import React, { useState, useRef } from 'react';
+import React, {useState, useRef} from 'react';
 import { useIntl, FormattedMessage } from 'umi';
 import { PageContainer } from '@ant-design/pro-layout';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { ModalForm, ProFormText, ProFormTextArea, ProFormSelect, ProForm, ProFormTreeSelect } from '@ant-design/pro-form';
+import {
+  ModalForm,
+  ProFormText,
+  ProFormTextArea,
+  ProFormSelect,
+  ProForm,
+  ProFormTreeSelect,
+  ProFormInstance
+} from '@ant-design/pro-form';
 import type { ProDescriptionsItemProps } from '@ant-design/pro-descriptions';
 import ProDescriptions from '@ant-design/pro-descriptions';
 import type { FormValueType } from './components/UpdateForm';
@@ -230,8 +238,27 @@ const UserList: React.FC = () => {
     },
   ];
 
+  const tableRef = useRef<ProFormInstance>();
+  // const [deptTreeData, setDeptTreeData] = useState<SYSTEM.DeptTree[]|[]>([]);
+
+  /*useEffect(() => {
+    sysDeptSelectList().then(res => {
+      setDeptTreeData(res.data);
+    });
+  }, [])*/
+
+  /*const onSelect = (value: any) => {
+    if (tableRef.current) {
+      tableRef.current.setFieldsValue({
+        dept: value
+      });
+      tableRef.current.submit();
+    }
+  }*/
+
   return (
     <PageContainer>
+      {/*<DeptTree data={deptTreeData} onSelect={onSelect} />*/}
       <ProTable<SYSTEM.SysUser, SYSTEM.PageParams & {dept: number, userName: string, nickName: string}>
         headerTitle={"用户信息"}
         actionRef={actionRef}
@@ -243,6 +270,7 @@ const UserList: React.FC = () => {
         search={{
           labelWidth: 120,
         }}
+        formRef={tableRef}
         toolBarRender={() => [
           <Button
             type="primary"

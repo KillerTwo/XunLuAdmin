@@ -11,7 +11,7 @@ import org.wm.exception.user.CaptchaException;
 import org.wm.exception.user.CaptchaExpireException;
 import org.wm.service.ISysConfigService;
 import org.wm.service.ISysUserService;
-import org.wm.threads.factory.AsyncFactory;
+import org.wm.threads.AsyncFactory;
 import org.wm.utils.MessageUtils;
 import org.wm.utils.RedisCache;
 import org.wm.utils.SecurityUtils;
@@ -19,8 +19,6 @@ import org.wm.utils.StringUtils;
 
 /**
  * 注册校验方法
- *
- * @author ruoyi
  */
 @Component
 public class SysRegisterService {

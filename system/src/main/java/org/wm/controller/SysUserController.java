@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.java.Log;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +38,7 @@ import org.wm.utils.StringUtils;
  *
  * @author ruoyi
  */
+@Tag(name = "user", description = "the user API")
 @RestController
 @RequestMapping("/system/user")
 public class SysUserController extends BaseController {
@@ -51,6 +54,7 @@ public class SysUserController extends BaseController {
     /**
      * 获取用户列表
      */
+    @Operation(summary = "Delete user", description = "This can only be done by the logged in user.", tags = { "user" })
     @PreAuthorize("@ss.hasPermi('system:user:list')")
     @GetMapping("/list")
     public PageResult<SysUser> list(SysUser user) {

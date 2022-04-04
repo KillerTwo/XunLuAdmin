@@ -1,4 +1,5 @@
 import React from "react";
+import {sysOperlogList} from "@/services/system/operlog";
 
 declare namespace SYSTEM {
   type Router = {
@@ -57,20 +58,27 @@ declare namespace SYSTEM {
     leader?: string;
     phone?: string;
     email?: string;
-    status: string;
+    status?: string;
     parentName?: string;
+    parentId?: number;
+    orderNum?: number;
+    children?: SysDept[];
   }
 
   type SysRole = {
-    roleId: number;
-    roleName: string;
-    roleKey: string;
-    status: string;
+    roleId?: number;
+    roleName?: string;
+    roleKey?: string;
+    status?: string;
+    createTime?: string;
+    remark?: string;
+    roleSort?: number;
+    menuIds?: number[];
   };
 
   type PageParams = {
-    current?: number;
-    pageSize?: number;
+    current?: number | 0;
+    pageSize?: number | 10;
   };
 
   type ResponseResult = {
@@ -78,5 +86,134 @@ declare namespace SYSTEM {
     code: number;
     data?: any
   }
+
+  type DeptTree = {
+    id: number;
+    label: string;
+    children?: DeptTree[]
+  }
+
+  type SysMenu = {
+    menuId?: number;
+    menuName?: string;
+    parentName?: string;
+    parentId?: number;
+    orderNum?: number;
+    path?: string;
+    component?: string;
+    query?: string;
+    menuType?: string;
+    status?: string;
+    perms?: string;
+    icon?: string;
+    children?: SysMenu[];
+    isFrame?: string;
+    isCache?: string;
+    visible?: string;
+  }
+
+  type SysPost = {
+    postId?: number;
+    postName?: string;
+    postCode?: string;
+    postSort?: string;
+    status?: string;
+    remark?: string;
+  }
+
+  type SysConfig = {
+    configId?: number;
+    configName?: string;
+    configKey?: string;
+    configValue?: string;
+    configType?: string;
+    remark?: string;
+  }
+
+  type SysNotice = {
+    noticeId?: number;
+    noticeTitle?: string;
+    noticeType?: string;
+    noticeContent?: string;
+    status?: string;
+    remark?: string;
+  }
+
+  type Operlog = {
+    operId?: number;
+    title?: string;
+    businessType?: string;
+    method?: string;
+    requestMethod?: string;
+    operatorType?: number;
+    operName?: string;
+    deptName?: string;
+    operUrl?: string;
+    operIp?: string;
+    operLocation?: string;
+    operParam?: string;
+    jsonResult?: string;
+    status?: string;
+    errorMsg?: string;
+    operTime?: string;
+  }
+
+  type SysLogininfor = {
+    infoId?: number;
+    userName?: string;
+    status?: string;
+    ipaddr?: string;
+    loginLocation?: string;
+    browser?: string;
+    os?: string;
+    msg?: string;
+    loginTime?: string;
+  }
+
+  type SysDictType = {
+    dictId?: number;
+    dictName?: string;
+    dictType?: string;
+    status?: string;
+    remark?: string;
+  }
+
+  type SysDictData = {
+    dictCode?: number;
+    dictSort?: number;
+    dictLabel?: string;
+    dictValue?: string;
+    dictType?: string;
+    cssClass?: string;
+    listClass?: string;
+    isDefault?: string;
+    status?: string;
+    remark?: string;
+  }
+
+  type SysJob = {
+    jobId?: number;
+    jobName?: string;
+    jobGroup?: string;
+    invokeTarget?: string;
+    cronExpression?: string;
+    misfirePolicy?: string;
+    concurrent?: string;
+    status?: string;
+  }
+
+  type SysJobLog = {
+    jobLogId?: number;
+    jobName?: string;
+    jobGroup?: string;
+    invokeTarget?: string;
+    jobMessage?: string;
+    status?: string;
+    exceptionInfo?: string;
+    startTime?: string;
+    stopTime?: string;
+  }
+
+
 
 }

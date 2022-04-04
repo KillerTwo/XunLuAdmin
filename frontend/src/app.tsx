@@ -35,7 +35,7 @@ export const initialStateConfig = {
 };
 
 const authHeaderInterceptor = (url: string, options: RequestOptionsInit) => {
-  if(url.indexOf('login') !== -1) {
+  if(url.indexOf('/login/') !== -1) {
     return {
       url: `${url}`,
       options: { ...options, interceptors: true },
@@ -169,9 +169,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
         ]
       : [],
     menuDataRender: (menuItems) => {
-      // console.log("menuItems", menuItems);
-      console.log("initialState", initialState);
-      console.log("initialState.customMenuData", initialState?.customMenuData);
+      console.log("menuItems", menuItems);
       const resMenuData = initialState?.customMenuData||[];
 
       const menuDataIcon = handleIconAndComponent(resMenuData);
@@ -205,7 +203,6 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
       const data = [...menuDataIcon||[]]
       // const menuData = await fetchMenuData();
       // return [menuItems, initialState?.customMenuData];
-      console.log('menu-data: ', data)
       return data;
     },
     menuHeaderRender: undefined,

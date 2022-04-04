@@ -1,32 +1,32 @@
-import { PlusOutlined } from '@ant-design/icons';
-import { Button, message, Input, Drawer } from 'antd';
+import {DeleteOutlined, EditOutlined, PlusOutlined} from '@ant-design/icons';
+import {Button, message, Drawer, Tag, Space, Popconfirm} from 'antd';
 import React, { useState, useRef } from 'react';
-import { useIntl, FormattedMessage } from 'umi';
-import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
+import { PageContainer } from '@ant-design/pro-layout';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { ModalForm, ProFormText, ProFormTextArea } from '@ant-design/pro-form';
+import {ModalForm, ProFormRadio, ProFormText, ProFormTextArea} from '@ant-design/pro-form';
 import type { ProDescriptionsItemProps } from '@ant-design/pro-descriptions';
 import ProDescriptions from '@ant-design/pro-descriptions';
 import type { FormValueType } from './components/UpdateForm';
 import UpdateForm from './components/UpdateForm';
-import { rule, addRule, updateRule, removeRule } from '@/services/ant-design-pro/api';
+import {addSysConfig, removeSysConfig, sysConfigList, updateSysConfig} from "@/services/system/sysConfig";
+import {SYSTEM} from "@/services/system/typings";
 
 /**
  * @en-US Add node
  * @zh-CN 添加节点
  * @param fields
  */
-const handleAdd = async (fields: API.RuleListItem) => {
+const handleAdd = async (fields: SYSTEM.SysConfig) => {
   const hide = message.loading('正在添加');
   try {
-    await addRule({ ...fields });
+    await addSysConfig({ ...fields });
     hide();
-    message.success('Added successfully');
+    message.success('添加成功！');
     return true;
   } catch (error) {
     hide();
-    message.error('Adding failed, please try again!');
+    message.error('添加失败，请稍后重试!');
     return false;
   }
 };
@@ -38,20 +38,18 @@ const handleAdd = async (fields: API.RuleListItem) => {
  * @param fields
  */
 const handleUpdate = async (fields: FormValueType) => {
-  const hide = message.loading('Configuring');
+  const hide = message.loading('修改');
   try {
-    await updateRule({
-      name: fields.name,
-      desc: fields.desc,
-      key: fields.key,
+    await updateSysConfig({
+      ...fields
     });
     hide();
 
-    message.success('Configuration is successful');
+    message.success('修改成功');
     return true;
   } catch (error) {
     hide();
-    message.error('Configuration failed, please try again!');
+    message.error('修改失败，请稍后重试!');
     return false;
   }
 };
@@ -62,19 +60,17 @@ const handleUpdate = async (fields: FormValueType) => {
  *
  * @param selectedRows
  */
-const handleRemove = async (selectedRows: API.RuleListItem[]) => {
+const handleRemove = async (selectedRows: SYSTEM.SysConfig[]) => {
   const hide = message.loading('正在删除');
   if (!selectedRows) return true;
   try {
-    await removeRule({
-      key: selectedRows.map((row) => row.key),
-    });
+    await removeSysConfig([...selectedRows.map((row) => row.configId)])
     hide();
-    message.success('Deleted successfully and will refresh soon');
+    message.success('删除成功');
     return true;
   } catch (error) {
     hide();
-    message.error('Delete failed, please try again');
+    message.error('删除失败，请稍后重试!');
     return false;
   }
 };
@@ -94,127 +90,67 @@ const ConfigList: React.FC = () => {
   const [showDetail, setShowDetail] = useState<boolean>(false);
 
   const actionRef = useRef<ActionType>();
-  const [currentRow, setCurrentRow] = useState<API.RuleListItem>();
-  const [selectedRowsState, setSelectedRows] = useState<API.RuleListItem[]>([]);
+  const [currentRow, setCurrentRow] = useState<SYSTEM.SysConfig>();
+  const [selectedRowsState, setSelectedRows] = useState<SYSTEM.SysConfig[]>([]);
 
-  /**
-   * @en-US International configuration
-   * @zh-CN 国际化配置
-   * */
-  const intl = useIntl();
 
-  const columns: ProColumns<API.RuleListItem>[] = [
+  const columns: ProColumns<SYSTEM.SysConfig>[] = [
     {
-      title: (
-        <FormattedMessage
-          id="pages.searchTable.updateForm.ruleName.nameLabel"
-          defaultMessage="Rule name"
-        />
-      ),
-      dataIndex: 'name',
-      tip: 'The rule name is the unique key',
-      render: (dom, entity) => {
-        return (
-          <a
-            onClick={() => {
-              setCurrentRow(entity);
-              setShowDetail(true);
-            }}
-          >
-            {dom}
-          </a>
-        );
-      },
+      title: "参数主键",
+      dataIndex: 'configId',
+      hideInSearch: true
     },
     {
-      title: <FormattedMessage id="pages.searchTable.titleDesc" defaultMessage="Description" />,
-      dataIndex: 'desc',
-      valueType: 'textarea',
+      title: "参数名称",
+      dataIndex: 'configName',
     },
     {
-      title: (
-        <FormattedMessage
-          id="pages.system.user.searchTable.username"
-          defaultMessage="username"
-        />
-      ),
-      dataIndex: 'callNo',
-      sorter: true,
-      hideInForm: true,
-      renderText: (val: string) =>
-        `${val}${intl.formatMessage({
-          id: 'pages.searchTable.tenThousand',
-          defaultMessage: ' 万 ',
-        })}`,
+      title: "参数键名",
+      dataIndex: 'configKey',
     },
     {
-      title: <FormattedMessage id="pages.system.user.searchTable.nickname" defaultMessage="NickName" />,
-      dataIndex: 'status',
+      title: "参数键值",
+      dataIndex: 'configValue',
+      hideInSearch: true
+    },
+    {
+      title: "系统内置",
+      dataIndex: 'configType',
       hideInForm: true,
       valueEnum: {
-        0: {
+        "Y": {
           text: (
-            <FormattedMessage
-              id="pages.searchTable.nameStatus.default"
-              defaultMessage="Shut down"
-            />
+            <Tag color={"green"}>
+              是
+            </Tag>
           ),
           status: 'Default',
         },
-        1: {
+        "N": {
           text: (
-            <FormattedMessage id="pages.searchTable.nameStatus.running" defaultMessage="Running" />
+            <Tag color={"red"}>
+              否
+            </Tag>
           ),
           status: 'Processing',
-        },
-        2: {
-          text: (
-            <FormattedMessage id="pages.searchTable.nameStatus.online" defaultMessage="Online" />
-          ),
-          status: 'Success',
-        },
-        3: {
-          text: (
-            <FormattedMessage
-              id="pages.searchTable.nameStatus.abnormal"
-              defaultMessage="Abnormal"
-            />
-          ),
-          status: 'Error',
-        },
+        }
       },
     },
     {
-      title: (
-        <FormattedMessage
-          id="pages.searchTable.titleUpdatedAt"
-          defaultMessage="Last scheduled time"
-        />
-      ),
+      title: "备注",
+      dataIndex: 'remark',
+      valueType: 'textarea',
+      hideInSearch: true
+    },
+    {
+      title: "创建时间",
       sorter: true,
-      dataIndex: 'updatedAt',
+      dataIndex: 'createTime',
       valueType: 'dateTime',
-      renderFormItem: (item, { defaultRender, ...rest }, form) => {
-        const status = form.getFieldValue('status');
-        if (`${status}` === '0') {
-          return false;
-        }
-        if (`${status}` === '3') {
-          return (
-            <Input
-              {...rest}
-              placeholder={intl.formatMessage({
-                id: 'pages.searchTable.exception',
-                defaultMessage: 'Please enter the reason for the exception!',
-              })}
-            />
-          );
-        }
-        return defaultRender(item);
-      },
+      hideInSearch: true
     },
     {
-      title: <FormattedMessage id="pages.searchTable.titleOption" defaultMessage="Operating" />,
+      title: "操作",
       dataIndex: 'option',
       valueType: 'option',
       render: (_, record) => [
@@ -225,27 +161,33 @@ const ConfigList: React.FC = () => {
             setCurrentRow(record);
           }}
         >
-          <FormattedMessage id="pages.searchTable.config" defaultMessage="Configuration" />
+          <EditOutlined />修改
         </a>,
-        <a key="subscribeAlert" href="https://procomponents.ant.design/">
-          <FormattedMessage
-            id="pages.searchTable.subscribeAlert"
-            defaultMessage="Subscribe to alerts"
-          />
-        </a>,
+        <Popconfirm
+          title="确定要删除配置?"
+          onConfirm={async () => {
+            await handleRemove([record]);
+            actionRef.current?.reloadAndRest?.();
+          }}
+          onCancel={() => {
+          }}
+          okText="确定"
+          cancelText="取消"
+        >
+          <a>
+            <DeleteOutlined />删除
+          </a>
+        </Popconfirm>
       ],
     },
   ];
 
   return (
     <PageContainer>
-      <ProTable<API.RuleListItem, API.PageParams>
-        headerTitle={intl.formatMessage({
-          id: 'pages.searchTable.title',
-          defaultMessage: 'Enquiry form',
-        })}
+      <ProTable<SYSTEM.SysConfig, SYSTEM.PageParams>
+        headerTitle={"参数配置列表"}
         actionRef={actionRef}
-        rowKey="key"
+        rowKey="configId"
         search={{
           labelWidth: 120,
         }}
@@ -257,66 +199,57 @@ const ConfigList: React.FC = () => {
               handleModalVisible(true);
             }}
           >
-            <PlusOutlined /> <FormattedMessage id="pages.searchTable.new" defaultMessage="New" />
+            <PlusOutlined /> 新增
           </Button>,
         ]}
-        request={rule}
+        request={sysConfigList}
         columns={columns}
         rowSelection={{
           onChange: (_, selectedRows) => {
             setSelectedRows(selectedRows);
           },
         }}
+        tableAlertRender={({ selectedRowKeys, onCleanSelected }) => (
+          <Space size={24}>
+          <span>
+            已选 {selectedRowKeys.length} 项
+            <a style={{ marginLeft: 8 }} onClick={onCleanSelected}>
+              取消选择
+            </a>
+          </span>
+          </Space>
+        )}
+        tableAlertOptionRender={() => {
+          return (
+            <Space size={16}>
+              <Popconfirm
+                title="确定要删除配置项?"
+                onConfirm={async () => {
+                  await handleRemove(selectedRowsState);
+                  setSelectedRows([]);
+                  actionRef.current?.reloadAndRest?.();
+                }}
+                onCancel={() => {
+                }}
+                okText="确定"
+                cancelText="取消"
+              >
+                <Button>
+                  批量删除
+                </Button>
+              </Popconfirm>
+            </Space>
+          );
+        }}
       />
-      {selectedRowsState?.length > 0 && (
-        <FooterToolbar
-          extra={
-            <div>
-              <FormattedMessage id="pages.searchTable.chosen" defaultMessage="Chosen" />{' '}
-              <a style={{ fontWeight: 600 }}>{selectedRowsState.length}</a>{' '}
-              <FormattedMessage id="pages.searchTable.item" defaultMessage="项" />
-              &nbsp;&nbsp;
-              <span>
-                <FormattedMessage
-                  id="pages.searchTable.totalServiceCalls"
-                  defaultMessage="Total number of service calls"
-                />{' '}
-                {selectedRowsState.reduce((pre, item) => pre + item.callNo!, 0)}{' '}
-                <FormattedMessage id="pages.searchTable.tenThousand" defaultMessage="万" />
-              </span>
-            </div>
-          }
-        >
-          <Button
-            onClick={async () => {
-              await handleRemove(selectedRowsState);
-              setSelectedRows([]);
-              actionRef.current?.reloadAndRest?.();
-            }}
-          >
-            <FormattedMessage
-              id="pages.searchTable.batchDeletion"
-              defaultMessage="Batch deletion"
-            />
-          </Button>
-          <Button type="primary">
-            <FormattedMessage
-              id="pages.searchTable.batchApproval"
-              defaultMessage="Batch approval"
-            />
-          </Button>
-        </FooterToolbar>
-      )}
       <ModalForm
-        title={intl.formatMessage({
-          id: 'pages.searchTable.createForm.newRule',
-          defaultMessage: 'New rule',
-        })}
-        width="400px"
+        title={"新增"}
+        width="600px"
+        modalProps={{destroyOnClose: true}}
         visible={createModalVisible}
         onVisibleChange={handleModalVisible}
         onFinish={async (value) => {
-          const success = await handleAdd(value as API.RuleListItem);
+          const success = await handleAdd(value as SYSTEM.SysConfig);
           if (success) {
             handleModalVisible(false);
             if (actionRef.current) {
@@ -329,22 +262,56 @@ const ConfigList: React.FC = () => {
           rules={[
             {
               required: true,
-              message: (
-                <FormattedMessage
-                  id="pages.searchTable.ruleName"
-                  defaultMessage="Rule name is required"
-                />
-              ),
+              message: "参数名称不能为空",
             },
           ]}
           width="md"
-          name="name"
+          name="configName"
+          label={"参数名称"}
         />
-        <ProFormTextArea width="md" name="desc" />
+        <ProFormText
+          rules={[
+            {
+              required: true,
+              message: "参数键名不能为空",
+            },
+          ]}
+          width="md"
+          name="configKey"
+          label={"参数键名"}
+        />
+        <ProFormText
+          rules={[
+            {
+              required: true,
+              message: "参数键值不能为空",
+            },
+          ]}
+          width="md"
+          name="configValue"
+          label={"参数键值"}
+        />
+        <ProFormRadio.Group
+          width={"md"}
+          initialValue={"Y"}
+          name="configType"
+          label="系统内置"
+          options={[
+            {
+              label: '是',
+              value: 'Y',
+            },
+            {
+              label: '否',
+              value: 'N',
+            }
+          ]}
+        />
+        <ProFormTextArea width="md" name="remark" label={"备注"} />
       </ModalForm>
       <UpdateForm
         onSubmit={async (value) => {
-          const success = await handleUpdate(value);
+          const success = await handleUpdate({...currentRow, ...value});
           if (success) {
             handleUpdateModalVisible(false);
             setCurrentRow(undefined);
@@ -353,10 +320,12 @@ const ConfigList: React.FC = () => {
             }
           }
         }}
-        onCancel={() => {
-          handleUpdateModalVisible(false);
-          if (!showDetail) {
-            setCurrentRow(undefined);
+        onCancel={(value) => {
+          if (!value) {
+            handleUpdateModalVisible(false);
+            if (!showDetail) {
+              setCurrentRow(undefined);
+            }
           }
         }}
         updateModalVisible={updateModalVisible}
@@ -372,17 +341,17 @@ const ConfigList: React.FC = () => {
         }}
         closable={false}
       >
-        {currentRow?.name && (
-          <ProDescriptions<API.RuleListItem>
+        {currentRow?.configName && (
+          <ProDescriptions<SYSTEM.SysConfig>
             column={2}
-            title={currentRow?.name}
+            title={currentRow?.configName}
             request={async () => ({
               data: currentRow || {},
             })}
             params={{
-              id: currentRow?.name,
+              id: currentRow?.configName,
             }}
-            columns={columns as ProDescriptionsItemProps<API.RuleListItem>[]}
+            columns={columns as ProDescriptionsItemProps<SYSTEM.SysConfig>[]}
           />
         )}
       </Drawer>

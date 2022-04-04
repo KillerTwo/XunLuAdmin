@@ -59,6 +59,11 @@
         component: './system/DictList',
       },
       {
+        name: '字典数据管理',
+        path: '/system/dictData',
+        component: './system/DictDataList',
+      },
+      {
         name: '参数设置',
         path: '/system/config',
         component: './system/ConfigList',
@@ -83,6 +88,16 @@
             component: './system/LoggingList/LoginLogList',
           },
         ]
+      },
+      {
+        name: '任务调度',
+        path: '/system/sysJob',
+        component: './system/Jobs',
+      },
+      {
+        name: '调度任务日志',
+        path: '/system/sysJobLog',
+        component: './system/JobLogs',
       },
     ]
   },

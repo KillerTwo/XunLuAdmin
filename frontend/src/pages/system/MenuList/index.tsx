@@ -1,26 +1,25 @@
-import { PlusOutlined } from '@ant-design/icons';
-import { Button, message, Input, Drawer } from 'antd';
-import React, { useState, useRef } from 'react';
-import { useIntl, FormattedMessage } from 'umi';
-import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
-import type { ProColumns, ActionType } from '@ant-design/pro-table';
-import ProTable from '@ant-design/pro-table';
-import { ModalForm, ProFormText, ProFormTextArea } from '@ant-design/pro-form';
+import {message, Table, Drawer, Tag, Space, Popconfirm, TreeSelect,Form,Input, Button,Select,Card} from 'antd';
+import React, {useState, useEffect} from 'react';
+import { PageContainer } from '@ant-design/pro-layout';
+import {ModalForm, ProForm, ProFormText, ProFormDigit, ProFormRadio, ProFormTreeSelect} from '@ant-design/pro-form';
 import type { ProDescriptionsItemProps } from '@ant-design/pro-descriptions';
 import ProDescriptions from '@ant-design/pro-descriptions';
 import type { FormValueType } from './components/UpdateForm';
 import UpdateForm from './components/UpdateForm';
-import { rule, addRule, updateRule, removeRule } from '@/services/ant-design-pro/api';
+import {SYSTEM} from "@/services/system/typings";
+import {addSysMenu, removeSysMenu, sysMenuList, sysMenuSelectList, updateSysMenu} from "@/services/system/sysMenu";
+import {handleTree} from "@/utils/sysMenu";
+import {ColumnsType} from "antd/es/table";
 
 /**
  * @en-US Add node
  * @zh-CN 添加节点
  * @param fields
  */
-const handleAdd = async (fields: API.RuleListItem) => {
+const handleAdd = async (fields: SYSTEM.SysMenu) => {
   const hide = message.loading('正在添加');
   try {
-    await addRule({ ...fields });
+    await addSysMenu({ ...fields });
     hide();
     message.success('Added successfully');
     return true;
@@ -40,10 +39,8 @@ const handleAdd = async (fields: API.RuleListItem) => {
 const handleUpdate = async (fields: FormValueType) => {
   const hide = message.loading('Configuring');
   try {
-    await updateRule({
-      name: fields.name,
-      desc: fields.desc,
-      key: fields.key,
+    await updateSysMenu({
+      ...fields
     });
     hide();
 
@@ -62,19 +59,17 @@ const handleUpdate = async (fields: FormValueType) => {
  *
  * @param selectedRows
  */
-const handleRemove = async (selectedRows: API.RuleListItem[]) => {
+const handleRemove = async (selectedRows: SYSTEM.SysMenu[]) => {
   const hide = message.loading('正在删除');
   if (!selectedRows) return true;
   try {
-    await removeRule({
-      key: selectedRows.map((row) => row.key),
-    });
+    await removeSysMenu(selectedRows.map((row) => row.menuId));
     hide();
-    message.success('Deleted successfully and will refresh soon');
+    message.success('删除成功');
     return true;
   } catch (error) {
     hide();
-    message.error('Delete failed, please try again');
+    message.error('删除失败, 请稍后重试');
     return false;
   }
 };
@@ -93,270 +88,400 @@ const MenuList: React.FC = () => {
 
   const [showDetail, setShowDetail] = useState<boolean>(false);
 
-  const actionRef = useRef<ActionType>();
-  const [currentRow, setCurrentRow] = useState<API.RuleListItem>();
-  const [selectedRowsState, setSelectedRows] = useState<API.RuleListItem[]>([]);
+  const [currentRow, setCurrentRow] = useState<SYSTEM.SysMenu>();
+  const [defaultParent, setDefaultParent] = useState<number|0>(0);
+  const [data, setData] = useState<SYSTEM.SysMenu[]>([]);
+  const [menuType, setMenuType] = useState<string>("M");
+  const [loading, setLoading] = useState<boolean>(false);
 
-  /**
-   * @en-US International configuration
-   * @zh-CN 国际化配置
-   * */
-  const intl = useIntl();
+  const handleRequestMenu = (params?: SYSTEM.SysMenu | {}) => {
+    setLoading(true);
+    sysMenuList({...params}).then((res: SYSTEM.ResponseResult) => {
+      setLoading(false);
+      const treeMenu = handleTree(res.data, 'menuId');
+      console.log("treeMenu: ", treeMenu);
+      setData(treeMenu);
+    })
+  }
 
-  const columns: ProColumns<API.RuleListItem>[] = [
+  const columns: ColumnsType<SYSTEM.SysMenu> = [
     {
-      title: (
-        <FormattedMessage
-          id="pages.searchTable.updateForm.ruleName.nameLabel"
-          defaultMessage="Rule name"
-        />
-      ),
-      dataIndex: 'name',
-      tip: 'The rule name is the unique key',
-      render: (dom, entity) => {
-        return (
-          <a
-            onClick={() => {
-              setCurrentRow(entity);
-              setShowDetail(true);
-            }}
-          >
-            {dom}
-          </a>
-        );
-      },
+      title: '菜单名称',
+      dataIndex: 'menuName',
+      key: 'menuName',
     },
     {
-      title: <FormattedMessage id="pages.searchTable.titleDesc" defaultMessage="Description" />,
-      dataIndex: 'desc',
-      valueType: 'textarea',
+      title: '图标',
+      dataIndex: 'icon',
+      key: 'icon',
     },
     {
-      title: (
-        <FormattedMessage
-          id="pages.system.user.searchTable.username"
-          defaultMessage="username"
-        />
-      ),
-      dataIndex: 'callNo',
-      sorter: true,
-      hideInForm: true,
-      renderText: (val: string) =>
-        `${val}${intl.formatMessage({
-          id: 'pages.searchTable.tenThousand',
-          defaultMessage: ' 万 ',
-        })}`,
+      title: '排序',
+      dataIndex: 'orderNum',
+      key: 'orderNum',
     },
     {
-      title: <FormattedMessage id="pages.system.user.searchTable.nickname" defaultMessage="NickName" />,
+      title: '权限标识',
+      dataIndex: 'perms',
+      key: 'perms',
+    },
+    {
+      title: '组件路径',
+      dataIndex: 'component',
+      key: 'component',
+    },
+    {
+      title: '状态',
       dataIndex: 'status',
-      hideInForm: true,
-      valueEnum: {
-        0: {
-          text: (
-            <FormattedMessage
-              id="pages.searchTable.nameStatus.default"
-              defaultMessage="Shut down"
-            />
-          ),
-          status: 'Default',
-        },
-        1: {
-          text: (
-            <FormattedMessage id="pages.searchTable.nameStatus.running" defaultMessage="Running" />
-          ),
-          status: 'Processing',
-        },
-        2: {
-          text: (
-            <FormattedMessage id="pages.searchTable.nameStatus.online" defaultMessage="Online" />
-          ),
-          status: 'Success',
-        },
-        3: {
-          text: (
-            <FormattedMessage
-              id="pages.searchTable.nameStatus.abnormal"
-              defaultMessage="Abnormal"
-            />
-          ),
-          status: 'Error',
-        },
-      },
+      key: 'status',
+      render: (record: string) => {
+        const color = record === "0" ? "green" : "red";
+        const text = record === "0" ? "正常" : "停用";
+        return (
+          <Tag color={color}>
+            {text}
+          </Tag>
+        );
+      }
     },
     {
-      title: (
-        <FormattedMessage
-          id="pages.searchTable.titleUpdatedAt"
-          defaultMessage="Last scheduled time"
-        />
-      ),
-      sorter: true,
-      dataIndex: 'updatedAt',
-      valueType: 'dateTime',
-      renderFormItem: (item, { defaultRender, ...rest }, form) => {
-        const status = form.getFieldValue('status');
-        if (`${status}` === '0') {
-          return false;
-        }
-        if (`${status}` === '3') {
-          return (
-            <Input
-              {...rest}
-              placeholder={intl.formatMessage({
-                id: 'pages.searchTable.exception',
-                defaultMessage: 'Please enter the reason for the exception!',
-              })}
-            />
-          );
-        }
-        return defaultRender(item);
-      },
+      title: '创建时间',
+      dataIndex: 'createTime',
+      key: 'createTime',
     },
     {
-      title: <FormattedMessage id="pages.searchTable.titleOption" defaultMessage="Operating" />,
-      dataIndex: 'option',
-      valueType: 'option',
-      render: (_, record) => [
-        <a
-          key="config"
-          onClick={() => {
-            handleUpdateModalVisible(true);
+      title: '操作',
+      dataIndex: 'options',
+      key: 'options',
+      render: (text: any, record: SYSTEM.SysMenu) => (
+        <Space size="middle">
+          <a onClick={() => {
             setCurrentRow(record);
-          }}
-        >
-          <FormattedMessage id="pages.searchTable.config" defaultMessage="Configuration" />
-        </a>,
-        <a key="subscribeAlert" href="https://procomponents.ant.design/">
-          <FormattedMessage
-            id="pages.searchTable.subscribeAlert"
-            defaultMessage="Subscribe to alerts"
-          />
-        </a>,
-      ],
+            handleUpdateModalVisible(true);
+          }}>修改</a>
+          <a onClick={() => {
+            setDefaultParent(record.menuId || 0);
+            setMenuType("M");
+            handleModalVisible(true);
+          }}>新增</a>
+          <Popconfirm
+            title="确定要删除菜单?"
+            onConfirm={async () => {
+              const result = await handleRemove([record]);
+              if (result) {
+                handleRequestMenu({});
+              }
+            }}
+            onCancel={() => {
+            }}
+            okText="确定"
+            cancelText="取消"
+          >
+            <a>删除</a>
+          </Popconfirm>
+
+        </Space>
+      ),
     },
   ];
 
+
+
+  useEffect(() => {
+    /*sysMenuList({}).then((res: SYSTEM.ResponseResult) => {
+      const treeMenu = handleTree(res.data, 'menuId');
+      console.log("treeMenu: ", treeMenu);
+      setData(treeMenu);
+    })*/
+    handleRequestMenu({})
+  }, []);
+
+  const [form] = Form.useForm();
+
   return (
     <PageContainer>
-      <ProTable<API.RuleListItem, API.PageParams>
-        headerTitle={intl.formatMessage({
-          id: 'pages.searchTable.title',
-          defaultMessage: 'Enquiry form',
-        })}
-        actionRef={actionRef}
-        rowKey="key"
-        search={{
-          labelWidth: 120,
-        }}
-        toolBarRender={() => [
-          <Button
-            type="primary"
-            key="primary"
-            onClick={() => {
-              handleModalVisible(true);
-            }}
+      <>
+      <Card bordered={false} style={{ width: "100%", marginBottom: 20 }}>
+        <Form form={form} name="horizontal_login" layout="inline" onFinish={(values: any) => {handleRequestMenu({...values})}}>
+          <Form.Item
+            name="menuName"
+            label={"菜单名称"}
           >
-            <PlusOutlined /> <FormattedMessage id="pages.searchTable.new" defaultMessage="New" />
-          </Button>,
-        ]}
-        request={rule}
+            <Input placeholder="菜单名称" />
+          </Form.Item>
+          <Form.Item
+            label={"状态"}
+            name="status"
+          >
+            <Select style={{width: 200}}>
+              <Select.Option value="0" key={0}>正常</Select.Option>
+              <Select.Option value="1" key={1}>停用</Select.Option>
+            </Select>
+          </Form.Item>
+          <Form.Item shouldUpdate>
+            <Button
+              type="primary"
+              htmlType="submit"
+            >
+              查询
+            </Button>
+          </Form.Item>
+          <Form.Item shouldUpdate>
+            <Button
+              type="primary"
+              htmlType="button"
+              onClick={() => {
+                form.resetFields();
+                handleRequestMenu({});
+              }}
+            >
+              重置
+            </Button>
+          </Form.Item>
+        </Form>
+      </Card>
+      <Table
+        rowKey={"menuId"}
         columns={columns}
-        rowSelection={{
-          onChange: (_, selectedRows) => {
-            setSelectedRows(selectedRows);
-          },
-        }}
+        dataSource={data}
+        pagination={false}
+        loading={loading}
       />
-      {selectedRowsState?.length > 0 && (
-        <FooterToolbar
-          extra={
-            <div>
-              <FormattedMessage id="pages.searchTable.chosen" defaultMessage="Chosen" />{' '}
-              <a style={{ fontWeight: 600 }}>{selectedRowsState.length}</a>{' '}
-              <FormattedMessage id="pages.searchTable.item" defaultMessage="项" />
-              &nbsp;&nbsp;
-              <span>
-                <FormattedMessage
-                  id="pages.searchTable.totalServiceCalls"
-                  defaultMessage="Total number of service calls"
-                />{' '}
-                {selectedRowsState.reduce((pre, item) => pre + item.callNo!, 0)}{' '}
-                <FormattedMessage id="pages.searchTable.tenThousand" defaultMessage="万" />
-              </span>
-            </div>
-          }
-        >
-          <Button
-            onClick={async () => {
-              await handleRemove(selectedRowsState);
-              setSelectedRows([]);
-              actionRef.current?.reloadAndRest?.();
-            }}
-          >
-            <FormattedMessage
-              id="pages.searchTable.batchDeletion"
-              defaultMessage="Batch deletion"
-            />
-          </Button>
-          <Button type="primary">
-            <FormattedMessage
-              id="pages.searchTable.batchApproval"
-              defaultMessage="Batch approval"
-            />
-          </Button>
-        </FooterToolbar>
-      )}
       <ModalForm
-        title={intl.formatMessage({
-          id: 'pages.searchTable.createForm.newRule',
-          defaultMessage: 'New rule',
-        })}
-        width="400px"
+        modalProps={{destroyOnClose: true}}
+        title={'添加菜单'}
+        width="70%"
         visible={createModalVisible}
         onVisibleChange={handleModalVisible}
+        onValuesChange={(changedValues) => {
+          if (changedValues["menuType"]) {
+            setMenuType(changedValues["menuType"]);
+          }
+          // setMenuType(changedValues);
+        }}
         onFinish={async (value) => {
-          const success = await handleAdd(value as API.RuleListItem);
+          const success = await handleAdd(value as SYSTEM.SysMenu);
           if (success) {
             handleModalVisible(false);
-            if (actionRef.current) {
-              actionRef.current.reload();
-            }
+            handleRequestMenu({});
           }
         }}
       >
-        <ProFormText
-          rules={[
-            {
-              required: true,
-              message: (
-                <FormattedMessage
-                  id="pages.searchTable.ruleName"
-                  defaultMessage="Rule name is required"
+        <ProForm.Group>
+          <ProFormTreeSelect
+            initialValue={defaultParent}
+            width={"md"}
+            label="上级菜单"
+            request={async () => {
+              const resData = await sysMenuSelectList();
+              return resData.data;
+            }}
+            fieldProps={{
+              fieldNames: {
+                label: 'label',
+                value: 'id',
+                children: 'children'
+              },
+              showCheckedStrategy: TreeSelect.SHOW_PARENT
+            }}
+            rules={[
+              {
+                required: true,
+                message: "上级菜单不能为空"
+              }
+            ]}
+            name={"parentId"}
+          />
+        </ProForm.Group>
+        <ProForm.Group>
+          <ProFormRadio.Group
+            initialValue={menuType}
+            width={"md"}
+            name="menuType"
+            label="菜单类型"
+            options={[
+              {
+                label: '目录',
+                value: 'M',
+              },
+              {
+                label: '菜单',
+                value: 'C',
+              },
+              {
+                label: '按钮',
+                value: 'F',
+              },
+            ]}
+          />
+        </ProForm.Group>
+        <ProForm.Group>
+          <ProFormText
+            width="md"
+            name="icon"
+            label={"菜单图标"}
+          />
+        </ProForm.Group>
+        <ProForm.Group>
+          <ProFormText
+            rules={[
+              {
+                required: true,
+                message: "菜单名称必填",
+              },
+            ]}
+            width="md"
+            name="menuName"
+            label={"菜单名称"}
+          />
+          <ProFormDigit
+            rules={[
+              {
+                required: true,
+                message: "显示排序必填",
+              },
+            ]}
+            width="md"
+            name="orderNum"
+            label={"显示排序"}
+            min={1}
+            max={999}
+          />
+        </ProForm.Group>
+        {
+          (menuType === "C" || menuType === "M") && (
+            <>
+              <ProForm.Group>
+                <ProFormRadio.Group
+                  initialValue={"1"}
+                  width={"md"}
+                  rules={[
+                    {
+                      required: true,
+                      message: "是否是外链必填",
+                    },
+                  ]}
+                  name="isFrame"
+                  label="是否是外链"
+                  options={[
+                    {
+                      label: '是',
+                      value: '0',
+                    },
+                    {
+                      label: '否',
+                      value: '1',
+                    }
+                  ]}
                 />
-              ),
-            },
-          ]}
-          width="md"
-          name="name"
-        />
-        <ProFormTextArea width="md" name="desc" />
+                <ProFormText
+                  rules={[
+                    {
+                      required: true,
+                      message: "路由地址必填",
+                    },
+                  ]}
+                  width="md"
+                  name="path"
+                  label={"路由地址"}
+                />
+              </ProForm.Group>
+              {
+                menuType === "C" && (
+                  <>
+                    <ProForm.Group>
+                      <ProFormText
+                        width="md"
+                        name="component"
+                        label={"组件路径"}
+                      />
+                      <ProFormText
+                        width="md"
+                        name="perms"
+                        label={"权限字符串"}
+                      />
+                    </ProForm.Group>
+                    <ProForm.Group>
+                      <ProFormText
+                        width="md"
+                        name="query"
+                        label={"路由参数"}
+                      />
+                      <ProFormRadio.Group
+                        initialValue={"0"}
+                        width={"md"}
+                        name="isCache"
+                        label="是否缓存"
+                        options={[
+                          {
+                            label: '是',
+                            value: '0',
+                          },
+                          {
+                            label: '否',
+                            value: '1',
+                          }
+                        ]}
+                      />
+                    </ProForm.Group>
+                  </>
+
+                )
+              }
+              <ProForm.Group>
+                <ProFormRadio.Group
+                  initialValue={"0"}
+                  width={"md"}
+                  name="visible"
+                  label="显示状态"
+                  options={[
+                    {
+                      label: '显示',
+                      value: '0',
+                    },
+                    {
+                      label: '隐藏',
+                      value: '1',
+                    }
+                  ]}
+                />
+                <ProFormRadio.Group
+                  initialValue={"0"}
+                  width={"md"}
+                  name="status"
+                  label="菜单状态"
+                  options={[
+                    {
+                      label: '正常',
+                      value: '0',
+                    },
+                    {
+                      label: '停用',
+                      value: '1',
+                    }
+                  ]}
+                />
+              </ProForm.Group>
+            </>
+          )
+        }
+
       </ModalForm>
       <UpdateForm
         onSubmit={async (value) => {
-          const success = await handleUpdate(value);
+          const success = await handleUpdate({...currentRow, ...value});
           if (success) {
             handleUpdateModalVisible(false);
             setCurrentRow(undefined);
-            if (actionRef.current) {
-              actionRef.current.reload();
-            }
+            handleRequestMenu({});
           }
         }}
-        onCancel={() => {
-          handleUpdateModalVisible(false);
-          if (!showDetail) {
-            setCurrentRow(undefined);
+        onCancel={(value: boolean | undefined) => {
+          if (!value) {
+            handleUpdateModalVisible(false);
+            if (!showDetail) {
+              setCurrentRow(undefined);
+            }
           }
         }}
         updateModalVisible={updateModalVisible}
@@ -372,20 +497,21 @@ const MenuList: React.FC = () => {
         }}
         closable={false}
       >
-        {currentRow?.name && (
-          <ProDescriptions<API.RuleListItem>
+        {currentRow?.menuName && (
+          <ProDescriptions<SYSTEM.SysMenu>
             column={2}
-            title={currentRow?.name}
+            title={currentRow?.menuName}
             request={async () => ({
               data: currentRow || {},
             })}
             params={{
-              id: currentRow?.name,
+              id: currentRow?.menuName,
             }}
-            columns={columns as ProDescriptionsItemProps<API.RuleListItem>[]}
+            columns={columns as ProDescriptionsItemProps<SYSTEM.SysMenu>[]}
           />
         )}
       </Drawer>
+      </>
     </PageContainer>
   );
 };

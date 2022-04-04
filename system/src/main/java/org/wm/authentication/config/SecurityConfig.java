@@ -105,6 +105,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/**/*.js",
                         "/profile/**"
                 ).permitAll()
+                .antMatchers(HttpMethod.GET, // Swagger的资源路径需要允许访问
+                        "/",
+                        "/swagger-ui.html",
+                        "/swagger-ui/",
+                        "/*.html",
+                        "/favicon.ico",
+                        "/**/*.html",
+                        "/**/*.css",
+                        "/**/*.js",
+                        "/swagger-resources/**",
+                        "/v3/api-docs/**"
+                )
+                .permitAll()
                 .antMatchers("/swagger-ui.html").permitAll()
                 .antMatchers("/swagger-resources/**").permitAll()
                 .antMatchers("/webjars/**").permitAll()

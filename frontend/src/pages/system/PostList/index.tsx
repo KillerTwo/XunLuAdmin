@@ -1,32 +1,32 @@
-import { PlusOutlined } from '@ant-design/icons';
-import { Button, message, Input, Drawer } from 'antd';
+import {DeleteOutlined, EditOutlined, PlusOutlined} from '@ant-design/icons';
+import {Button, message, Drawer, Tag, Space,Popconfirm} from 'antd';
 import React, { useState, useRef } from 'react';
-import { useIntl, FormattedMessage } from 'umi';
-import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
+import { PageContainer } from '@ant-design/pro-layout';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { ModalForm, ProFormText, ProFormTextArea } from '@ant-design/pro-form';
+import {ModalForm, ProFormDigit, ProFormRadio, ProFormText, ProFormTextArea} from '@ant-design/pro-form';
 import type { ProDescriptionsItemProps } from '@ant-design/pro-descriptions';
 import ProDescriptions from '@ant-design/pro-descriptions';
 import type { FormValueType } from './components/UpdateForm';
 import UpdateForm from './components/UpdateForm';
-import { rule, addRule, updateRule, removeRule } from '@/services/ant-design-pro/api';
+import {addSysPost, deleteSysPost, sysPostList, updateSysPost} from "@/services/system/sysPost";
+import {SYSTEM} from "@/services/system/typings";
 
 /**
  * @en-US Add node
  * @zh-CN 添加节点
  * @param fields
  */
-const handleAdd = async (fields: API.RuleListItem) => {
+const handleAdd = async (fields: SYSTEM.SysPost) => {
   const hide = message.loading('正在添加');
   try {
-    await addRule({ ...fields });
+    await addSysPost({ ...fields });
     hide();
-    message.success('Added successfully');
+    message.success('添加成功');
     return true;
   } catch (error) {
     hide();
-    message.error('Adding failed, please try again!');
+    message.error('添加失败，请稍后重试!');
     return false;
   }
 };
@@ -38,20 +38,16 @@ const handleAdd = async (fields: API.RuleListItem) => {
  * @param fields
  */
 const handleUpdate = async (fields: FormValueType) => {
-  const hide = message.loading('Configuring');
+  const hide = message.loading('更新中');
   try {
-    await updateRule({
-      name: fields.name,
-      desc: fields.desc,
-      key: fields.key,
-    });
+    await updateSysPost({...fields});
     hide();
 
-    message.success('Configuration is successful');
+    message.success('更新成功');
     return true;
   } catch (error) {
     hide();
-    message.error('Configuration failed, please try again!');
+    message.error('更新失败，请稍后重试!');
     return false;
   }
 };
@@ -62,19 +58,19 @@ const handleUpdate = async (fields: FormValueType) => {
  *
  * @param selectedRows
  */
-const handleRemove = async (selectedRows: API.RuleListItem[]) => {
+const handleRemove = async (selectedRows: SYSTEM.SysPost[]) => {
   const hide = message.loading('正在删除');
   if (!selectedRows) return true;
   try {
-    await removeRule({
-      key: selectedRows.map((row) => row.key),
-    });
+    await deleteSysPost(
+      [...selectedRows.map((row) => row.postId)]
+    );
     hide();
-    message.success('Deleted successfully and will refresh soon');
+    message.success('删除成功！');
     return true;
   } catch (error) {
     hide();
-    message.error('Delete failed, please try again');
+    message.error('删除失败，请稍后重试！');
     return false;
   }
 };
@@ -94,127 +90,61 @@ const PostList: React.FC = () => {
   const [showDetail, setShowDetail] = useState<boolean>(false);
 
   const actionRef = useRef<ActionType>();
-  const [currentRow, setCurrentRow] = useState<API.RuleListItem>();
-  const [selectedRowsState, setSelectedRows] = useState<API.RuleListItem[]>([]);
+  const [currentRow, setCurrentRow] = useState<SYSTEM.SysPost>();
+  const [selectedRowsState, setSelectedRows] = useState<SYSTEM.SysPost[]>([]);
 
-  /**
-   * @en-US International configuration
-   * @zh-CN 国际化配置
-   * */
-  const intl = useIntl();
 
-  const columns: ProColumns<API.RuleListItem>[] = [
+  const columns: ProColumns<SYSTEM.SysPost>[] = [
     {
-      title: (
-        <FormattedMessage
-          id="pages.searchTable.updateForm.ruleName.nameLabel"
-          defaultMessage="Rule name"
-        />
-      ),
-      dataIndex: 'name',
-      tip: 'The rule name is the unique key',
-      render: (dom, entity) => {
-        return (
-          <a
-            onClick={() => {
-              setCurrentRow(entity);
-              setShowDetail(true);
-            }}
-          >
-            {dom}
-          </a>
-        );
-      },
+      title: "岗位编号",
+      dataIndex: 'postId',
+      hideInSearch: true
     },
     {
-      title: <FormattedMessage id="pages.searchTable.titleDesc" defaultMessage="Description" />,
-      dataIndex: 'desc',
-      valueType: 'textarea',
+      title: "岗位编码",
+      dataIndex: 'postCode',
     },
     {
-      title: (
-        <FormattedMessage
-          id="pages.system.user.searchTable.username"
-          defaultMessage="username"
-        />
-      ),
-      dataIndex: 'callNo',
-      sorter: true,
-      hideInForm: true,
-      renderText: (val: string) =>
-        `${val}${intl.formatMessage({
-          id: 'pages.searchTable.tenThousand',
-          defaultMessage: ' 万 ',
-        })}`,
+      title: "岗位名称",
+      dataIndex: 'postName'
     },
     {
-      title: <FormattedMessage id="pages.system.user.searchTable.nickname" defaultMessage="NickName" />,
+      title: "岗位排序",
+      dataIndex: 'postSort',
+      hideInSearch: true
+    },
+    {
+      title: "状态",
       dataIndex: 'status',
       hideInForm: true,
       valueEnum: {
         0: {
           text: (
-            <FormattedMessage
-              id="pages.searchTable.nameStatus.default"
-              defaultMessage="Shut down"
-            />
+            <Tag color={"green"}>
+              正常
+            </Tag>
           ),
           status: 'Default',
         },
         1: {
           text: (
-            <FormattedMessage id="pages.searchTable.nameStatus.running" defaultMessage="Running" />
+            <Tag color={"red"}>
+              停用
+            </Tag>
           ),
           status: 'Processing',
-        },
-        2: {
-          text: (
-            <FormattedMessage id="pages.searchTable.nameStatus.online" defaultMessage="Online" />
-          ),
-          status: 'Success',
-        },
-        3: {
-          text: (
-            <FormattedMessage
-              id="pages.searchTable.nameStatus.abnormal"
-              defaultMessage="Abnormal"
-            />
-          ),
-          status: 'Error',
-        },
+        }
       },
     },
     {
-      title: (
-        <FormattedMessage
-          id="pages.searchTable.titleUpdatedAt"
-          defaultMessage="Last scheduled time"
-        />
-      ),
+      title: "创建时间",
       sorter: true,
-      dataIndex: 'updatedAt',
-      valueType: 'dateTime',
-      renderFormItem: (item, { defaultRender, ...rest }, form) => {
-        const status = form.getFieldValue('status');
-        if (`${status}` === '0') {
-          return false;
-        }
-        if (`${status}` === '3') {
-          return (
-            <Input
-              {...rest}
-              placeholder={intl.formatMessage({
-                id: 'pages.searchTable.exception',
-                defaultMessage: 'Please enter the reason for the exception!',
-              })}
-            />
-          );
-        }
-        return defaultRender(item);
-      },
+      dataIndex: 'createTime',
+      hideInSearch: true,
+      valueType: 'dateTime'
     },
     {
-      title: <FormattedMessage id="pages.searchTable.titleOption" defaultMessage="Operating" />,
+      title: "操作",
       dataIndex: 'option',
       valueType: 'option',
       render: (_, record) => [
@@ -225,27 +155,33 @@ const PostList: React.FC = () => {
             setCurrentRow(record);
           }}
         >
-          <FormattedMessage id="pages.searchTable.config" defaultMessage="Configuration" />
+          <EditOutlined />修改
         </a>,
-        <a key="subscribeAlert" href="https://procomponents.ant.design/">
-          <FormattedMessage
-            id="pages.searchTable.subscribeAlert"
-            defaultMessage="Subscribe to alerts"
-          />
-        </a>,
+        <Popconfirm
+          title="确定要删除岗位?"
+          onConfirm={async () => {
+            await handleRemove([record]);
+            actionRef.current?.reloadAndRest?.();
+          }}
+          onCancel={() => {
+          }}
+          okText="确定"
+          cancelText="取消"
+        >
+          <a>
+            <DeleteOutlined />删除
+          </a>
+        </Popconfirm>
       ],
     },
   ];
 
   return (
     <PageContainer>
-      <ProTable<API.RuleListItem, API.PageParams>
-        headerTitle={intl.formatMessage({
-          id: 'pages.searchTable.title',
-          defaultMessage: 'Enquiry form',
-        })}
+      <ProTable<SYSTEM.SysPost, SYSTEM.PageParams>
+        headerTitle={"岗位列表"}
         actionRef={actionRef}
-        rowKey="key"
+        rowKey="postId"
         search={{
           labelWidth: 120,
         }}
@@ -257,66 +193,57 @@ const PostList: React.FC = () => {
               handleModalVisible(true);
             }}
           >
-            <PlusOutlined /> <FormattedMessage id="pages.searchTable.new" defaultMessage="New" />
+            <PlusOutlined />新增
           </Button>,
         ]}
-        request={rule}
+        request={sysPostList}
         columns={columns}
         rowSelection={{
           onChange: (_, selectedRows) => {
             setSelectedRows(selectedRows);
           },
         }}
+        tableAlertRender={({ selectedRowKeys, onCleanSelected }) => (
+          <Space size={24}>
+          <span>
+            已选 {selectedRowKeys.length} 项
+            <a style={{ marginLeft: 8 }} onClick={onCleanSelected}>
+              取消选择
+            </a>
+          </span>
+          </Space>
+        )}
+        tableAlertOptionRender={() => {
+          return (
+            <Space size={16}>
+              <Popconfirm
+                title="确定要删除岗位?"
+                onConfirm={async () => {
+                  await handleRemove(selectedRowsState);
+                  setSelectedRows([]);
+                  actionRef.current?.reloadAndRest?.();
+                }}
+                onCancel={() => {
+                }}
+                okText="确定"
+                cancelText="取消"
+              >
+                <Button>
+                  批量删除
+                </Button>
+              </Popconfirm>
+
+            </Space>
+          );
+        }}
       />
-      {selectedRowsState?.length > 0 && (
-        <FooterToolbar
-          extra={
-            <div>
-              <FormattedMessage id="pages.searchTable.chosen" defaultMessage="Chosen" />{' '}
-              <a style={{ fontWeight: 600 }}>{selectedRowsState.length}</a>{' '}
-              <FormattedMessage id="pages.searchTable.item" defaultMessage="项" />
-              &nbsp;&nbsp;
-              <span>
-                <FormattedMessage
-                  id="pages.searchTable.totalServiceCalls"
-                  defaultMessage="Total number of service calls"
-                />{' '}
-                {selectedRowsState.reduce((pre, item) => pre + item.callNo!, 0)}{' '}
-                <FormattedMessage id="pages.searchTable.tenThousand" defaultMessage="万" />
-              </span>
-            </div>
-          }
-        >
-          <Button
-            onClick={async () => {
-              await handleRemove(selectedRowsState);
-              setSelectedRows([]);
-              actionRef.current?.reloadAndRest?.();
-            }}
-          >
-            <FormattedMessage
-              id="pages.searchTable.batchDeletion"
-              defaultMessage="Batch deletion"
-            />
-          </Button>
-          <Button type="primary">
-            <FormattedMessage
-              id="pages.searchTable.batchApproval"
-              defaultMessage="Batch approval"
-            />
-          </Button>
-        </FooterToolbar>
-      )}
       <ModalForm
-        title={intl.formatMessage({
-          id: 'pages.searchTable.createForm.newRule',
-          defaultMessage: 'New rule',
-        })}
+        title={"新增岗位"}
         width="400px"
         visible={createModalVisible}
         onVisibleChange={handleModalVisible}
         onFinish={async (value) => {
-          const success = await handleAdd(value as API.RuleListItem);
+          const success = await handleAdd(value as SYSTEM.SysPost);
           if (success) {
             handleModalVisible(false);
             if (actionRef.current) {
@@ -329,22 +256,58 @@ const PostList: React.FC = () => {
           rules={[
             {
               required: true,
-              message: (
-                <FormattedMessage
-                  id="pages.searchTable.ruleName"
-                  defaultMessage="Rule name is required"
-                />
-              ),
+              message: "岗位名称不能为空",
             },
           ]}
           width="md"
-          name="name"
+          name="postName"
+          label={"岗位编码"}
         />
-        <ProFormTextArea width="md" name="desc" />
+        <ProFormText
+          rules={[
+            {
+              required: true,
+              message: "岗位编码不能为空",
+            },
+          ]}
+          width="md"
+          name="postCode"
+          label={"岗位编码"}
+        />
+        <ProFormDigit
+          rules={[
+            {
+              required: true,
+              message: "岗位顺序不能为空",
+            },
+          ]}
+          width="md"
+          name="postSort"
+          label={"岗位顺序"}
+          min={0}
+          max={100}
+        />
+        <ProFormRadio.Group
+          width={"md"}
+          initialValue={0}
+          name="status"
+          label="岗位状态"
+          options={[
+            {
+              label: '正常',
+              value: '0',
+            },
+            {
+              label: '停用',
+              value: '1',
+            }
+          ]}
+        />
+        <ProFormTextArea width="md" name="remark" label={"备注"} />
       </ModalForm>
       <UpdateForm
         onSubmit={async (value) => {
-          const success = await handleUpdate(value);
+          const success = await handleUpdate({...currentRow, ...value});
           if (success) {
             handleUpdateModalVisible(false);
             setCurrentRow(undefined);
@@ -353,10 +316,12 @@ const PostList: React.FC = () => {
             }
           }
         }}
-        onCancel={() => {
-          handleUpdateModalVisible(false);
-          if (!showDetail) {
-            setCurrentRow(undefined);
+        onCancel={(value) => {
+          if (!value) {
+            handleUpdateModalVisible(false);
+            if (!showDetail) {
+              setCurrentRow(undefined);
+            }
           }
         }}
         updateModalVisible={updateModalVisible}
@@ -372,17 +337,17 @@ const PostList: React.FC = () => {
         }}
         closable={false}
       >
-        {currentRow?.name && (
-          <ProDescriptions<API.RuleListItem>
+        {currentRow?.postName && (
+          <ProDescriptions<SYSTEM.SysPost>
             column={2}
-            title={currentRow?.name}
+            title={currentRow?.postName}
             request={async () => ({
               data: currentRow || {},
             })}
             params={{
-              id: currentRow?.name,
+              id: currentRow?.postName,
             }}
-            columns={columns as ProDescriptionsItemProps<API.RuleListItem>[]}
+            columns={columns as ProDescriptionsItemProps<SYSTEM.SysPost>[]}
           />
         )}
       </Drawer>

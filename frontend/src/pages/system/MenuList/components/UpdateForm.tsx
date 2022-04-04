@@ -1,14 +1,11 @@
-import React from 'react';
-import { Modal } from 'antd';
+import React, {useEffect, useState} from 'react';
 import {
-  ProFormSelect,
   ProFormText,
-  ProFormTextArea,
-  StepsForm,
-  ProFormRadio,
-  ProFormDateTimePicker,
+  ModalForm, ProForm, ProFormTreeSelect, ProFormRadio, ProFormDigit,
 } from '@ant-design/pro-form';
-import { useIntl, FormattedMessage } from 'umi';
+import {SYSTEM} from "@/services/system/typings";
+import {sysMenuSelectList} from "@/services/system/sysMenu";
+import {TreeSelect} from "antd";
 
 export type FormValueType = {
   target?: string;
@@ -16,193 +13,244 @@ export type FormValueType = {
   type?: string;
   time?: string;
   frequency?: string;
-} & Partial<API.RuleListItem>;
+} & Partial<SYSTEM.SysMenu>;
 
 export type UpdateFormProps = {
   onCancel: (flag?: boolean, formVals?: FormValueType) => void;
   onSubmit: (values: FormValueType) => Promise<void>;
   updateModalVisible: boolean;
-  values: Partial<API.RuleListItem>;
+  values: Partial<SYSTEM.SysMenu>;
 };
 
+
+
 const UpdateForm: React.FC<UpdateFormProps> = (props) => {
-  const intl = useIntl();
+  const [menuType, setMenuType] = useState<string|undefined>("");
+
+  useEffect(() => {
+    setMenuType(props.values.menuType);
+  }, [props.values])
+
   return (
-    <StepsForm
-      stepsProps={{
-        size: 'small',
-      }}
-      stepsFormRender={(dom, submitter) => {
-        return (
-          <Modal
-            width={640}
-            bodyStyle={{ padding: '32px 40px 48px' }}
-            destroyOnClose
-            title={intl.formatMessage({
-              id: 'pages.searchTable.updateForm.ruleConfig',
-              defaultMessage: '规则配置',
-            })}
-            visible={props.updateModalVisible}
-            footer={submitter}
-            onCancel={() => {
-              props.onCancel();
-            }}
-          >
-            {dom}
-          </Modal>
-        );
-      }}
+    <ModalForm
+      modalProps={{destroyOnClose: true}}
+      title={'修改菜单'}
+      width="60%"
+      visible={props.updateModalVisible}
+      onVisibleChange={props.onCancel}
       onFinish={props.onSubmit}
+      onValuesChange={(changedValues) => {
+        if (changedValues["menuType"]) {
+          setMenuType(changedValues["menuType"]);
+        }
+      }}
     >
-      <StepsForm.StepForm
-        initialValues={{
-          name: props.values.name,
-          desc: props.values.desc,
-        }}
-        title={intl.formatMessage({
-          id: 'pages.searchTable.updateForm.basicConfig',
-          defaultMessage: '基本信息',
-        })}
-      >
-        <ProFormText
-          name="name"
-          label={intl.formatMessage({
-            id: 'pages.searchTable.updateForm.ruleName.nameLabel',
-            defaultMessage: '规则名称',
-          })}
-          width="md"
+      <ProForm.Group>
+        <ProFormTreeSelect
+          initialValue={props.values.parentId}
+          width={"md"}
+          label="上级菜单"
+          request={async () => {
+            const resData = await sysMenuSelectList();
+            return resData.data;
+          }}
+          fieldProps={{
+            fieldNames: {
+              label: 'label',
+              value: 'id',
+              children: 'children'
+            },
+            showCheckedStrategy: TreeSelect.SHOW_PARENT
+          }}
           rules={[
             {
               required: true,
-              message: (
-                <FormattedMessage
-                  id="pages.searchTable.updateForm.ruleName.nameRules"
-                  defaultMessage="请输入规则名称！"
-                />
-              ),
-            },
+              message: "上级菜单不能为空"
+            }
           ]}
+          name={"parentId"}
         />
-        <ProFormTextArea
-          name="desc"
-          width="md"
-          label={intl.formatMessage({
-            id: 'pages.searchTable.updateForm.ruleDesc.descLabel',
-            defaultMessage: '规则描述',
-          })}
-          placeholder={intl.formatMessage({
-            id: 'pages.searchTable.updateForm.ruleDesc.descPlaceholder',
-            defaultMessage: '请输入至少五个字符',
-          })}
-          rules={[
-            {
-              required: true,
-              message: (
-                <FormattedMessage
-                  id="pages.searchTable.updateForm.ruleDesc.descRules"
-                  defaultMessage="请输入至少五个字符的规则描述！"
-                />
-              ),
-              min: 5,
-            },
-          ]}
-        />
-      </StepsForm.StepForm>
-      <StepsForm.StepForm
-        initialValues={{
-          target: '0',
-          template: '0',
-        }}
-        title={intl.formatMessage({
-          id: 'pages.searchTable.updateForm.ruleProps.title',
-          defaultMessage: '配置规则属性',
-        })}
-      >
-        <ProFormSelect
-          name="target"
-          width="md"
-          label={intl.formatMessage({
-            id: 'pages.searchTable.updateForm.object',
-            defaultMessage: '监控对象',
-          })}
-          valueEnum={{
-            0: '表一',
-            1: '表二',
-          }}
-        />
-        <ProFormSelect
-          name="template"
-          width="md"
-          label={intl.formatMessage({
-            id: 'pages.searchTable.updateForm.ruleProps.templateLabel',
-            defaultMessage: '规则模板',
-          })}
-          valueEnum={{
-            0: '规则模板一',
-            1: '规则模板二',
-          }}
-        />
+      </ProForm.Group>
+      <ProForm.Group>
         <ProFormRadio.Group
-          name="type"
-          label={intl.formatMessage({
-            id: 'pages.searchTable.updateForm.ruleProps.typeLabel',
-            defaultMessage: '规则类型',
-          })}
+          initialValue={props.values.menuType}
+          width={"md"}
+          name="menuType"
+          label="菜单类型"
           options={[
             {
-              value: '0',
-              label: '强',
+              label: '目录',
+              value: 'M',
             },
             {
-              value: '1',
-              label: '弱',
+              label: '菜单',
+              value: 'C',
+            },
+            {
+              label: '按钮',
+              value: 'F',
             },
           ]}
         />
-      </StepsForm.StepForm>
-      <StepsForm.StepForm
-        initialValues={{
-          type: '1',
-          frequency: 'month',
-        }}
-        title={intl.formatMessage({
-          id: 'pages.searchTable.updateForm.schedulingPeriod.title',
-          defaultMessage: '设定调度周期',
-        })}
-      >
-        <ProFormDateTimePicker
-          name="time"
+      </ProForm.Group>
+      <ProForm.Group>
+        <ProFormText
+          initialValue={props.values.icon}
           width="md"
-          label={intl.formatMessage({
-            id: 'pages.searchTable.updateForm.schedulingPeriod.timeLabel',
-            defaultMessage: '开始时间',
-          })}
+          name="icon"
+          label={"菜单图标"}
+        />
+      </ProForm.Group>
+      <ProForm.Group>
+        <ProFormText
+          initialValue={props.values.menuName}
           rules={[
             {
               required: true,
-              message: (
-                <FormattedMessage
-                  id="pages.searchTable.updateForm.schedulingPeriod.timeRules"
-                  defaultMessage="请选择开始时间！"
-                />
-              ),
+              message: "菜单名称必填",
             },
           ]}
-        />
-        <ProFormSelect
-          name="frequency"
-          label={intl.formatMessage({
-            id: 'pages.searchTable.updateForm.object',
-            defaultMessage: '监控对象',
-          })}
           width="md"
-          valueEnum={{
-            month: '月',
-            week: '周',
-          }}
+          name="menuName"
+          label={"菜单名称"}
         />
-      </StepsForm.StepForm>
-    </StepsForm>
+        <ProFormDigit
+          initialValue={props.values.orderNum}
+          rules={[
+            {
+              required: true,
+              message: "显示排序必填",
+            },
+          ]}
+          width="md"
+          name="orderNum"
+          label={"显示排序"}
+          min={1}
+          max={999}
+        />
+      </ProForm.Group>
+      {
+        (menuType === "C" || menuType === "M") && (
+          <>
+            <ProForm.Group>
+              <ProFormRadio.Group
+                initialValue={props.values.isFrame}
+                width={"md"}
+                rules={[
+                  {
+                    required: true,
+                    message: "是否是外链必填",
+                  },
+                ]}
+                name="isFrame"
+                label="是否是外链"
+                options={[
+                  {
+                    label: '是',
+                    value: '0',
+                  },
+                  {
+                    label: '否',
+                    value: '1',
+                  }
+                ]}
+              />
+              <ProFormText
+                initialValue={props.values.path}
+                rules={[
+                  {
+                    required: true,
+                    message: "路由地址必填",
+                  },
+                ]}
+                width="md"
+                name="path"
+                label={"路由地址"}
+              />
+            </ProForm.Group>
+            {
+              menuType === "C" && (
+                <>
+                  <ProForm.Group>
+                    <ProFormText
+                      initialValue={props.values.component}
+                      width="md"
+                      name="component"
+                      label={"组件路径"}
+                    />
+                    <ProFormText
+                      initialValue={props.values.path}
+                      width="md"
+                      name="perms"
+                      label={"权限字符串"}
+                    />
+                  </ProForm.Group>
+                  <ProForm.Group>
+                    <ProFormText
+                      initialValue={props.values.query}
+                      width="md"
+                      name="query"
+                      label={"路由参数"}
+                    />
+                    <ProFormRadio.Group
+                      initialValue={props.values.isCache}
+                      width={"md"}
+                      name="isCache"
+                      label="是否缓存"
+                      options={[
+                        {
+                          label: '是',
+                          value: '0',
+                        },
+                        {
+                          label: '否',
+                          value: '1',
+                        }
+                      ]}
+                    />
+                  </ProForm.Group>
+                </>
+
+              )
+            }
+            <ProForm.Group>
+              <ProFormRadio.Group
+                initialValue={props.values.visible}
+                width={"md"}
+                name="visible"
+                label="显示状态"
+                options={[
+                  {
+                    label: '显示',
+                    value: '0',
+                  },
+                  {
+                    label: '隐藏',
+                    value: '1',
+                  }
+                ]}
+              />
+              <ProFormRadio.Group
+                initialValue={props.values.status}
+                width={"md"}
+                name="status"
+                label="菜单状态"
+                options={[
+                  {
+                    label: '正常',
+                    value: '0',
+                  },
+                  {
+                    label: '停用',
+                    value: '1',
+                  }
+                ]}
+              />
+            </ProForm.Group>
+          </>
+        )
+      }
+    </ModalForm>
   );
 };
 

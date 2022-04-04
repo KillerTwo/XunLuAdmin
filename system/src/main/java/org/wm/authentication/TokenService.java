@@ -23,8 +23,6 @@ import org.wm.utils.uuid.IdUtils;
 
 /**
  * token验证处理
- *
- * @author ruoyi
  */
 @Component
 public class TokenService {

@@ -31,6 +31,7 @@ const HeaderSearch: React.FC<HeaderSearchProps> = (props) => {
     ...restProps
   } = props;
 
+  // @ts-ignore
   const inputRef = useRef<Input | null>(null);
 
   const [value, setValue] = useMergedState<string | undefined>(defaultValue, {
@@ -46,6 +47,7 @@ const HeaderSearch: React.FC<HeaderSearchProps> = (props) => {
   const inputClass = classNames(styles.input, {
     [styles.show]: searchMode,
   });
+  // @ts-ignore
   return (
     <div
       className={classNames(className, styles.headerSearch)}
@@ -74,7 +76,7 @@ const HeaderSearch: React.FC<HeaderSearchProps> = (props) => {
         className={inputClass}
         value={value}
         options={restProps.options}
-        onChange={setValue}
+        onChange={() => setValue(value)}
       >
         <Input
           size="small"

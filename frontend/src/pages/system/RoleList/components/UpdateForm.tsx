@@ -1,14 +1,12 @@
 import React from 'react';
-import { Modal } from 'antd';
 import {
-  ProFormSelect,
   ProFormText,
   ProFormTextArea,
-  StepsForm,
-  ProFormRadio,
-  ProFormDateTimePicker,
+  ProForm, ProFormDigit, ModalForm, ProFormRadio, ProFormTreeSelect
 } from '@ant-design/pro-form';
-import { useIntl, FormattedMessage } from 'umi';
+import {SYSTEM} from "@/services/system/typings";
+import {sysMenuSelectList} from "@/services/system/sysMenu";
+import {TreeSelect} from "antd";
 
 export type FormValueType = {
   target?: string;
@@ -16,193 +14,97 @@ export type FormValueType = {
   type?: string;
   time?: string;
   frequency?: string;
-} & Partial<API.RuleListItem>;
+} & Partial<SYSTEM.SysRole>;
 
 export type UpdateFormProps = {
   onCancel: (flag?: boolean, formVals?: FormValueType) => void;
   onSubmit: (values: FormValueType) => Promise<void>;
   updateModalVisible: boolean;
-  values: Partial<API.RuleListItem>;
+  values: Partial<SYSTEM.SysRole>;
 };
 
 const UpdateForm: React.FC<UpdateFormProps> = (props) => {
-  const intl = useIntl();
+  const currentData = props.values;
   return (
-    <StepsForm
-      stepsProps={{
-        size: 'small',
-      }}
-      stepsFormRender={(dom, submitter) => {
-        return (
-          <Modal
-            width={640}
-            bodyStyle={{ padding: '32px 40px 48px' }}
-            destroyOnClose
-            title={intl.formatMessage({
-              id: 'pages.searchTable.updateForm.ruleConfig',
-              defaultMessage: '规则配置',
-            })}
-            visible={props.updateModalVisible}
-            footer={submitter}
-            onCancel={() => {
-              props.onCancel();
-            }}
-          >
-            {dom}
-          </Modal>
-        );
-      }}
+    <ModalForm
+      modalProps={{destroyOnClose: true}}
+      title={"新增角色"}
+      width="60%"
+      visible={props.updateModalVisible}
+      onVisibleChange={props.onCancel}
       onFinish={props.onSubmit}
     >
-      <StepsForm.StepForm
-        initialValues={{
-          name: props.values.name,
-          desc: props.values.desc,
-        }}
-        title={intl.formatMessage({
-          id: 'pages.searchTable.updateForm.basicConfig',
-          defaultMessage: '基本信息',
-        })}
-      >
+      <ProForm.Group>
         <ProFormText
-          name="name"
-          label={intl.formatMessage({
-            id: 'pages.searchTable.updateForm.ruleName.nameLabel',
-            defaultMessage: '规则名称',
-          })}
-          width="md"
+          initialValue={currentData.roleName}
           rules={[
             {
               required: true,
-              message: (
-                <FormattedMessage
-                  id="pages.searchTable.updateForm.ruleName.nameRules"
-                  defaultMessage="请输入规则名称！"
-                />
-              ),
+              message: "角色名称不能为空",
             },
           ]}
-        />
-        <ProFormTextArea
-          name="desc"
+          label={"角色名称"}
           width="md"
-          label={intl.formatMessage({
-            id: 'pages.searchTable.updateForm.ruleDesc.descLabel',
-            defaultMessage: '规则描述',
-          })}
-          placeholder={intl.formatMessage({
-            id: 'pages.searchTable.updateForm.ruleDesc.descPlaceholder',
-            defaultMessage: '请输入至少五个字符',
-          })}
+          name="roleName"
+        />
+        <ProFormText
+          initialValue={currentData.roleKey}
           rules={[
             {
               required: true,
-              message: (
-                <FormattedMessage
-                  id="pages.searchTable.updateForm.ruleDesc.descRules"
-                  defaultMessage="请输入至少五个字符的规则描述！"
-                />
-              ),
-              min: 5,
+              message: "角色标识不能为空",
             },
           ]}
-        />
-      </StepsForm.StepForm>
-      <StepsForm.StepForm
-        initialValues={{
-          target: '0',
-          template: '0',
-        }}
-        title={intl.formatMessage({
-          id: 'pages.searchTable.updateForm.ruleProps.title',
-          defaultMessage: '配置规则属性',
-        })}
-      >
-        <ProFormSelect
-          name="target"
+          label={"角色标识"}
           width="md"
-          label={intl.formatMessage({
-            id: 'pages.searchTable.updateForm.object',
-            defaultMessage: '监控对象',
-          })}
-          valueEnum={{
-            0: '表一',
-            1: '表二',
-          }}
+          name="roleKey"
         />
-        <ProFormSelect
-          name="template"
-          width="md"
-          label={intl.formatMessage({
-            id: 'pages.searchTable.updateForm.ruleProps.templateLabel',
-            defaultMessage: '规则模板',
-          })}
-          valueEnum={{
-            0: '规则模板一',
-            1: '规则模板二',
-          }}
-        />
+      </ProForm.Group>
+
+      <ProForm.Group>
+        <ProFormDigit width="md" name="roleSort" label="角色顺序" initialValue={currentData.roleSort} />
         <ProFormRadio.Group
-          name="type"
-          label={intl.formatMessage({
-            id: 'pages.searchTable.updateForm.ruleProps.typeLabel',
-            defaultMessage: '规则类型',
-          })}
+          initialValue={currentData.status}
+          width={"md"}
+          name="status"
+          label="状态"
           options={[
             {
+              label: '正常',
               value: '0',
-              label: '强',
             },
             {
+              label: '停用',
               value: '1',
-              label: '弱',
-            },
+            }
           ]}
         />
-      </StepsForm.StepForm>
-      <StepsForm.StepForm
-        initialValues={{
-          type: '1',
-          frequency: 'month',
-        }}
-        title={intl.formatMessage({
-          id: 'pages.searchTable.updateForm.schedulingPeriod.title',
-          defaultMessage: '设定调度周期',
-        })}
-      >
-        <ProFormDateTimePicker
-          name="time"
-          width="md"
-          label={intl.formatMessage({
-            id: 'pages.searchTable.updateForm.schedulingPeriod.timeLabel',
-            defaultMessage: '开始时间',
-          })}
-          rules={[
-            {
-              required: true,
-              message: (
-                <FormattedMessage
-                  id="pages.searchTable.updateForm.schedulingPeriod.timeRules"
-                  defaultMessage="请选择开始时间！"
-                />
-              ),
-            },
-          ]}
-        />
-        <ProFormSelect
-          name="frequency"
-          label={intl.formatMessage({
-            id: 'pages.searchTable.updateForm.object',
-            defaultMessage: '监控对象',
-          })}
-          width="md"
-          valueEnum={{
-            month: '月',
-            week: '周',
+      </ProForm.Group>
+      <ProForm.Group>
+        <ProFormTreeSelect
+          initialValue={currentData.menuIds}
+          width={"md"}
+          label="菜单权限"
+          request={async () => {
+            const resData = await sysMenuSelectList();
+            return resData.data;
           }}
+          fieldProps={{
+            fieldNames: {
+              label: 'label',
+              value: 'id',
+              children: 'children'
+            },
+            showCheckedStrategy: TreeSelect.SHOW_ALL,
+            treeCheckable: true
+          }}
+          name={"menuIds"}
         />
-      </StepsForm.StepForm>
-    </StepsForm>
+      </ProForm.Group>
+      <ProForm.Group>
+        <ProFormTextArea width="md" label={"备注"} name="remark" initialValue={currentData.remark} />
+      </ProForm.Group>
+    </ModalForm>
   );
 };
 

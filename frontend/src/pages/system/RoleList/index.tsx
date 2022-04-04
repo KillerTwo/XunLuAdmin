@@ -1,32 +1,41 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, message, Input, Drawer } from 'antd';
+import {Button, message, Drawer, Tag, Space, TreeSelect} from 'antd';
 import React, { useState, useRef } from 'react';
-import { useIntl, FormattedMessage } from 'umi';
-import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
+import { PageContainer } from '@ant-design/pro-layout';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { ModalForm, ProFormText, ProFormTextArea } from '@ant-design/pro-form';
+import {
+  ModalForm,
+  ProFormText,
+  ProFormTextArea,
+  ProForm,
+  ProFormDigit,
+  ProFormRadio,
+  ProFormTreeSelect
+} from '@ant-design/pro-form';
 import type { ProDescriptionsItemProps } from '@ant-design/pro-descriptions';
 import ProDescriptions from '@ant-design/pro-descriptions';
 import type { FormValueType } from './components/UpdateForm';
 import UpdateForm from './components/UpdateForm';
-import { rule, addRule, updateRule, removeRule } from '@/services/ant-design-pro/api';
+import {SYSTEM} from "@/services/system/typings";
+import {addRole, removeRole, sysRoleList, updateRole} from "@/services/system/sysRole";
+import {sysMenuSelectList, sysMenuSelectRoleList} from "@/services/system/sysMenu";
 
 /**
  * @en-US Add node
  * @zh-CN 添加节点
  * @param fields
  */
-const handleAdd = async (fields: API.RuleListItem) => {
+const handleAdd = async (fields: SYSTEM.SysRole) => {
   const hide = message.loading('正在添加');
   try {
-    await addRule({ ...fields });
+    await addRole({ ...fields });
     hide();
-    message.success('Added successfully');
+    message.success('添加成功');
     return true;
   } catch (error) {
     hide();
-    message.error('Adding failed, please try again!');
+    message.error('添加失败, 请稍后重试!');
     return false;
   }
 };
@@ -38,20 +47,15 @@ const handleAdd = async (fields: API.RuleListItem) => {
  * @param fields
  */
 const handleUpdate = async (fields: FormValueType) => {
-  const hide = message.loading('Configuring');
+  const hide = message.loading('修改角色');
   try {
-    await updateRule({
-      name: fields.name,
-      desc: fields.desc,
-      key: fields.key,
-    });
+    await updateRole(fields);
     hide();
-
-    message.success('Configuration is successful');
+    message.success('更新成功');
     return true;
   } catch (error) {
     hide();
-    message.error('Configuration failed, please try again!');
+    message.error('更新失败, 请稍后重试!');
     return false;
   }
 };
@@ -62,19 +66,19 @@ const handleUpdate = async (fields: FormValueType) => {
  *
  * @param selectedRows
  */
-const handleRemove = async (selectedRows: API.RuleListItem[]) => {
+const handleRemove = async (selectedRows: SYSTEM.SysRole[]) => {
   const hide = message.loading('正在删除');
   if (!selectedRows) return true;
   try {
-    await removeRule({
-      key: selectedRows.map((row) => row.key),
-    });
+    await removeRole(
+      selectedRows.map((row) => row.roleId),
+    );
     hide();
-    message.success('Deleted successfully and will refresh soon');
+    message.success('删除成功！');
     return true;
   } catch (error) {
     hide();
-    message.error('Delete failed, please try again');
+    message.error('删除失败，请稍后重试！');
     return false;
   }
 };
@@ -94,25 +98,13 @@ const RoleList: React.FC = () => {
   const [showDetail, setShowDetail] = useState<boolean>(false);
 
   const actionRef = useRef<ActionType>();
-  const [currentRow, setCurrentRow] = useState<API.RuleListItem>();
-  const [selectedRowsState, setSelectedRows] = useState<API.RuleListItem[]>([]);
+  const [currentRow, setCurrentRow] = useState<SYSTEM.SysRole>();
+  const [selectedRowsState, setSelectedRows] = useState<SYSTEM.SysRole[]>([]);
 
-  /**
-   * @en-US International configuration
-   * @zh-CN 国际化配置
-   * */
-  const intl = useIntl();
-
-  const columns: ProColumns<API.RuleListItem>[] = [
+  const columns: ProColumns<SYSTEM.SysRole>[] = [
     {
-      title: (
-        <FormattedMessage
-          id="pages.searchTable.updateForm.ruleName.nameLabel"
-          defaultMessage="Rule name"
-        />
-      ),
-      dataIndex: 'name',
-      tip: 'The rule name is the unique key',
+      title: "角色名称",
+      dataIndex: "roleName",
       render: (dom, entity) => {
         return (
           <a
@@ -127,125 +119,86 @@ const RoleList: React.FC = () => {
       },
     },
     {
-      title: <FormattedMessage id="pages.searchTable.titleDesc" defaultMessage="Description" />,
-      dataIndex: 'desc',
-      valueType: 'textarea',
+      title: "角色标识",
+      dataIndex: 'roleKey',
     },
     {
-      title: (
-        <FormattedMessage
-          id="pages.system.user.searchTable.username"
-          defaultMessage="username"
-        />
-      ),
-      dataIndex: 'callNo',
-      sorter: true,
-      hideInForm: true,
-      renderText: (val: string) =>
-        `${val}${intl.formatMessage({
-          id: 'pages.searchTable.tenThousand',
-          defaultMessage: ' 万 ',
-        })}`,
-    },
-    {
-      title: <FormattedMessage id="pages.system.user.searchTable.nickname" defaultMessage="NickName" />,
+      title: "状态",
       dataIndex: 'status',
       hideInForm: true,
+      hideInSearch: true,
       valueEnum: {
         0: {
           text: (
-            <FormattedMessage
-              id="pages.searchTable.nameStatus.default"
-              defaultMessage="Shut down"
-            />
+            <Tag color={'green'}>
+              有效
+            </Tag>
           ),
           status: 'Default',
         },
         1: {
           text: (
-            <FormattedMessage id="pages.searchTable.nameStatus.running" defaultMessage="Running" />
+            <Tag color={'red'}>
+              无效
+            </Tag>
           ),
           status: 'Processing',
         },
-        2: {
-          text: (
-            <FormattedMessage id="pages.searchTable.nameStatus.online" defaultMessage="Online" />
-          ),
-          status: 'Success',
-        },
-        3: {
-          text: (
-            <FormattedMessage
-              id="pages.searchTable.nameStatus.abnormal"
-              defaultMessage="Abnormal"
-            />
-          ),
-          status: 'Error',
-        },
       },
     },
     {
-      title: (
-        <FormattedMessage
-          id="pages.searchTable.titleUpdatedAt"
-          defaultMessage="Last scheduled time"
-        />
-      ),
+      title: "创建时间",
       sorter: true,
-      dataIndex: 'updatedAt',
-      valueType: 'dateTime',
-      renderFormItem: (item, { defaultRender, ...rest }, form) => {
-        const status = form.getFieldValue('status');
-        if (`${status}` === '0') {
-          return false;
-        }
-        if (`${status}` === '3') {
-          return (
-            <Input
-              {...rest}
-              placeholder={intl.formatMessage({
-                id: 'pages.searchTable.exception',
-                defaultMessage: 'Please enter the reason for the exception!',
-              })}
-            />
-          );
-        }
-        return defaultRender(item);
-      },
+      hideInSearch: true,
+      dataIndex: 'createTime',
+      valueType: 'dateTime'
     },
     {
-      title: <FormattedMessage id="pages.searchTable.titleOption" defaultMessage="Operating" />,
+      title: "操作",
       dataIndex: 'option',
       valueType: 'option',
-      render: (_, record) => [
-        <a
-          key="config"
-          onClick={() => {
-            handleUpdateModalVisible(true);
-            setCurrentRow(record);
-          }}
-        >
-          <FormattedMessage id="pages.searchTable.config" defaultMessage="Configuration" />
-        </a>,
-        <a key="subscribeAlert" href="https://procomponents.ant.design/">
-          <FormattedMessage
-            id="pages.searchTable.subscribeAlert"
-            defaultMessage="Subscribe to alerts"
-          />
-        </a>,
-      ],
-    },
-  ];
-
+      render: (_, record) => {
+        if (record.roleKey === "admin") {
+          return [];
+        }
+        return [
+          <a
+            key="modify"
+            onClick={async () => {
+              const roleMenus = await sysMenuSelectRoleList(record.roleId);
+              if (roleMenus.code === 200) {
+                const checkedKeys = roleMenus.data.checkedKeys;
+                handleUpdateModalVisible(true);
+                setCurrentRow({...record, menuIds: checkedKeys});
+              } else {
+                message.error('查询菜单权限失败!');
+              }
+            }}
+          >
+            修改
+          </a>,
+          <a
+            key="remove"
+            onClick={async () => {
+              const success = await handleRemove([record]);
+              if (success) {
+                if (actionRef.current) {
+                  actionRef.current.reload();
+                }
+              }
+            }}
+          >
+            删除
+          </a>
+        ]
+      }
+    }];
   return (
     <PageContainer>
-      <ProTable<API.RuleListItem, API.PageParams>
-        headerTitle={intl.formatMessage({
-          id: 'pages.searchTable.title',
-          defaultMessage: 'Enquiry form',
-        })}
+      <ProTable<SYSTEM.SysRole, SYSTEM.PageParams & SYSTEM.SysRole>
+        headerTitle={"角色列表"}
         actionRef={actionRef}
-        rowKey="key"
+        rowKey="roleId"
         search={{
           labelWidth: 120,
         }}
@@ -257,66 +210,50 @@ const RoleList: React.FC = () => {
               handleModalVisible(true);
             }}
           >
-            <PlusOutlined /> <FormattedMessage id="pages.searchTable.new" defaultMessage="New" />
+            <PlusOutlined /> 新增
           </Button>,
         ]}
-        request={rule}
+        request={sysRoleList}
         columns={columns}
         rowSelection={{
           onChange: (_, selectedRows) => {
             setSelectedRows(selectedRows);
           },
         }}
+        tableAlertRender={({ selectedRowKeys, onCleanSelected }) => (
+          <Space size={24}>
+          <span>
+            已选 {selectedRowKeys.length} 项
+            <a style={{ marginLeft: 8 }} onClick={onCleanSelected}>
+              取消选择
+            </a>
+          </span>
+          </Space>
+        )}
+        tableAlertOptionRender={() => {
+          return (
+            <Space size={16}>
+              <Button
+                onClick={async () => {
+                  await handleRemove(selectedRowsState);
+                  setSelectedRows([]);
+                  actionRef.current?.reloadAndRest?.();
+                }}
+              >
+                批量删除
+              </Button>
+            </Space>
+          );
+        }}
       />
-      {selectedRowsState?.length > 0 && (
-        <FooterToolbar
-          extra={
-            <div>
-              <FormattedMessage id="pages.searchTable.chosen" defaultMessage="Chosen" />{' '}
-              <a style={{ fontWeight: 600 }}>{selectedRowsState.length}</a>{' '}
-              <FormattedMessage id="pages.searchTable.item" defaultMessage="项" />
-              &nbsp;&nbsp;
-              <span>
-                <FormattedMessage
-                  id="pages.searchTable.totalServiceCalls"
-                  defaultMessage="Total number of service calls"
-                />{' '}
-                {selectedRowsState.reduce((pre, item) => pre + item.callNo!, 0)}{' '}
-                <FormattedMessage id="pages.searchTable.tenThousand" defaultMessage="万" />
-              </span>
-            </div>
-          }
-        >
-          <Button
-            onClick={async () => {
-              await handleRemove(selectedRowsState);
-              setSelectedRows([]);
-              actionRef.current?.reloadAndRest?.();
-            }}
-          >
-            <FormattedMessage
-              id="pages.searchTable.batchDeletion"
-              defaultMessage="Batch deletion"
-            />
-          </Button>
-          <Button type="primary">
-            <FormattedMessage
-              id="pages.searchTable.batchApproval"
-              defaultMessage="Batch approval"
-            />
-          </Button>
-        </FooterToolbar>
-      )}
       <ModalForm
-        title={intl.formatMessage({
-          id: 'pages.searchTable.createForm.newRule',
-          defaultMessage: 'New rule',
-        })}
-        width="400px"
+        modalProps={{destroyOnClose: true}}
+        title={"新增角色"}
+        width="60%"
         visible={createModalVisible}
         onVisibleChange={handleModalVisible}
         onFinish={async (value) => {
-          const success = await handleAdd(value as API.RuleListItem);
+          const success = await handleAdd(value as SYSTEM.SysRole);
           if (success) {
             handleModalVisible(false);
             if (actionRef.current) {
@@ -325,26 +262,76 @@ const RoleList: React.FC = () => {
           }
         }}
       >
-        <ProFormText
-          rules={[
-            {
-              required: true,
-              message: (
-                <FormattedMessage
-                  id="pages.searchTable.ruleName"
-                  defaultMessage="Rule name is required"
-                />
-              ),
-            },
-          ]}
-          width="md"
-          name="name"
-        />
-        <ProFormTextArea width="md" name="desc" />
+        <ProForm.Group>
+          <ProFormText
+            rules={[
+              {
+                required: true,
+                message: "角色名称不能为空",
+              },
+            ]}
+            label={"角色名称"}
+            width="md"
+            name="roleName"
+          />
+          <ProFormText
+            rules={[
+              {
+                required: true,
+                message: "角色标识不能为空",
+              },
+            ]}
+            label={"角色标识"}
+            width="md"
+            name="roleKey"
+          />
+        </ProForm.Group>
+        <ProForm.Group>
+          <ProFormDigit width="md" name="roleSort" label="角色顺序" initialValue={1} />
+          <ProFormRadio.Group
+            width={"md"}
+            initialValue={"0"}
+            name="status"
+            label="状态"
+            options={[
+              {
+                label: '正常',
+                value: '0',
+              },
+              {
+                label: '停用',
+                value: '1',
+              }
+            ]}
+          />
+        </ProForm.Group>
+        <ProForm.Group>
+          <ProFormTreeSelect
+            width={"md"}
+            label="菜单权限"
+            request={async () => {
+              const resData = await sysMenuSelectList();
+              return resData.data;
+            }}
+            fieldProps={{
+              fieldNames: {
+                label: 'label',
+                value: 'id',
+                children: 'children'
+              },
+              showCheckedStrategy: TreeSelect.SHOW_ALL,
+              treeCheckable: true
+            }}
+            name={"menuIds"}
+          />
+        </ProForm.Group>
+        <ProForm.Group>
+          <ProFormTextArea width="md" label={"备注"} name="remark" />
+        </ProForm.Group>
       </ModalForm>
       <UpdateForm
         onSubmit={async (value) => {
-          const success = await handleUpdate(value);
+          const success = await handleUpdate({...value, roleId: currentRow?.roleId});
           if (success) {
             handleUpdateModalVisible(false);
             setCurrentRow(undefined);
@@ -353,10 +340,12 @@ const RoleList: React.FC = () => {
             }
           }
         }}
-        onCancel={() => {
-          handleUpdateModalVisible(false);
-          if (!showDetail) {
-            setCurrentRow(undefined);
+        onCancel={(value) => {
+          if(!value) {
+            handleUpdateModalVisible(false);
+            if (!showDetail) {
+              setCurrentRow(undefined);
+            }
           }
         }}
         updateModalVisible={updateModalVisible}
@@ -372,17 +361,17 @@ const RoleList: React.FC = () => {
         }}
         closable={false}
       >
-        {currentRow?.name && (
-          <ProDescriptions<API.RuleListItem>
+        {currentRow?.roleName && (
+          <ProDescriptions<SYSTEM.SysRole>
             column={2}
-            title={currentRow?.name}
+            title={currentRow?.roleName}
             request={async () => ({
               data: currentRow || {},
             })}
             params={{
-              id: currentRow?.name,
+              id: currentRow?.roleId,
             }}
-            columns={columns as ProDescriptionsItemProps<API.RuleListItem>[]}
+            columns={columns as ProDescriptionsItemProps<SYSTEM.SysRole>[]}
           />
         )}
       </Drawer>
