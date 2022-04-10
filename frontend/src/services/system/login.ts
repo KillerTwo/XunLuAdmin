@@ -31,3 +31,29 @@ export async function outLogin(options?: { [key: string]: any }) {
     ...(options || {}),
   });
 }
+
+/** 发送短信验证码 POST /api/login/captcha "data:image/gif;base64," + res.img */
+export async function getFakeCaptcha(data: SYSTEM.PhoneCodeBody) {
+  return request<SYSTEM.ResponseResult>(`/api/captcha`, {
+    method: 'POST',
+    data: data
+  });
+}
+
+/** 获取验证码 **/
+export async function getCaptchaImage() {
+  return request<SYSTEM.ResponseResult>(`/api/captchaImage`, {
+    method: 'GET'
+  });
+}
+
+/** 重置密码 */
+export async function resetPassword(body: SYSTEM.ResetPasswordBody) {
+  return request<SYSTEM.LoginResult>('/api/resetPassword', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+  });
+}

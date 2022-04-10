@@ -15,7 +15,7 @@ import type { RequestOptionsInit } from 'umi-request'
 import errorHandler from "@/utils/errorHandler";
 import {fetchMenuData} from "@/services/system/routes";
 // import LoadingComponent from "@ant-design/pro-layout/es/PageLoading";
-import {getUserInfo} from "@/services/system/login";
+import {getUserInfo, outLogin} from "@/services/system/login";
 // import {fetchMenuData} from "@/services/system/routes";
 
 import {SYSTEM} from "@/services/system/typings";
@@ -23,10 +23,13 @@ import {SYSTEM} from "@/services/system/typings";
 // import React from "react";
 import {handleIconAndComponent} from "@/utils/routes";
 // import LoadingComponent from "@ant-design/pro-layout/es/PageLoading";
-import { getToken } from "@/utils/auth";
+import {clearToken, getToken} from "@/utils/auth";
+import {notification} from "antd";
+import {stringify} from "querystring";
 
 
-const isDev = process.env.NODE_ENV === 'development';
+// const isDev = process.env.NODE_ENV === 'development';
+const isDev = false;
 const loginPath = '/user/login';
 
 /** 获取用户信息比较慢的时候会展示一个 loading */
@@ -50,10 +53,43 @@ const authHeaderInterceptor = (url: string, options: RequestOptionsInit) => {
   }
 };
 
+const demoResponseInterceptors = async (response: Response, _: RequestOptionsInit) => {
+  const data = await response.clone().json();
+  console.log("data.code: ", data.code);
+  if (data.code && data.code !== 200 && [300, 301, 302, 303, 304, 305, 306, 307, 308, 309].indexOf(data.code) === -1) {
+    if (data.code === 401) {
+      notification.error({
+        message: `请求错误 ${data.code}`,
+        description: "您无权访问指定资源，登录状态已过期或未登录，请重新登录！",
+      });
+      await outLogin();
+      clearToken();    // 清除token
+      const { query = {}, search, pathname } = history.location;
+      const { redirect } = query;
+      // Note: There may be security issues, please note
+      if ((window.location.pathname !== '/user/login' && window.location.pathname !== '/user/resetPassword') && !redirect) {
+        history.replace({
+          pathname: '/user/login',
+          search: stringify({
+            redirect: pathname + search,
+          }),
+        });
+      }
+    } else {
+      notification.error({
+        message: `请求错误 ${data.code}`,
+        description: data.msg,
+      });
+    }
+  }
+  return response;
+};
+
 export const request: RequestConfig = {
   errorHandler,
   // 新增自动添加AccessToken的请求前拦截器
   requestInterceptors: [authHeaderInterceptor],
+  responseInterceptors: [demoResponseInterceptors]
 };
 
 /**
@@ -84,7 +120,7 @@ export async function getInitialState(): Promise<{
   }
 
   // 如果是登录页面，不执行
-  if (history.location.pathname !== loginPath) {
+  if (history.location.pathname !== loginPath && history.location.pathname !== "/user/resetPassword") {
     const currentUser = await fetchUserInfo();
     const customMenuData = await fetchMenuInfo();
     return {
@@ -152,7 +188,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
     onPageChange: () => {
       const { location } = history;
       // 如果没有登录，重定向到 login
-      if (!initialState?.currentUser && location.pathname !== loginPath) {
+      if (!initialState?.currentUser && location.pathname !== loginPath && location.pathname !== "/user/resetPassword") {
         history.push(loginPath);
       }
     },

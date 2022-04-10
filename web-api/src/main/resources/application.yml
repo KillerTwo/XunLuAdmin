@@ -125,3 +125,5 @@ springdoc:
   paths-to-match: /system/**
 server:
   port: 8001
+app:
+  captcha-type: char

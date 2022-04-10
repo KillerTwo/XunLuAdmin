@@ -44,6 +44,13 @@ public interface ISysUserService {
     SysUser selectUserByUserName(String userName);
 
     /**
+     *  通过手机号查询
+     * @param mobile 手机号
+     * @return SysUser
+     */
+    SysUser selectUserByMobile(String mobile);
+
+    /**
      * 通过用户ID查询用户
      *
      * @param userId 用户ID

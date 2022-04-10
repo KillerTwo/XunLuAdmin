@@ -11,10 +11,36 @@
             path: '/user/login',
             component: './user/Login',
           },
+          {
+            name: 'resetPassword',
+            path: '/user/resetPassword',
+            component: './user/ResetPassword',
+          },
         ],
       },
       {
         component: './404',
+      },
+    ],
+  },
+  {
+    name: '个人页',
+    /*icon: 'user',*/
+    path: '/account',
+    routes: [
+      {
+        path: '/',
+        redirect: '/account/center',
+      },
+      {
+        name: '个人中心',
+        path: '/account/center',
+        component: './account/center',
+      },
+      {
+        name: '个人设置',
+        path: '/account/settings',
+        component: './account/settings',
       },
     ],
   },
@@ -99,6 +125,22 @@
         path: '/system/sysJobLog',
         component: './system/JobLogs',
       },
+    ]
+  },
+  {
+    path: '/tool',
+    name: '系统工具',
+    routes: [
+      {
+        name: '代码生成',
+        path: '/tool/gen',
+        component: './tool/Generator',
+      },
+      {
+        name: '系统接口',
+        path: '/tool/swagger',
+        component: './tool/SpringDoc',
+      }
     ]
   },
 

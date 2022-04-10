@@ -33,7 +33,7 @@ export async function addUser(sysUser: SYSTEM.SysUser) {
 
 /** 用户 UPDATE /api/system/user */
 export async function updateUser(sysUser: SYSTEM.SysUser) {
-  return request<SYSTEM.SysUser>('/api/system/user', {
+  return request<SYSTEM.ResponseResult>('/api/system/user', {
     method: 'PUT',
     data: sysUser
   });

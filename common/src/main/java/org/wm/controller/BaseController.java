@@ -46,7 +46,7 @@ public class BaseController {
 
 
     protected void startPage() {
-        int pageNum = ServletUtils.getParameterToInt("current", 0);
+        int pageNum = ServletUtils.getParameterToInt("current", 1);
         int pageSize = ServletUtils.getParameterToInt("pageSize", 10);
         PageHelper.startPage(pageNum, pageSize);
     }

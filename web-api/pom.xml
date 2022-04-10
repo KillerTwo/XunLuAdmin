@@ -118,6 +118,11 @@
             <artifactId>quartz</artifactId>
             <version>2022.01.20-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>org.wm</groupId>
+            <artifactId>generator</artifactId>
+            <version>2022.01.20-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>

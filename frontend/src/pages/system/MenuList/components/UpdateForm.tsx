@@ -1,11 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import {
   ProFormText,
-  ModalForm, ProForm, ProFormTreeSelect, ProFormRadio, ProFormDigit,
+  ModalForm, ProForm, ProFormTreeSelect, ProFormRadio, ProFormDigit, ProFormSelect,
 } from '@ant-design/pro-form';
 import {SYSTEM} from "@/services/system/typings";
 import {sysMenuSelectList} from "@/services/system/sysMenu";
 import {TreeSelect} from "antd";
+import {iconSelect} from "@/utils/routes";
 
 export type FormValueType = {
   target?: string;
@@ -52,7 +53,10 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
           label="上级菜单"
           request={async () => {
             const resData = await sysMenuSelectList();
-            return resData.data;
+            const menu: {id: number, label: string, children: []} = { id: 0, label: '主类目', children: [] };
+            menu.children = resData.data;
+            // return resData.data;
+            return [menu] || [];
           }}
           fieldProps={{
             fieldNames: {
@@ -94,11 +98,20 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
         />
       </ProForm.Group>
       <ProForm.Group>
-        <ProFormText
+        {/*<ProFormText
           initialValue={props.values.icon}
           width="md"
           name="icon"
           label={"菜单图标"}
+        />*/}
+        <ProFormSelect
+          initialValue={props.values.icon}
+          width="md"
+          name="icon"
+          label={"菜单图标"}
+          valueEnum={() => {
+            return iconSelect();
+          }}
         />
       </ProForm.Group>
       <ProForm.Group>

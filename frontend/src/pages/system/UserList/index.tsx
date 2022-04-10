@@ -1,5 +1,5 @@
-import { PlusOutlined } from '@ant-design/icons';
-import {Button, message, Drawer, Tag, TreeSelect, Space } from 'antd';
+import {DeleteOutlined, EditOutlined, PlusOutlined} from '@ant-design/icons';
+import {Button, message, Drawer, Tag, TreeSelect, Space, Popconfirm} from 'antd';
 import React, {useState, useRef} from 'react';
 import { useIntl, FormattedMessage } from 'umi';
 import { PageContainer } from '@ant-design/pro-layout';
@@ -224,16 +224,23 @@ const UserList: React.FC = () => {
 
           }}
         >
-          <FormattedMessage id="pages.system.user.searchTable.modify" defaultMessage="修改" />
+          <EditOutlined /><FormattedMessage id="pages.system.user.searchTable.modify" defaultMessage="修改" />
         </a>,
-        <a
-          key="remove"
-          onClick={async () => {
+        <Popconfirm
+          title="确定要删除用户?"
+          onConfirm={async () => {
             await handleRemove([record]);
+            actionRef.current?.reloadAndRest?.();
           }}
+          onCancel={() => {
+          }}
+          okText="确定"
+          cancelText="取消"
         >
-          <FormattedMessage id="pages.system.user.searchTable.remove" defaultMessage="删除" />
-        </a>,
+          <a>
+            <DeleteOutlined />删除
+          </a>
+        </Popconfirm>,
       ],
     },
   ];

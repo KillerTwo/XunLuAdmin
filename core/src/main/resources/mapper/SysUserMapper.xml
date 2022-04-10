@@ -115,6 +115,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	    <include refid="selectUserVo"/>
 		where u.user_name = #{userName}
 	</select>
+
+	<select id="selectUserByMobile" parameterType="String" resultMap="SysUserResult">
+		<include refid="selectUserVo"/>
+		where u.phonenumber = #{mobile}
+	</select>
 	
 	<select id="selectUserById" parameterType="Long" resultMap="SysUserResult">
 		<include refid="selectUserVo"/>

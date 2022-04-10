@@ -13,6 +13,9 @@ export function handleIconAndComponent(routes: SYSTEM.Router[]) {
       if (iconNode) {
         ele.icon = iconNode;
       }
+      if (ele.isFrame === "0") {
+        ele.target = "_blank";
+      }
     }
     delete ele.component
     /*if (ele.component) {
@@ -29,4 +32,21 @@ export function handleIconAndComponent(routes: SYSTEM.Router[]) {
     }
     return ele;
   })
+}
+
+
+export function iconSelect() {
+  // const iconNode: React.ReactNode = React.createElement(allIcons[ele.iconName]);
+  const enums = {};
+  const showType = typeof allIcons["IdcardOutlined"];
+  for (const allIconsKey in allIcons) {
+    const item = allIcons[allIconsKey];
+    if (typeof item === showType && item.displayName !== 'AntdIcon') {
+      const iconNode: React.ReactNode = React.createElement(allIcons[allIconsKey]);
+      if (iconNode) {
+        enums[allIconsKey] = iconNode
+      }
+    }
+  }
+  return enums;
 }

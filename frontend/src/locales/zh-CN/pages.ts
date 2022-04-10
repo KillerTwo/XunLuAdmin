@@ -1,7 +1,7 @@
 export default {
-  'pages.layouts.userLayout.title': '寻路 基于spring-boot、ant-design-pro的中后台管理系统',
+  'pages.layouts.userLayout.title': '寻路 基于spring-boot、ant-design-pro、RuoYi-Vue的中后台管理系统(admin/admin123)',
   'pages.login.accountLogin.tab': '账户密码登录',
-  'pages.login.accountLogin.errorMessage': '错误的用户名和密码(admin/ant.design)',
+  'pages.login.accountLogin.errorMessage': '错误的用户名和密码',
   'pages.login.failure': '登录失败，请重试！',
   'pages.login.success': '登录成功！',
   'pages.login.username.placeholder': '用户名: admin',
@@ -17,7 +17,7 @@ export default {
   'pages.login.captcha.required': '验证码是必填项！',
   'pages.login.phoneLogin.getVerificationCode': '获取验证码',
   'pages.getCaptchaSecondText': '秒后重新获取',
-  'pages.login.rememberMe': '自动登录',
+  'pages.login.rememberMe': '记住密码',
   'pages.login.forgotPassword': '忘记密码 ?',
   'pages.login.submit': '登录',
   'pages.login.loginWith': '其他登录方式 :',

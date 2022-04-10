@@ -1,5 +1,4 @@
 import React from "react";
-import {sysOperlogList} from "@/services/system/operlog";
 
 declare namespace SYSTEM {
   type Router = {
@@ -11,6 +10,8 @@ declare namespace SYSTEM {
     routes?: Router[];
     icon?: React.ReactNode;
     iconName?: string;
+    isFrame?: string;
+    target?: string;
   };
   type LoginBody = {
     username?: string;
@@ -19,7 +20,22 @@ declare namespace SYSTEM {
     uuid?: string;
     autoLogin?: boolean;
     type?: string;
+    phone?: string;
+    uuid?: string;
+    code?: string;
+    phoneCode?: string;
   }
+
+  type ResetPasswordBody = {
+    phone?: string;
+    username?: string;
+    code?: string;
+    uuid?: string;
+    phoneCode?: string;
+    password?: string;
+    rePassword?: string;
+  }
+
   type LoginResult = {
     code?: number;
     msg?: string
@@ -32,7 +48,17 @@ declare namespace SYSTEM {
     password?: string;
     autoLogin?: boolean;
     type?: string;
+    phone?: string;
+    uuid?: string;
+    code?: string;
+    phoneCode?: string;
   };
+
+  type PhoneCodeBody = {
+    phone?: string;
+    uuid?: string;
+    code?: string;
+  }
 
   type SysUser = {
     userId?: number;

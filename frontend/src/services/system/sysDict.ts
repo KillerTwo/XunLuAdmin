@@ -13,6 +13,13 @@ export async function sysDictTypeList(params: SYSTEM.PageParams & SYSTEM.SysDict
   });
 }
 
+// optionselect
+export async function dictTypeOptionSelect() {
+  return request<SYSTEM.ResponseResult>('/api/system/dict/type/optionselect', {
+    method: 'GET',
+  });
+}
+
 /** 新增字典类型 */
 export async function addSysDictType(sysDictType: SYSTEM.SysDictType) {
   return request<SYSTEM.ResponseResult>('/api/dict/type', {

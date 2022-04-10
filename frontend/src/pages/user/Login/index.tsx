@@ -7,17 +7,17 @@ import {
   WeiboCircleOutlined,
 } from '@ant-design/icons';
 import { Alert, message, Tabs } from 'antd';
-import React, { useState } from 'react';
-import { ProFormCaptcha, ProFormCheckbox, ProFormText, LoginForm } from '@ant-design/pro-form';
-import { useIntl, history, FormattedMessage, SelectLang, useModel } from 'umi';
+import React, {useEffect, useRef, useState} from 'react';
+import {ProFormCaptcha, ProFormCheckbox, ProFormText, LoginForm, ProFormInstance} from '@ant-design/pro-form';
+import { useIntl, history, FormattedMessage, useModel } from 'umi';
 import Footer from '@/components/Footer';
-import { login } from '@/services/system/login'
-import { getFakeCaptcha } from '@/services/ant-design-pro/login';
+import {getCaptchaImage, getFakeCaptcha, login} from '@/services/system/login'
 
 import styles from './index.less';
 import {SYSTEM} from "@/services/system/typings";
 
 import { setToken } from '@/utils/auth';
+import Cookies from "js-cookie";
 
 const LoginMessage: React.FC<{
   content: string;
@@ -37,7 +37,44 @@ const Login: React.FC = () => {
   const [type, setType] = useState<string>('account');
   const { initialState, setInitialState } = useModel('@@initialState');
 
+  const loginFormRef = useRef<
+    ProFormInstance<SYSTEM.LoginBody>
+    >();
+
+  // const [loginForm, setLoginForm] = useState<{username?: string, password?: string, rememberMe?: boolean}>({username: "", password: "", rememberMe: false});
+
+  const [captchaOnOff, setCaptchaOnOff] = useState<boolean>(true);
+  const [imgSrc, setImgSrc] = useState<string>("");
+  const [codeUuid, setCodeUuid] = useState<string>("");
+  const [captcha, setCaptcha] = useState<string>("");
+
   const intl = useIntl();
+
+  const getCookies = () => {
+    const username = Cookies.get("username");
+    const password = Cookies.get("password");
+    const phone = Cookies.get("phone");
+    const rememberMe = Cookies.get('rememberMe');
+    // setLoginForm({username, password, rememberMe: rememberMe === "true"});
+    return {username, password, rememberMe: rememberMe === "true", phone};
+  };
+
+  const captchaImage = async () => {
+    const resData = await getCaptchaImage();
+    if (resData.code === 200) {
+      const data = resData.data;
+      if (!data.captchaOnOff) {
+        setCaptchaOnOff(data.captchaOnOff);
+      } else {
+        setImgSrc(`data:image/gif;base64,${data.img}`);
+        setCodeUuid(data.uuid);
+      }
+    }
+  }
+
+  useEffect(() => {
+    captchaImage();
+  }, []);
 
   const fetchUserInfo = async () => {
     const userInfo = await initialState?.fetchUserInfo?.();
@@ -60,11 +97,28 @@ const Login: React.FC = () => {
   }
 
   const handleSubmit = async (values: SYSTEM.LoginParams) => {
+    if (!captcha) {
+      message.error("请填写验证码");
+      return;
+    }
     try {
+      if (values.autoLogin === true) {
+        if (type === "account") {
+          Cookies.set("username", values.username || "", { expires: 30 });
+          Cookies.set("password", values.password || "", { expires: 30 });
+        } else if (type === "mobile") {
+          Cookies.set("phone", values.phone || "", { expires: 30 });
+        }
+        Cookies.set("rememberMe", "true", { expires: 30 });
+      } else {
+        Cookies.remove("username");
+        Cookies.remove("password");
+        Cookies.remove("phone");
+        Cookies.remove("rememberMe");
+      }
       // 登录
-      const msg = await login({ ...values });
+      const msg = await login({ ...values, code: captcha, uuid: codeUuid });
       if (msg.code === 200) {
-        console.log('登录成功msg: ', msg)
         setToken(msg?.data?.token || '');
         const defaultLoginSuccessMessage = intl.formatMessage({
           id: 'pages.login.success',
@@ -96,17 +150,23 @@ const Login: React.FC = () => {
   const loginType = 'account';
   return (
     <div className={styles.container}>
-      <div className={styles.lang} data-lang>
+      {/*<div className={styles.lang} data-lang>
         {SelectLang && <SelectLang />}
-      </div>
+      </div>*/}
       <div className={styles.content}>
         <LoginForm
+          formRef={loginFormRef}
           logo={<img alt="logo" style={{borderRadius: 30}} src="/logo1.jpg" />}
           title="寻 路"
           subTitle={intl.formatMessage({ id: 'pages.layouts.userLayout.title' })}
-          initialValues={{
-            autoLogin: true,
-          }}
+          request={async ()=> {
+            const data = getCookies();
+            return {
+              autoLogin: data.rememberMe,
+              username: data.username,
+              password: data.password,
+              phone: data.phone
+            }}}
           actions={[
             <FormattedMessage
               key="loginWith"
@@ -118,7 +178,7 @@ const Login: React.FC = () => {
             <WeiboCircleOutlined key="WeiboCircleOutlined" className={styles.icon} />,
           ]}
           onFinish={async (values) => {
-            await handleSubmit(values as API.LoginParams);
+            await handleSubmit(values as SYSTEM.LoginParams);
           }}
         >
           <Tabs activeKey={type} onChange={setType}>
@@ -203,7 +263,7 @@ const Login: React.FC = () => {
                   size: 'large',
                   prefix: <MobileOutlined className={styles.prefixIcon} />,
                 }}
-                name="mobile"
+                name="phone"
                 placeholder={intl.formatMessage({
                   id: 'pages.login.phoneNumber.placeholder',
                   defaultMessage: '手机号',
@@ -265,18 +325,51 @@ const Login: React.FC = () => {
                     ),
                   },
                 ]}
-                onGetCaptcha={async (phone) => {
-                  const result = await getFakeCaptcha({
-                    phone,
-                  });
-                  if (result === false) {
-                    return;
+                onGetCaptcha={async () => {
+                  const mobile = loginFormRef.current?.getFieldsValue().phone || "";
+                  if (!mobile) {
+                    message.error("请填写手机号！");
+                    throw new Error("请填写手机号！");
                   }
-                  message.success('获取验证码成功！验证码为：1234');
+                  if (!captcha) {
+                    message.error("请填写验证码！");
+                    throw new Error("请填写验证码！");
+                  }
+                  const result = await getFakeCaptcha({phone: mobile, uuid: codeUuid, code: captcha});
+                  if (result.code === 200) {
+                    message.success(`获取验证码成功！验证码为：${result.data}`);
+                    return;
+                  } else {
+                    throw new Error(result.msg);
+                  }
                 }}
               />
             </>
           )}
+          {
+            captchaOnOff && (
+              <div className="ant-row ant-form-item" style={{rowGap: "0px"}}>
+                <div className="ant-col ant-form-item-control">
+                  <div className="ant-form-item-control-input">
+                    <div className="ant-form-item-control-input-content">
+                      <div style={{display: "flex", alignItems: "center"}}>
+                    <span
+                      className="ant-input-affix-wrapper ant-input-affix-wrapper-lg"
+                      style={{flex: "1 1 0%", transition:" width 0.3s ease 0s", marginRight: "8px"}}><span
+                      className="ant-input-prefix"></span>
+                    <input id="captcha" placeholder="请输入验证码！" onChange={(target) => {
+                      setCaptcha(target.target.value);
+                    }} className="ant-input" type="text" value={captcha} />
+                    </span>
+                        <img src={imgSrc} style={{width: "100px", height: "40.14px", cursor: "pointer"}} onClick={captchaImage}/>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )
+          }
+
           <div
             style={{
               marginBottom: 24,
@@ -288,6 +381,10 @@ const Login: React.FC = () => {
             <a
               style={{
                 float: 'right',
+              }}
+              onClick={()=>{
+                history.push("/user/resetPassword");
+                return false;
               }}
             >
               <FormattedMessage id="pages.login.forgotPassword" defaultMessage="忘记密码" />

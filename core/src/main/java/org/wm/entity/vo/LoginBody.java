@@ -29,7 +29,18 @@ public class LoginBody {
      */
     private String uuid = "";
 
+    /**
+     *  自动登录
+     */
     private Boolean autoLogin = false;
 
+    /**
+     *  登录方式
+     */
     private String type = "account";
+
+    /**
+     *  手机验证码
+     */
+    private String phoneCode;
 }

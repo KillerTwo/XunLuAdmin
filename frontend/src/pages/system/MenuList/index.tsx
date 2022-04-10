@@ -1,7 +1,15 @@
 import {message, Table, Drawer, Tag, Space, Popconfirm, TreeSelect,Form,Input, Button,Select,Card} from 'antd';
 import React, {useState, useEffect} from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
-import {ModalForm, ProForm, ProFormText, ProFormDigit, ProFormRadio, ProFormTreeSelect} from '@ant-design/pro-form';
+import {
+  ModalForm,
+  ProForm,
+  ProFormText,
+  ProFormDigit,
+  ProFormRadio,
+  ProFormTreeSelect,
+  ProFormSelect
+} from '@ant-design/pro-form';
 import type { ProDescriptionsItemProps } from '@ant-design/pro-descriptions';
 import ProDescriptions from '@ant-design/pro-descriptions';
 import type { FormValueType } from './components/UpdateForm';
@@ -10,6 +18,7 @@ import {SYSTEM} from "@/services/system/typings";
 import {addSysMenu, removeSysMenu, sysMenuList, sysMenuSelectList, updateSysMenu} from "@/services/system/sysMenu";
 import {handleTree} from "@/utils/sysMenu";
 import {ColumnsType} from "antd/es/table";
+import {iconSelect} from "@/utils/routes";
 
 /**
  * @en-US Add node
@@ -95,11 +104,13 @@ const MenuList: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const handleRequestMenu = (params?: SYSTEM.SysMenu | {}) => {
+    // const menu: SYSTEM.SysMenu = { menuId: 0, menuName: '主类目', children: [] };
     setLoading(true);
     sysMenuList({...params}).then((res: SYSTEM.ResponseResult) => {
       setLoading(false);
       const treeMenu = handleTree(res.data, 'menuId');
       console.log("treeMenu: ", treeMenu);
+      // menu.children = treeMenu;
       setData(treeMenu);
     })
   }
@@ -240,6 +251,17 @@ const MenuList: React.FC = () => {
           </Form.Item>
         </Form>
       </Card>
+      <Button
+        type="primary"
+        htmlType="button"
+        onClick={() => {
+          setDefaultParent(0);
+          setMenuType("M");
+          handleModalVisible(true);
+        }}
+      >
+        新增
+      </Button>
       <Table
         rowKey={"menuId"}
         columns={columns}
@@ -274,7 +296,11 @@ const MenuList: React.FC = () => {
             label="上级菜单"
             request={async () => {
               const resData = await sysMenuSelectList();
-              return resData.data;
+              const menu: {id: number, label: string, children: []} = { id: 0, label: '主类目', children: [] };
+              menu.children = resData.data;
+              console.log("resData.data: ", resData.data);
+              // return resData.data;
+              return [menu] || [];
             }}
             fieldProps={{
               fieldNames: {
@@ -316,10 +342,18 @@ const MenuList: React.FC = () => {
           />
         </ProForm.Group>
         <ProForm.Group>
-          <ProFormText
+          {/*<ProFormText
             width="md"
             name="icon"
             label={"菜单图标"}
+          />*/}
+          <ProFormSelect
+            width="md"
+            name="icon"
+            label={"菜单图标"}
+            valueEnum={() => {
+              return iconSelect();
+            }}
           />
         </ProForm.Group>
         <ProForm.Group>
