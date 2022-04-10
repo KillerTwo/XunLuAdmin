@@ -38,7 +38,7 @@
 
 - admin/admin123
 
-演示地址：http://vue.ruoyi.vip
+演示地址：http://110.40.159.200/welcome
 
 ## 演示图
 
