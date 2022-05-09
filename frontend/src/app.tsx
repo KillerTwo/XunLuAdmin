@@ -3,30 +3,29 @@ import { SettingDrawer } from '@ant-design/pro-layout';
 import { PageLoading } from '@ant-design/pro-layout';
 import type { RunTimeLayoutConfig } from 'umi';
 
-import { history, Link} from 'umi';
+import { history, Link } from 'umi';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
 // import { currentUser as queryCurrentUser } from './services/ant-design-pro/api';
 import { BookOutlined, LinkOutlined } from '@ant-design/icons';
 import defaultSettings from '../config/defaultSettings';
 // import { fetchMenuData } from './services/system/routes';
-import type { RequestConfig } from "@@/plugin-request/request";
-import type { RequestOptionsInit } from 'umi-request'
-import errorHandler from "@/utils/errorHandler";
-import {fetchMenuData} from "@/services/system/routes";
+import type { RequestConfig } from '@@/plugin-request/request';
+import type { RequestOptionsInit } from 'umi-request';
+import errorHandler from '@/utils/errorHandler';
+import { fetchMenuData } from '@/services/system/routes';
 // import LoadingComponent from "@ant-design/pro-layout/es/PageLoading";
-import {getUserInfo, outLogin} from "@/services/system/login";
+import { getUserInfo, outLogin } from '@/services/system/login';
 // import {fetchMenuData} from "@/services/system/routes";
 
-import {SYSTEM} from "@/services/system/typings";
+import { SYSTEM } from '@/services/system/typings';
 // import iconMapping from "@/utils/iconMap";
 // import React from "react";
-import {handleIconAndComponent} from "@/utils/routes";
+import { handleIconAndComponent } from '@/utils/routes';
 // import LoadingComponent from "@ant-design/pro-layout/es/PageLoading";
-import {clearToken, getToken} from "@/utils/auth";
-import {notification} from "antd";
-import {stringify} from "querystring";
-
+import { clearToken, getToken } from '@/utils/auth';
+import { notification } from 'antd';
+import { stringify } from 'querystring';
 
 // const isDev = process.env.NODE_ENV === 'development';
 const isDev = false;
@@ -38,14 +37,19 @@ export const initialStateConfig = {
 };
 
 const authHeaderInterceptor = (url: string, options: RequestOptionsInit) => {
-  if(url.indexOf('/login/') !== -1) {
+  if (url.indexOf('/login/') !== -1 || url.indexOf('/logout') !== -1) {
     return {
       url: `${url}`,
       options: { ...options, interceptors: true },
     };
   } else {
     const token = getToken();
-    const authHeader = { Authorization: `Bearer ${token}` };
+    console.log('url, token: ', url, token);
+    let authHeader = {};
+    if (token) {
+      authHeader = { Authorization: `Bearer ${token}` };
+    }
+
     return {
       url: `${url}`,
       options: { ...options, interceptors: true, headers: authHeader },
@@ -53,21 +57,31 @@ const authHeaderInterceptor = (url: string, options: RequestOptionsInit) => {
   }
 };
 
-const demoResponseInterceptors = async (response: Response, _: RequestOptionsInit) => {
+const demoResponseInterceptors = async (response: Response, r: RequestOptionsInit) => {
+  console.log('response: ', response);
+  console.log(r);
   const data = await response.clone().json();
-  console.log("data.code: ", data.code);
-  if (data.code && data.code !== 200 && [300, 301, 302, 303, 304, 305, 306, 307, 308, 309].indexOf(data.code) === -1) {
+  console.log('demoResponseInterceptors data: ', data);
+  if (
+    data.code &&
+    data.code !== 200 &&
+    [300, 301, 302, 303, 304, 305, 306, 307, 308, 309].indexOf(data.code) === -1
+  ) {
     if (data.code === 401) {
       notification.error({
         message: `请求错误 ${data.code}`,
-        description: "您无权访问指定资源，登录状态已过期或未登录，请重新登录！",
+        description: '您无权访问指定资源，登录状态已过期或未登录，请重新登录！',
       });
       await outLogin();
-      clearToken();    // 清除token
+      clearToken(); // 清除token
       const { query = {}, search, pathname } = history.location;
       const { redirect } = query;
       // Note: There may be security issues, please note
-      if ((window.location.pathname !== '/user/login' && window.location.pathname !== '/user/resetPassword') && !redirect) {
+      if (
+        window.location.pathname !== '/user/login' &&
+        window.location.pathname !== '/user/resetPassword' &&
+        !redirect
+      ) {
         history.replace({
           pathname: '/user/login',
           search: stringify({
@@ -89,7 +103,7 @@ export const request: RequestConfig = {
   errorHandler,
   // 新增自动添加AccessToken的请求前拦截器
   requestInterceptors: [authHeaderInterceptor],
-  responseInterceptors: [demoResponseInterceptors]
+  responseInterceptors: [demoResponseInterceptors],
 };
 
 /**
@@ -115,12 +129,16 @@ export async function getInitialState(): Promise<{
 
   const fetchMenuInfo = async () => {
     const menuData = await fetchMenuData();
-    console.log("fetchMenuDatas.menuData: ", menuData);
+    console.log('fetchMenuDatas.menuData: ', menuData);
     return menuData.data;
-  }
+  };
 
+  console.log('defaultSetting: ', defaultSettings);
   // 如果是登录页面，不执行
-  if (history.location.pathname !== loginPath && history.location.pathname !== "/user/resetPassword") {
+  if (
+    history.location.pathname !== loginPath &&
+    history.location.pathname !== '/user/resetPassword'
+  ) {
     const currentUser = await fetchUserInfo();
     const customMenuData = await fetchMenuInfo();
     return {
@@ -188,7 +206,11 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
     onPageChange: () => {
       const { location } = history;
       // 如果没有登录，重定向到 login
-      if (!initialState?.currentUser && location.pathname !== loginPath && location.pathname !== "/user/resetPassword") {
+      if (
+        !initialState?.currentUser &&
+        location.pathname !== loginPath &&
+        location.pathname !== '/user/resetPassword'
+      ) {
         history.push(loginPath);
       }
     },
@@ -205,8 +227,9 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
         ]
       : [],
     menuDataRender: (menuItems) => {
-      console.log("menuItems", menuItems);
-      const resMenuData = initialState?.customMenuData||[];
+      console.log('initialState?.settings: ', initialState?.settings);
+      console.log('menuItems', menuItems);
+      const resMenuData = initialState?.customMenuData || [];
 
       const menuDataIcon = handleIconAndComponent(resMenuData);
 
@@ -236,7 +259,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
       })*/
 
       // const data = [...menuItems, ...menuDataIcon||[]]
-      const data = [...menuDataIcon||[]]
+      const data = [...(menuDataIcon || [])];
       // const menuData = await fetchMenuData();
       // return [menuItems, initialState?.customMenuData];
       return data;
@@ -249,9 +272,10 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
       // 支持二级菜单显示icon
       return (
         <Link to={menuItemProps.path}>
-          {menuItemProps.pro_layout_parentKeys
-            && menuItemProps.pro_layout_parentKeys.length > 0 &&
-            menuItemProps.icon}{defaultDom}
+          {menuItemProps.pro_layout_parentKeys &&
+            menuItemProps.pro_layout_parentKeys.length > 0 &&
+            menuItemProps.icon}
+          {defaultDom}
         </Link>
       );
     },
