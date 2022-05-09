@@ -5,45 +5,37 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.6.6</version>
+        <version>2.6.7</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>org.wm</groupId>
     <artifactId>XunLuAdmin</artifactId>
     <packaging>pom</packaging>
-    <version>2022.01.20-SNAPSHOT</version>
-    <name>XunLuAdmin</name>
+    <version>2022.05.09-SNAPSHOT</version>
+    <name>XunLuAdmin中后台管理</name>
     <description>XunLuAdmin</description>
     <properties>
-        <project.version>2022.01.20-SNAPSHOT</project.version>
+        <project.version>2022.05.09-SNAPSHOT</project.version>
         <java.version>17</java.version>
-        <mybatis-boot.version>2.2.1</mybatis-boot.version>
-        <spring-boot.version>2.6.2</spring-boot.version>
-        <lombok.version>1.18.22</lombok.version>
+        <mybatis-boot.version>2.2.2</mybatis-boot.version>
+        <spring-boot.version>2.6.7</spring-boot.version>
+        <lombok.version>1.18.24</lombok.version>
         <fastjson2.version>2.0.2</fastjson2.version>
         <java-jwt.version>3.18.3</java-jwt.version>
         <jjwt.version>0.9.1</jjwt.version>
         <commons-fileupload.version>1.4</commons-fileupload.version>
         <druid-spring-boot.version>1.2.8</druid-spring-boot.version>
         <pagehelper.version>1.4.1</pagehelper.version>
-        <springdoc.version>1.6.6</springdoc.version>
+        <springdoc.version>1.6.8</springdoc.version>
         <springdoc-openapi-maven-plugin.version>1.4</springdoc-openapi-maven-plugin.version>
         <velocity.version>2.3</velocity.version>
-        <hutool.version>5.6.1</hutool.version>
+        <hutool.version>5.8.0</hutool.version>
         <kaptcha.version>2.3.2</kaptcha.version>
     </properties>
 
 
     <dependencyManagement>
         <dependencies>
-            <!--<dependency>
-                &lt;!&ndash; Import dependency management from Spring Boot &ndash;&gt;
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>${spring-boot.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>-->
             <dependency>
                 <groupId>cn.hutool</groupId>
                 <artifactId>hutool-all</artifactId>
@@ -186,11 +178,11 @@
                 <artifactId>springdoc-openapi-webmvc-core</artifactId>
                 <version>${springdoc.version}</version>
             </dependency>
-            <dependency>
+            <!--<dependency>
                 <groupId>org.springdoc</groupId>
                 <artifactId>springdoc-openapi-security</artifactId>
                 <version>${springdoc.version}</version>
-            </dependency>
+            </dependency>-->
 
             <dependency>
                 <groupId>org.springdoc</groupId>
@@ -198,10 +190,41 @@
                 <version>${springdoc.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.wm</groupId>
+                <artifactId>boogle-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wm</groupId>
+                <artifactId>boogle-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wm</groupId>
+                <artifactId>boogle-generator</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wm</groupId>
+                <artifactId>boogle-logging</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wm</groupId>
+                <artifactId>boogle-quartz</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wm</groupId>
+                <artifactId>boogle-system</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
         </dependencies>
     </dependencyManagement>
-
     <dependencies>
 
 
@@ -328,13 +351,13 @@
     </dependencies>
 
     <modules>
-        <module>web-api</module>
-        <module>system</module>
-        <module>common</module>
-        <module>core</module>
-        <module>logging</module>
-        <module>quartz</module>
-        <module>generator</module>
+        <module>boogle-web-starter</module>
+        <module>boogle-system</module>
+        <module>boogle-common</module>
+        <module>boogle-core</module>
+        <module>boogle-logging</module>
+        <module>boogle-quartz</module>
+        <module>boogle-generator</module>
     </modules>
 
 </project>

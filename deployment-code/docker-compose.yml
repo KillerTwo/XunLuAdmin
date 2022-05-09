@@ -1,0 +1,57 @@
+version: "3.8"
+services:
+  # 前端
+  web-fonted:
+    container_name: web-fonted
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - target: 80
+        published: 80
+    networks:
+      - wm-net
+    volumes:
+      - type: volume
+        source: html-vol
+        target: /home/html
+  redis-alpine:
+    container_name: redis-alpine
+    image: "redis:alpine"
+    ports:
+      - target: 6379
+        published: 6380
+    networks:
+      wm-net:
+  mysql-8:
+    container_name: mysql-8
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456root
+      MYSQL_DATABASE: we-master
+    ports:
+      - target: 3306
+        published: 3306
+    networks:
+      wm-net:
+    volumes:
+      - "/home/mysql/data:/var/lib/mysql"
+  # 后端
+  web-backend:
+    container_name: web-backend
+    build: ./backend
+    ports:
+      # 容器端口
+      - target: 8080
+      # 本机端口
+        published: 8080
+    networks:
+      wm-net:
+# 网络
+networks:
+  wm-net:
+# 卷
+volumes:
+  html-vol:
