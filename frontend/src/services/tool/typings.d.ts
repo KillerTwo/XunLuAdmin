@@ -1,5 +1,4 @@
 declare namespace Tool {
-
   type PageParams = {
     current?: number | 0;
     pageSize?: number | 10;
@@ -10,7 +9,7 @@ declare namespace Tool {
     code: number;
     data?: any;
     total?: number;
-  }
+  };
 
   type GenTable = {
     tableId?: number;
@@ -34,7 +33,7 @@ declare namespace Tool {
     parentMenuId?: string;
     parentMenuName?: string;
     remark?: string;
-  }
+  };
 
   type GenTableColumn = {
     columnId?: number;
@@ -55,7 +54,6 @@ declare namespace Tool {
     htmlType?: string;
     dictType?: string;
     sort?: number;
-  }
-
-
+    typeScriptType?: string;
+  };
 }

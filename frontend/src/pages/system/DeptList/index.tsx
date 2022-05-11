@@ -1,16 +1,42 @@
-import {message, Table, Drawer, Tag, Space, Popconfirm, TreeSelect,Form,Input, Button,Select,Card} from 'antd';
-import React, {useState, useEffect} from 'react';
+import {
+  message,
+  Table,
+  Drawer,
+  Tag,
+  Space,
+  Popconfirm,
+  TreeSelect,
+  Form,
+  Input,
+  Button,
+  Select,
+  Card,
+} from 'antd';
+import React, { useState, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
-import {ModalForm, ProForm, ProFormText, ProFormDigit, ProFormRadio, ProFormTreeSelect} from '@ant-design/pro-form';
+import {
+  ModalForm,
+  ProForm,
+  ProFormText,
+  ProFormDigit,
+  ProFormRadio,
+  ProFormTreeSelect,
+} from '@ant-design/pro-form';
 import type { ProDescriptionsItemProps } from '@ant-design/pro-descriptions';
 import ProDescriptions from '@ant-design/pro-descriptions';
 import type { FormValueType } from './components/UpdateForm';
 import UpdateForm from './components/UpdateForm';
-import {SYSTEM} from "@/services/system/typings";
-import {addSysDept, removeSysDept, sysDeptList, sysDeptSelectList, updateSysDept} from "@/services/system/sysDept";
-import {handleTree} from "@/utils/sysMenu";
-import {ColumnsType} from "antd/es/table";
-import {EditOutlined,PlusOutlined,DeleteOutlined} from "@ant-design/icons";
+import type { SYSTEM } from '@/services/system/typings';
+import {
+  addSysDept,
+  removeSysDept,
+  sysDeptList,
+  sysDeptSelectList,
+  updateSysDept,
+} from '@/services/system/sysDept';
+import { handleTree } from '@/utils/sysMenu';
+import type { ColumnsType } from 'antd/es/table';
+import { EditOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 
 /**
  * @en-US Add node
@@ -41,7 +67,7 @@ const handleUpdate = async (fields: FormValueType) => {
   const hide = message.loading('Configuring');
   try {
     await updateSysDept({
-      ...fields
+      ...fields,
     });
     hide();
 
@@ -90,19 +116,19 @@ const DeptList: React.FC = () => {
   const [showDetail, setShowDetail] = useState<boolean>(false);
 
   const [currentRow, setCurrentRow] = useState<SYSTEM.SysDept>();
-  const [defaultParent, setDefaultParent] = useState<number|0>(0);
+  const [defaultParent, setDefaultParent] = useState<number | 0>(0);
   const [data, setData] = useState<SYSTEM.SysDept[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
   const handleRequestDept = (params?: SYSTEM.SysDept | {}) => {
     setLoading(true);
-    sysDeptList({...params}).then((res: SYSTEM.ResponseResult) => {
+    sysDeptList({ ...params }).then((res: SYSTEM.ResponseResult) => {
       setLoading(false);
       const treeMenu = handleTree(res.data, 'deptId');
-      console.log("treeMenu: ", treeMenu);
+      console.log('treeMenu: ', treeMenu);
       setData(treeMenu);
-    })
-  }
+    });
+  };
 
   const columns: ColumnsType<SYSTEM.SysDept> = [
     {
@@ -120,14 +146,10 @@ const DeptList: React.FC = () => {
       dataIndex: 'status',
       key: 'status',
       render: (record: string) => {
-        const color = record === "0" ? "green" : "red";
-        const text = record === "0" ? "正常" : "停用";
-        return (
-          <Tag color={color}>
-            {text}
-          </Tag>
-        );
-      }
+        const color = record === '0' ? 'green' : 'red';
+        const text = record === '0' ? '正常' : '停用';
+        return <Tag color={color}>{text}</Tag>;
+      },
     },
     {
       title: '创建时间',
@@ -140,15 +162,24 @@ const DeptList: React.FC = () => {
       key: 'options',
       render: (text: any, record: SYSTEM.SysDept) => (
         <Space size="middle">
-
-          <a onClick={() => {
-            setCurrentRow(record);
-            handleUpdateModalVisible(true);
-          }}><EditOutlined />修改</a>
-          <a onClick={() => {
-            setDefaultParent(record.deptId || 0);
-            handleModalVisible(true);
-          }}><PlusOutlined />新增</a>
+          <a
+            onClick={() => {
+              setCurrentRow(record);
+              handleUpdateModalVisible(true);
+            }}
+          >
+            <EditOutlined />
+            修改
+          </a>
+          <a
+            onClick={() => {
+              setDefaultParent(record.deptId || 0);
+              handleModalVisible(true);
+            }}
+          >
+            <PlusOutlined />
+            新增
+          </a>
           <Popconfirm
             title="确定要删除菜单?"
             onConfirm={async () => {
@@ -157,20 +188,19 @@ const DeptList: React.FC = () => {
                 handleRequestDept({});
               }
             }}
-            onCancel={() => {
-            }}
+            onCancel={() => {}}
             okText="确定"
             cancelText="取消"
           >
-            <a><DeleteOutlined />删除</a>
+            <a>
+              <DeleteOutlined />
+              删除
+            </a>
           </Popconfirm>
-
         </Space>
       ),
     },
   ];
-
-
 
   useEffect(() => {
     /*sysMenuList({}).then((res: SYSTEM.ResponseResult) => {
@@ -178,7 +208,7 @@ const DeptList: React.FC = () => {
       console.log("treeMenu: ", treeMenu);
       setData(treeMenu);
     })*/
-    handleRequestDept({})
+    handleRequestDept({});
   }, []);
 
   const [form] = Form.useForm();
@@ -186,28 +216,30 @@ const DeptList: React.FC = () => {
   return (
     <PageContainer>
       <>
-        <Card bordered={false} style={{ width: "100%", marginBottom: 20 }}>
-          <Form form={form} name="horizontal_login" layout="inline" onFinish={(values: any) => {handleRequestDept({...values})}}>
-            <Form.Item
-              name="deptName"
-              label={"部门名称"}
-            >
+        <Card bordered={false} style={{ width: '100%', marginBottom: 20 }}>
+          <Form
+            form={form}
+            name="horizontal_login"
+            layout="inline"
+            onFinish={(values: any) => {
+              handleRequestDept({ ...values });
+            }}
+          >
+            <Form.Item name="deptName" label={'部门名称'}>
               <Input placeholder="部门名称" />
             </Form.Item>
-            <Form.Item
-              label={"状态"}
-              name="status"
-            >
-              <Select style={{width: 200}}>
-                <Select.Option value="0" key={0}>正常</Select.Option>
-                <Select.Option value="1" key={1}>停用</Select.Option>
+            <Form.Item label={'状态'} name="status">
+              <Select style={{ width: 200 }}>
+                <Select.Option value="0" key={0}>
+                  正常
+                </Select.Option>
+                <Select.Option value="1" key={1}>
+                  停用
+                </Select.Option>
               </Select>
             </Form.Item>
             <Form.Item shouldUpdate>
-              <Button
-                type="primary"
-                htmlType="submit"
-              >
+              <Button type="primary" htmlType="submit">
                 查询
               </Button>
             </Form.Item>
@@ -226,19 +258,18 @@ const DeptList: React.FC = () => {
           </Form>
         </Card>
         <Table
-          rowKey={"deptId"}
+          rowKey={'deptId'}
           columns={columns}
           dataSource={data}
           pagination={false}
           loading={loading}
         />
         <ModalForm
-          modalProps={{destroyOnClose: true}}
+          modalProps={{ destroyOnClose: true }}
           title={'添加菜单'}
           width="70%"
           visible={createModalVisible}
           onVisibleChange={handleModalVisible}
-
           onFinish={async (value) => {
             const success = await handleAdd(value as SYSTEM.SysMenu);
             if (success) {
@@ -250,7 +281,7 @@ const DeptList: React.FC = () => {
           <ProForm.Group>
             <ProFormTreeSelect
               initialValue={defaultParent}
-              width={"md"}
+              width={'md'}
               label="上级部门"
               request={async () => {
                 const resData = await sysDeptSelectList();
@@ -260,17 +291,17 @@ const DeptList: React.FC = () => {
                 fieldNames: {
                   label: 'label',
                   value: 'id',
-                  children: 'children'
+                  children: 'children',
                 },
-                showCheckedStrategy: TreeSelect.SHOW_PARENT
+                showCheckedStrategy: TreeSelect.SHOW_PARENT,
               }}
               rules={[
                 {
                   required: true,
-                  message: "上级部门不能为空"
-                }
+                  message: '上级部门不能为空',
+                },
               ]}
-              name={"parentId"}
+              name={'parentId'}
             />
           </ProForm.Group>
           <ProForm.Group>
@@ -278,48 +309,36 @@ const DeptList: React.FC = () => {
               rules={[
                 {
                   required: true,
-                  message: "部门名称必填",
+                  message: '部门名称必填',
                 },
               ]}
               width="md"
               name="deptName"
-              label={"部门名称"}
+              label={'部门名称'}
             />
             <ProFormDigit
               rules={[
                 {
                   required: true,
-                  message: "显示排序必填",
+                  message: '显示排序必填',
                 },
               ]}
               width="md"
               name="orderNum"
-              label={"显示排序"}
+              label={'显示排序'}
               min={0}
               max={999}
             />
           </ProForm.Group>
           <ProForm.Group>
-            <ProFormText
-              width="md"
-              name="leader"
-              label={"负责人"}
-            />
-            <ProFormText
-              width="md"
-              name="phone"
-              label={"联系电话"}
-            />
+            <ProFormText width="md" name="leader" label={'负责人'} />
+            <ProFormText width="md" name="phone" label={'联系电话'} />
           </ProForm.Group>
           <ProForm.Group>
-            <ProFormText
-              width="md"
-              name="email"
-              label={"邮箱"}
-            />
+            <ProFormText width="md" name="email" label={'邮箱'} />
             <ProFormRadio.Group
-              initialValue={"0"}
-              width={"md"}
+              initialValue={'0'}
+              width={'md'}
               name="status"
               label="部门状态"
               options={[
@@ -330,14 +349,14 @@ const DeptList: React.FC = () => {
                 {
                   label: '停用',
                   value: '1',
-                }
+                },
               ]}
             />
           </ProForm.Group>
         </ModalForm>
         <UpdateForm
           onSubmit={async (value) => {
-            const success = await handleUpdate({...currentRow, ...value});
+            const success = await handleUpdate({ ...currentRow, ...value });
             if (success) {
               handleUpdateModalVisible(false);
               setCurrentRow(undefined);

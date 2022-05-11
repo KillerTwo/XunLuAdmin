@@ -1,47 +1,45 @@
-import React, {useEffect, useState} from "react";
-import {Button} from "antd";
+import React, { useEffect, useState } from 'react';
+import { Button } from 'antd';
 
-import {EditableProTable, ProColumns} from "@ant-design/pro-table";
-import {dictTypeOptionSelect} from "@/services/system/sysDict";
-import {SYSTEM} from "@/services/system/typings";
-
+import { EditableProTable, ProColumns } from '@ant-design/pro-table';
+import { dictTypeOptionSelect } from '@/services/system/sysDict';
+import { SYSTEM } from '@/services/system/typings';
 
 export type EditTableProps = {
   /*onCancel: (flag?: boolean, formVals?: FormValueType) => void;
   onSubmit: (values: FormValueType) => Promise<void>;
   updateModalVisible: boolean;*/
-  onChange: (values: Tool.GenTableColumn[]) => void
+  onChange: (values: Tool.GenTableColumn[]) => void;
   values: Tool.GenTableColumn[];
 };
 
 const EditTable: React.FC<EditTableProps> = (props) => {
-
   const [editableKeys, setEditableRowKeys] = useState<React.Key[]>(() =>
     props.values.map((item) => item?.columnId || 0),
   );
   const [dataSource, setDataSource] = useState<Tool.GenTableColumn[]>(() => props.values);
   const [dictTypeOption, setOictTypeOption] = useState<SYSTEM.SysDictType[]>([]);
 
-  console.log("values: ", props.values);
+  console.log('values: ', props.values);
 
   useEffect(() => {
-    dictTypeOptionSelect().then(res => {
+    dictTypeOptionSelect().then((res) => {
       setOictTypeOption(res.data);
-    })
-  }, [])
+    });
+  }, []);
 
   const columns: ProColumns<Tool.GenTableColumn>[] = [
     {
       title: '字段名称',
       dataIndex: 'columnName',
-      width: "160px",
+      width: '160px',
       formItemProps: {
         rules: [
           {
             required: true,
             whitespace: true,
             message: '此项是必填项',
-          }
+          },
         ],
       },
     },
@@ -49,14 +47,14 @@ const EditTable: React.FC<EditTableProps> = (props) => {
       title: '字段描述',
       key: 'columnComment',
       dataIndex: 'columnComment',
-      width: "180px",
+      width: '180px',
       formItemProps: {
         rules: [
           {
             required: true,
             whitespace: true,
             message: '此项是必填项',
-          }
+          },
         ],
       },
     },
@@ -64,37 +62,38 @@ const EditTable: React.FC<EditTableProps> = (props) => {
       title: '物理类型',
       key: 'columnType',
       dataIndex: 'columnType',
-      editable: false
+      width: '180px',
+      editable: false,
     },
     {
       title: 'Java类型',
       key: 'javaType',
       dataIndex: 'javaType',
       valueType: 'select',
-      width: "100px",
+      width: '109px',
       valueEnum: {
-        'Long': { text: 'Long', status: 'Default' },
-        'String': {
+        Long: { text: 'Long', status: 'Default' },
+        String: {
           text: 'String',
           status: 'Default',
         },
-        'Integer': {
+        Integer: {
           text: 'Integer',
           status: 'Default',
         },
-        'Double': {
+        Double: {
           text: 'Double',
           status: 'Default',
         },
-        'BigDecimal': {
+        BigDecimal: {
           text: 'BigDecimal',
           status: 'Default',
         },
-        'Date': {
+        Date: {
           text: 'Date',
           status: 'Default',
         },
-        'Boolean': {
+        Boolean: {
           text: 'Boolean',
           status: 'Default',
         },
@@ -105,7 +104,7 @@ const EditTable: React.FC<EditTableProps> = (props) => {
             required: true,
             whitespace: true,
             message: '此项是必填项',
-          }
+          },
         ],
       },
     },
@@ -113,14 +112,45 @@ const EditTable: React.FC<EditTableProps> = (props) => {
       title: 'Java属性',
       key: 'javaField',
       dataIndex: 'javaField',
-      width: "180px",
+      width: '180px',
       formItemProps: {
         rules: [
           {
             required: true,
             whitespace: true,
             message: '此项是必填项',
-          }
+          },
+        ],
+      },
+    },
+    {
+      title: 'TypeScript类型',
+      key: 'typeScriptType',
+      dataIndex: 'typeScriptType',
+      valueType: 'select',
+      width: '109px',
+      valueEnum: {
+        string: { text: 'string', status: 'Default' },
+        number: {
+          text: 'number',
+          status: 'Default',
+        },
+        boolean: {
+          text: 'boolean',
+          status: 'Default',
+        },
+        any: {
+          text: 'any',
+          status: 'Default',
+        },
+      },
+      formItemProps: {
+        rules: [
+          {
+            required: true,
+            whitespace: true,
+            message: '此项是必填项',
+          },
         ],
       },
     },
@@ -129,11 +159,11 @@ const EditTable: React.FC<EditTableProps> = (props) => {
       key: 'isInsert',
       dataIndex: 'isInsert',
       valueType: 'checkbox',
-      width: "80px",
+      width: '80px',
       valueEnum: {
         '1': {
-          text: true
-        }
+          text: true,
+        },
       },
       formItemProps: {
         rules: [
@@ -141,7 +171,7 @@ const EditTable: React.FC<EditTableProps> = (props) => {
             required: true,
             whitespace: true,
             message: '此项是必填项',
-          }
+          },
         ],
       },
     },
@@ -150,11 +180,11 @@ const EditTable: React.FC<EditTableProps> = (props) => {
       key: 'isEdit',
       dataIndex: 'isEdit',
       valueType: 'checkbox',
-      width: "80px",
+      width: '80px',
       valueEnum: {
         '1': {
-          text: true
-        }
+          text: true,
+        },
       },
       formItemProps: {
         rules: [
@@ -162,7 +192,7 @@ const EditTable: React.FC<EditTableProps> = (props) => {
             required: true,
             whitespace: true,
             message: '此项是必填项',
-          }
+          },
         ],
       },
     },
@@ -171,11 +201,11 @@ const EditTable: React.FC<EditTableProps> = (props) => {
       key: 'isList',
       dataIndex: 'isList',
       valueType: 'checkbox',
-      width: "80px",
+      width: '80px',
       valueEnum: {
         '1': {
-          text: true
-        }
+          text: true,
+        },
       },
       formItemProps: {
         rules: [
@@ -183,7 +213,7 @@ const EditTable: React.FC<EditTableProps> = (props) => {
             required: true,
             whitespace: true,
             message: '此项是必填项',
-          }
+          },
         ],
       },
     },
@@ -192,11 +222,11 @@ const EditTable: React.FC<EditTableProps> = (props) => {
       key: 'isQuery',
       dataIndex: 'isQuery',
       valueType: 'checkbox',
-      width: "80px",
+      width: '80px',
       valueEnum: {
         '1': {
-          text: true
-        }
+          text: true,
+        },
       },
       formItemProps: {
         rules: [
@@ -204,7 +234,7 @@ const EditTable: React.FC<EditTableProps> = (props) => {
             required: true,
             whitespace: true,
             message: '此项是必填项',
-          }
+          },
         ],
       },
     },
@@ -213,29 +243,30 @@ const EditTable: React.FC<EditTableProps> = (props) => {
       key: 'queryType',
       dataIndex: 'queryType',
       valueType: 'select',
+      width: '180px',
       valueEnum: {
-        'EQ': { text: '=', status: 'Default' },
-        'NE': {
+        EQ: { text: '=', status: 'Default' },
+        NE: {
           text: '!=',
           status: 'Default',
         },
-        'GT': {
+        GT: {
           text: '>',
           status: 'Default',
         },
-        'GTE': {
+        GTE: {
           text: '>=',
           status: 'Default',
         },
-        'LT': {
+        LT: {
           text: '<=',
           status: 'Default',
         },
-        'LIKE': {
+        LIKE: {
           text: 'LIKE',
           status: 'Default',
         },
-        'BETWEEN': {
+        BETWEEN: {
           text: 'BETWEEN',
           status: 'Default',
         },
@@ -246,7 +277,7 @@ const EditTable: React.FC<EditTableProps> = (props) => {
             required: true,
             whitespace: true,
             message: '此项是必填项',
-          }
+          },
         ],
       },
     },
@@ -255,11 +286,11 @@ const EditTable: React.FC<EditTableProps> = (props) => {
       key: 'isRequired',
       dataIndex: 'isRequired',
       valueType: 'checkbox',
-      width: "80px",
+      width: '80px',
       valueEnum: {
         '1': {
-          text: true
-        }
+          text: true,
+        },
       },
       formItemProps: {
         rules: [
@@ -267,7 +298,7 @@ const EditTable: React.FC<EditTableProps> = (props) => {
             required: true,
             whitespace: true,
             message: '此项是必填项',
-          }
+          },
         ],
       },
     },
@@ -276,37 +307,38 @@ const EditTable: React.FC<EditTableProps> = (props) => {
       key: 'htmlType',
       dataIndex: 'htmlType',
       valueType: 'select',
+      width: '180px',
       valueEnum: {
-        'input': { text: '文本框', status: 'Default' },
-        'textarea': {
+        input: { text: '文本框', status: 'Default' },
+        textarea: {
           text: '文本域',
           status: 'Default',
         },
-        'select': {
+        select: {
           text: '下拉框',
           status: 'Default',
         },
-        'radio': {
+        radio: {
           text: '单选框',
           status: 'Default',
         },
-        'checkbox': {
+        checkbox: {
           text: '复选框',
           status: 'Default',
         },
-        'datetime': {
+        datetime: {
           text: '日期控件',
           status: 'Default',
         },
-        'imageUpload': {
+        imageUpload: {
           text: '图片上传',
           status: 'Default',
         },
-        'fileUpload': {
+        fileUpload: {
           text: '文件上传',
           status: 'Default',
         },
-        'editor': {
+        editor: {
           text: '富文本控件',
           status: 'Default',
         },
@@ -317,7 +349,7 @@ const EditTable: React.FC<EditTableProps> = (props) => {
             required: true,
             whitespace: true,
             message: '此项是必填项',
-          }
+          },
         ],
       },
     },
@@ -326,11 +358,12 @@ const EditTable: React.FC<EditTableProps> = (props) => {
       key: 'dictType',
       dataIndex: 'dictType',
       valueType: 'select',
+      width: '180px',
       valueEnum: () => {
-        const enumObj = {}
+        const enumObj = {};
         dictTypeOption.forEach((ele: any) => {
-          enumObj[ele.dictType] = {text: `${ele.dictName}-${ele.dictType}`, status: "Default"}
-        })
+          enumObj[ele.dictType] = { text: `${ele.dictName}-${ele.dictType}`, status: 'Default' };
+        });
         return enumObj;
       },
       formItemProps: {
@@ -339,59 +372,59 @@ const EditTable: React.FC<EditTableProps> = (props) => {
             required: true,
             whitespace: true,
             message: '此项是必填项',
-          }
+          },
         ],
       },
     },
   ];
 
   return (
-      <>
-        <EditableProTable<Tool.GenTableColumn>
-          headerTitle="编辑列属性"
-          columns={columns}
-          rowKey="columnId"
-          scroll={{
-            x: 960,
-          }}
-          value={dataSource}
-          onChange={setDataSource}
-          /*recordCreatorProps={{
+    <>
+      <EditableProTable<Tool.GenTableColumn>
+        headerTitle="编辑列属性"
+        columns={columns}
+        rowKey="columnId"
+        scroll={{
+          x: 960,
+        }}
+        value={dataSource}
+        onChange={setDataSource}
+        /*recordCreatorProps={{
             newRecordType: 'dataSource',
             record: () => ({
               id: Date.now(),
             }),
           }}*/
-          toolBarRender={() => {
-            return [
-              <Button
-                type="primary"
-                key="save"
-                onClick={() => {
-                  // dataSource 就是当前数据，可以调用 api 将其保存
-                  console.log(dataSource);
-                  props.onChange(dataSource)
-                }}
-              >
-                保存数据
-              </Button>,
-            ];
-          }}
-          editable={{
-            type: 'multiple',
-            editableKeys,
-            actionRender: (row, config, defaultDoms) => {
-              console.log("row, config, defaultDoms): ", row, config, defaultDoms)
-              return [defaultDoms.delete];
-            },
-            onValuesChange: (record, recordList) => {
-              setDataSource(recordList);
-            },
-            onChange: setEditableRowKeys,
-          }}
-          recordCreatorProps={false}
-        />
-      </>
+        toolBarRender={() => {
+          return [
+            <Button
+              type="primary"
+              key="save"
+              onClick={() => {
+                // dataSource 就是当前数据，可以调用 api 将其保存
+                console.log(dataSource);
+                props.onChange(dataSource);
+              }}
+            >
+              保存数据
+            </Button>,
+          ];
+        }}
+        editable={{
+          type: 'multiple',
+          editableKeys,
+          actionRender: (row, config, defaultDoms) => {
+            console.log('row, config, defaultDoms): ', row, config, defaultDoms);
+            return [defaultDoms.delete];
+          },
+          onValuesChange: (record, recordList) => {
+            setDataSource(recordList);
+          },
+          onChange: setEditableRowKeys,
+        }}
+        recordCreatorProps={false}
+      />
+    </>
   );
 };
 

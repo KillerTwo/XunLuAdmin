@@ -181,4 +181,24 @@ public class GenConstants {
      * 需要
      */
     public static final String REQUIRE = "1";
+
+    /**
+     *  字符串
+     */
+    public static final String TYPE_SCRIPT_STRING = "string";
+
+    /**
+     *  数字
+     */
+    public static final String TYPE_SCRIPT_NUMBER = "number";
+
+    /**
+     *  Boolean
+     */
+    public static final String TYPE_SCRIPT_BOOLEAN = "boolean";
+
+    /**
+     *  任意类型
+     */
+    public static final String TYPE_SCRIPT_ANY = "any";
 }

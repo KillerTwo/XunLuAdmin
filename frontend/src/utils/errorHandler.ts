@@ -33,19 +33,29 @@ interface error {
  * 异常处理程序
  */
 const errorHandler = (error: error) => {
+  console.log('error: ', error.name);
   if (error.name === 'BizError') {
     notification.error({
       message: `请求错误 ${error.data.code}`,
       description: error.data.msg,
     });
     return error.data.code;
+  } else if (error.name === 'SyntaxError') {
+    notification.error({
+      message: `请求错误 ${error.name}`,
+      description: '',
+    });
+    return 500;
   }
   const { response } = error;
-  const errortext = codeMessage[response.status] || response.statusText;
-  const { status, url } = response;
-  notification.error({
-    message: `请求错误 ${status}: ${url}`,
-    description: errortext,
-  });
+  if (response) {
+    console.log('response: ', response);
+    const { status, url, statusText } = response;
+    const errortext = codeMessage[status] || statusText;
+    notification.error({
+      message: `请求错误 ${status}: ${url}`,
+      description: errortext,
+    });
+  }
 };
 export default errorHandler;

@@ -1,20 +1,25 @@
-import {request} from "@@/plugin-request/request";
+import { request } from '@@/plugin-request/request';
 
 // /tool/gen/list
-export function listTable(params: Tool.PageParams & Tool.GenTable,
-                          options?: { [key: string]: any }) {
+export function listTable(
+  params: Tool.PageParams & Tool.GenTable,
+  options?: { [key: string]: any },
+) {
+  const a: Tool.TestA = {
+    username: '12312',
+  };
+  console.log('testA: ', a);
   return request<Tool.ResponseResult>('/api/tool/gen/list', {
     method: 'GET',
-    params: {...params},
+    params: { ...params },
     ...(options || {}),
   });
 }
 
-
 // 表详情
 export function getGenTable(tableId: number | undefined) {
   return request<Tool.ResponseResult>(`/api/tool/gen/${tableId}`, {
-    method: 'GET'
+    method: 'GET',
   });
 }
 
@@ -22,7 +27,7 @@ export function getGenTable(tableId: number | undefined) {
 export function listDbTable(params?: { [key: string]: any }) {
   return request<Tool.ResponseResult>('/api/tool/gen/db/list', {
     method: 'GET',
-    params: params
+    params: params,
   });
 }
 
@@ -30,12 +35,12 @@ export function listDbTable(params?: { [key: string]: any }) {
 export function importTable(tableNames: string) {
   return request<Tool.ResponseResult>(`/api/tool/gen/importTable`, {
     method: 'POST',
-    data: tableNames
+    data: tableNames,
   });
 }
 
 // 生成代码
-export function genCode(tableName: string|undefined) {
+export function genCode(tableName: string | undefined) {
   return request<Tool.ResponseResult>(`/api/tool/gen/genCode/${tableName}`, {
     method: 'GET',
   });
@@ -52,14 +57,14 @@ export function synchDb(tableName: string | undefined) {
 export function updateGenTable(genTable: Tool.GenTable) {
   return request<Tool.ResponseResult>('/api/tool/gen', {
     method: 'PUT',
-    data: genTable
+    data: genTable,
   });
 }
 
 // 生成预览
-export function previewTable(tableId: number|undefined) {
+export function previewTable(tableId: number | undefined) {
   return request<Tool.ResponseResult>(`/api/tool/gen/preview/${tableId}`, {
-    method: 'GET'
+    method: 'GET',
   });
 }
 

@@ -48,6 +48,11 @@ public class GenTableColumn extends BaseEntity {
     private String javaField;
 
     /**
+     * TypeScript类型
+     */
+    private String typeScriptType;
+
+    /**
      * 是否主键（1是）
      */
     private String isPk;
@@ -160,6 +165,14 @@ public class GenTableColumn extends BaseEntity {
 
     public String getCapJavaField() {
         return StringUtils.capitalize(javaField);
+    }
+
+    public String getTypeScriptType() {
+        return typeScriptType;
+    }
+
+    public void setTypeScriptType(String typeScriptType) {
+        this.typeScriptType = typeScriptType;
     }
 
     public void setIsPk(String isPk) {
