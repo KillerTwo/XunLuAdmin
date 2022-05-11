@@ -59,7 +59,10 @@ const authHeaderInterceptor = (url: string, options: RequestOptionsInit) => {
 
 const demoResponseInterceptors = async (response: Response, r: RequestOptionsInit) => {
   console.log('response: ', response);
-  console.log(r);
+  console.log('RequestOptionsInit', r);
+  if (r.responseType === 'blob') {
+    return response;
+  }
   const data = await response.clone().json();
   console.log('demoResponseInterceptors data: ', data);
   if (

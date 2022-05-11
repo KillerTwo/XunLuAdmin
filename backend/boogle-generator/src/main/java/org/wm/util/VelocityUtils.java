@@ -132,6 +132,11 @@ public class VelocityUtils {
         templates.add("vm/xml/mapper.xml.vm");
         templates.add("vm/sql/sql.vm");
         templates.add("vm/js/api.js.vm");
+
+        templates.add("vm/react/index.tsx.vm");
+        templates.add("vm/react/updateForm.tsx.vm");
+        templates.add("vm/typings/typings.d.ts.vm");
+        templates.add("vm/js/service.ts.vm");
         if (GenConstants.TPL_CRUD.equals(tplCategory)) {
             templates.add("vm/vue/index.vue.vm");
         } else if (GenConstants.TPL_TREE.equals(tplCategory)) {
@@ -161,6 +166,7 @@ public class VelocityUtils {
         String javaPath = PROJECT_PATH + "/" + StringUtils.replace(packageName, ".", "/");
         String mybatisPath = MYBATIS_PATH + "/" + moduleName;
         String vuePath = "vue";
+        String reactPath = "react";
 
         if (template.contains("domain.java.vm")) {
             fileName = StringUtils.format("{}/domain/{}.java", javaPath, className);
@@ -185,6 +191,14 @@ public class VelocityUtils {
             fileName = StringUtils.format("{}/views/{}/{}/index.vue", vuePath, moduleName, businessName);
         } else if (template.contains("index-tree.vue.vm")) {
             fileName = StringUtils.format("{}/views/{}/{}/index.vue", vuePath, moduleName, businessName);
+        } else if (template.contains("index.tsx.vm")) {
+            fileName = StringUtils.format("{}/pages/{}/{}/index.tsx", reactPath, moduleName, businessName);
+        } else if (template.contains("updateForm.tsx.vm")) {
+            fileName = StringUtils.format("{}/pages/{}/{}/components/UpdateForm.tsx", reactPath, moduleName, businessName);
+        } else if (template.contains("typings.d.ts.vm")) {
+            fileName = StringUtils.format("{}/services/{}/{}.d.ts", reactPath, moduleName, className);
+        } else if (template.contains("service.ts.vm")) {
+            fileName = StringUtils.format("{}/services/{}/{}.ts", reactPath, moduleName, className);
         }
         return fileName;
     }

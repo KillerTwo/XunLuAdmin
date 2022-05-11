@@ -1,25 +1,47 @@
-import {message, Table, Drawer, Space, Popconfirm,Form,Input, Button,Card, Modal, Tabs} from 'antd';
-import React, {useState, useEffect, useRef} from 'react';
+import {
+  message,
+  Table,
+  Drawer,
+  Space,
+  Popconfirm,
+  Form,
+  Input,
+  Button,
+  Card,
+  Modal,
+  Tabs,
+} from 'antd';
+import React, { useState, useEffect, useRef } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import type { ProDescriptionsItemProps } from '@ant-design/pro-descriptions';
 import ProDescriptions from '@ant-design/pro-descriptions';
-import hljs from "highlightjs";
 
-import {ColumnsType} from "antd/es/table";
+import { ColumnsType } from 'antd/es/table';
+
 import {
   genCode,
   getGenTable,
   importTable,
   listDbTable,
-  listTable, previewTable,
+  listTable,
+  previewTable,
   removeTable,
   synchDb,
-  updateGenTable
-} from "@/services/tool/genTable";
+  updateGenTable,
+} from '@/services/tool/genTable';
 
-import EditTable from "@/pages/tool/Generator/components/EditTable";
-import {ProForm, ProFormInstance, ProFormText, ProFormTextArea, ProFormRadio} from "@ant-design/pro-form";
-import download from "@/utils/download";
+import EditTable from '@/pages/tool/Generator/components/EditTable';
+import {
+  ProForm,
+  ProFormInstance,
+  ProFormText,
+  ProFormTextArea,
+  ProFormRadio,
+} from '@ant-design/pro-form';
+import download from '@/utils/download';
+// import hljs from 'highlight.js';
+
+import hljs from 'highlight.js';
 
 const { TabPane } = Tabs;
 
@@ -40,6 +62,17 @@ const handleRemove = async (selectedRows: Tool.GenTable[]) => {
     message.error('删除失败, 请稍后重试');
     return false;
   }
+};
+
+/** 高亮显示 */
+const highlightedCode = (code: string, key: string) => {
+  const vmName = key.substring(key.lastIndexOf('/') + 1, key.indexOf('.vm'));
+  let language = vmName.substring(vmName.indexOf('.') + 1, vmName.length);
+  if (language === 'd.ts') {
+    language = 'ts';
+  }
+  const result = hljs.highlight(language, code || '', true);
+  return result.value || '&nbsp;';
 };
 
 const Generator: React.FC = () => {
@@ -70,33 +103,23 @@ const Generator: React.FC = () => {
   const [tableColumns, setTableColumns] = useState<Tool.GenTableColumn[]>([]);
   const [previewData, setPreviewData] = useState({});
 
-  const handleRequestTable = (params?: Tool.PageParams & Tool.GenTable | {}) => {
+  const handleRequestTable = (params?: (Tool.PageParams & Tool.GenTable) | {}) => {
     setLoading(true);
-    listTable({...params}).then((res: Tool.ResponseResult) => {
+    listTable({ ...params }).then((res: Tool.ResponseResult) => {
       setLoading(false);
       setData(res.data);
-    })
-  }
+    });
+  };
 
-  const handleRequestImportData = async (params?: Tool.PageParams & Tool.GenTable | {}) => {
+  const handleRequestImportData = async (params?: (Tool.PageParams & Tool.GenTable) | {}) => {
     const resData = await listDbTable(params);
     setImportData(resData.data);
-    setImportTotal(resData.total || 0)
-  }
+    setImportTotal(resData.total || 0);
+  };
 
   const onSelectChange = (rowKeys: any) => {
     console.log('selectedRowKeys changed: ', rowKeys);
     setSelectedRowKeys(rowKeys);
-  };
-  /** 高亮显示 */
-  const highlightedCode = (code: string, key: string) => {
-    const vmName = key.substring(key.lastIndexOf("/") + 1, key.indexOf(".vm"));
-    const language = vmName.substring(vmName.indexOf(".") + 1, vmName.length);
-    if (language !== "vue") {
-      const result = hljs.highlight(language, code || "", true);
-      return result.value || '&nbsp;';
-    }
-    return "&nbsp;";
   };
 
   const columns: ColumnsType<Tool.GenTable> = [
@@ -131,45 +154,63 @@ const Generator: React.FC = () => {
       key: 'options',
       render: (text: any, record: Tool.GenTable) => (
         <Space size="middle">
-          <a onClick={async () => {
-            console.log("record: ", record);
-            setCurrentRow(record);
-            const resData = await getGenTable(record.tableId);
-            setTableColumn(resData.data.rows);
-            handleUpdateModalVisible(true);
-          }}>编辑</a>
-          <a onClick={async () => {
-            // handleModalVisible(true);
-            const resData = await previewTable(record.tableId);
-            setPreviewData(resData.data);
-            console.log("resData: ", resData);
-            handlePreviewModalVisible(true);
-          }}>预览</a>
-          <a onClick={async () => {
-            const resData = await synchDb(record.tableName);
-            if (resData.code === 200) {
-              message.success("同步成功！");
-            } else {
-              message.error("同步失败");
-            }
-          }}>同步</a>
-          <a onClick={async () => {
-            // handleModalVisible(true);
-            console.log("record.genType: ", record.genType);
-            if(record.genType === "1") {
-              const resData = await genCode(record.tableName);
+          <a
+            onClick={async () => {
+              console.log('record: ', record);
+              setCurrentRow(record);
+              const resData = await getGenTable(record.tableId);
+              setTableColumn(resData.data.rows);
+              handleUpdateModalVisible(true);
+            }}
+          >
+            编辑
+          </a>
+          <a
+            onClick={async () => {
+              // handleModalVisible(true);
+              const resData = await previewTable(record.tableId);
+              setPreviewData(resData.data);
+              console.log('resData: ', resData);
+              handlePreviewModalVisible(true);
+            }}
+          >
+            预览
+          </a>
+          <a
+            onClick={async () => {
+              const resData = await synchDb(record.tableName);
               if (resData.code === 200) {
-                message.success("生成成功，生成到自定义路径：" + record.genPath);
+                message.success('同步成功！');
               } else {
-                message.success("生成失败！");
+                message.error('同步失败');
               }
-            } else {
-              // this.$download.zip("/tool/gen/batchGenCode?tables=" + tableNames, "ruoyi");
-              // 下载zip
-              download.zip("/tool/gen/batchGenCode?tables=" + record.tableName, "generator");
-              // message.success("下载zip");
-            }
-          }}>生成代码</a>
+            }}
+          >
+            同步
+          </a>
+          <a
+            onClick={async () => {
+              // handleModalVisible(true);
+              console.log('record.genType: ', record.genType);
+              if (record.genType === '1') {
+                const resData = await genCode(record.tableName);
+                if (resData.code === 200) {
+                  message.success('生成成功，生成到自定义路径：' + record.genPath);
+                } else {
+                  message.success('生成失败！');
+                }
+              } else {
+                // this.$download.zip("/tool/gen/batchGenCode?tables=" + tableNames, "ruoyi");
+                // 下载zip
+                // download.zip('/tool/gen/batchGenCode?tables=' + record.tableName, 'generator');
+                download.zip(`/tool/gen/download/${record.tableName}`, 'generator');
+
+                // message.success("下载zip");
+              }
+            }}
+          >
+            生成代码
+          </a>
           <Popconfirm
             title="确定要删除表?"
             onConfirm={async () => {
@@ -178,14 +219,12 @@ const Generator: React.FC = () => {
                 handleRequestTable({});
               }
             }}
-            onCancel={() => {
-            }}
+            onCancel={() => {}}
             okText="确定"
             cancelText="取消"
           >
             <a>删除</a>
           </Popconfirm>
-
         </Space>
       ),
     },
@@ -215,7 +254,7 @@ const Generator: React.FC = () => {
   ];
 
   useEffect(() => {
-    handleRequestTable({})
+    handleRequestTable({});
   }, []);
 
   const rowSelection = {
@@ -225,8 +264,8 @@ const Generator: React.FC = () => {
 
   const importRowSelection = {
     selectedImportRowKeys,
-    onChange: (rowKeys: any) => setSelectedImportRowKeys(rowKeys)
-  }
+    onChange: (rowKeys: any) => setSelectedImportRowKeys(rowKeys),
+  };
 
   const [form] = Form.useForm();
 
@@ -238,7 +277,7 @@ const Generator: React.FC = () => {
       functionAuthor?: string;
       remark?: string;
     }>
-    >();
+  >();
 
   const genFormRef = useRef<
     ProFormInstance<{
@@ -251,113 +290,130 @@ const Generator: React.FC = () => {
       genType?: string;
       genPath?: string;
     }>
-    >();
+  >();
 
   return (
     <PageContainer>
       <>
-      <Card bordered={false} style={{ width: "100%", marginBottom: 20 }}>
-        <Form form={form} name="horizontal_login" layout="inline" onFinish={(values: any) => {handleRequestTable({...values})}}>
-          <Form.Item
-            name="tableName"
-            label={"表名称"}
+        <Card bordered={false} style={{ width: '100%', marginBottom: 20 }}>
+          <Form
+            form={form}
+            name="horizontal_login"
+            layout="inline"
+            onFinish={(values: any) => {
+              handleRequestTable({ ...values });
+            }}
           >
-            <Input placeholder="表名称" />
-          </Form.Item>
-          <Form.Item
-            name="tableComment"
-            label={"表描述"}
+            <Form.Item name="tableName" label={'表名称'}>
+              <Input placeholder="表名称" />
+            </Form.Item>
+            <Form.Item name="tableComment" label={'表描述'}>
+              <Input placeholder="表描述" />
+            </Form.Item>
+            <Form.Item shouldUpdate>
+              <Button type="primary" htmlType="submit">
+                查询
+              </Button>
+            </Form.Item>
+            <Form.Item shouldUpdate>
+              <Button
+                type="primary"
+                htmlType="button"
+                onClick={() => {
+                  form.resetFields();
+                  handleRequestTable({});
+                }}
+              >
+                重置
+              </Button>
+            </Form.Item>
+          </Form>
+        </Card>
+        <div style={{ marginBottom: 16 }}>
+          <Button
+            type="primary"
+            onClick={async () => {
+              await handleRequestImportData({ current: 1, pageSize: 10 });
+              // console.log("resData: ", resData);
+              handleImportModalVisible(true);
+            }}
           >
-            <Input placeholder="表描述" />
-          </Form.Item>
-          <Form.Item shouldUpdate>
-            <Button
-              type="primary"
-              htmlType="submit"
-            >
-              查询
-            </Button>
-          </Form.Item>
-          <Form.Item shouldUpdate>
-            <Button
-              type="primary"
-              htmlType="button"
-              onClick={() => {
-                form.resetFields();
-                handleRequestTable({});
-              }}
-            >
-              重置
-            </Button>
-          </Form.Item>
-        </Form>
-      </Card>
-      <div style={{ marginBottom: 16 }}>
-        <Button type="primary" onClick={async () => {
-          await handleRequestImportData({current: 1, pageSize: 10});
-          // console.log("resData: ", resData);
-          handleImportModalVisible(true)
-        }}>
-          导入
-        </Button>
-        <span style={{ marginLeft: 8 }}>
+            导入
+          </Button>
+          <span style={{ marginLeft: 8 }}></span>
+        </div>
+        <Table
+          rowKey={'tableId'}
+          columns={columns}
+          dataSource={data}
+          pagination={false}
+          loading={loading}
+          rowSelection={rowSelection}
+        />
 
-        </span>
-      </div>
-      <Table
-        rowKey={"tableId"}
-        columns={columns}
-        dataSource={data}
-        pagination={false}
-        loading={loading}
-        rowSelection={rowSelection}
-      />
-
-        <Modal title="预览" width={"80%"} visible={previewModalVisible} onCancel={() => handlePreviewModalVisible(false)} footer={[]}>
+        <Modal
+          title="预览"
+          width={'80%'}
+          visible={previewModalVisible}
+          onCancel={() => handlePreviewModalVisible(false)}
+          footer={[]}
+        >
           <Tabs defaultActiveKey="1">
-          {
-            Object.keys(previewData).filter(ele => ele.indexOf(".vue") === -1).map(key => {
-              return (
-                <TabPane tab={key.substring(key.lastIndexOf('/')+1,key.indexOf('.vm'))} key={key}>
-                  <pre><code className="hljs" dangerouslySetInnerHTML={{__html: highlightedCode(previewData[key], key)}}></code></pre>
-                </TabPane>
-              );
-            })
-          }
+            {Object.keys(previewData)
+              .filter((ele) => ele.indexOf('.vue') === -1)
+              .map((key) => {
+                return (
+                  <TabPane
+                    tab={key.substring(key.lastIndexOf('/') + 1, key.indexOf('.vm'))}
+                    key={key}
+                  >
+                    <pre>
+                      <code
+                        className="hljs"
+                        dangerouslySetInnerHTML={{ __html: highlightedCode(previewData[key], key) }}
+                      ></code>
+                    </pre>
+                  </TabPane>
+                );
+              })}
           </Tabs>
         </Modal>
 
-        <Modal title="导入" width={"80%"} visible={importModalVisible} onOk={async () => {
-          const resData = await importTable(selectedImportRowKeys.join(","));
-          if (resData.code === 200) {
-            message.success("导入成功！");
-            handleImportModalVisible(false);
-            handleRequestTable({current: 1, pageSize: 10});
-          } else {
-            message.error("导入失败");
-          }
-        }} onCancel={() => handleImportModalVisible(false)}>
-          <Card bordered={false} style={{ width: "100%", marginBottom: 20 }}>
-            <Form form={form} name="horizontal_login" layout="inline" onFinish={(values: any) => {handleRequestImportData({...values, current: 1, pageSize: 10})}}>
-              <Form.Item
-                name="tableName"
-                label={"表名称"}
-              >
+        <Modal
+          title="导入"
+          width={'80%'}
+          visible={importModalVisible}
+          onOk={async () => {
+            const resData = await importTable(selectedImportRowKeys.join(','));
+            if (resData.code === 200) {
+              message.success('导入成功！');
+              handleImportModalVisible(false);
+              handleRequestTable({ current: 1, pageSize: 10 });
+            } else {
+              message.error('导入失败');
+            }
+          }}
+          onCancel={() => handleImportModalVisible(false)}
+        >
+          <Card bordered={false} style={{ width: '100%', marginBottom: 20 }}>
+            <Form
+              form={form}
+              name="horizontal_login"
+              layout="inline"
+              onFinish={(values: any) => {
+                handleRequestImportData({ ...values, current: 1, pageSize: 10 });
+              }}
+            >
+              <Form.Item name="tableName" label={'表名称'}>
                 <Input placeholder="表名称" />
               </Form.Item>
 
-              <Form.Item
-                name="tableComment"
-                label={"表描述"}
-              >
+              <Form.Item name="tableComment" label={'表描述'}>
                 <Input placeholder="表描述" />
               </Form.Item>
 
               <Form.Item shouldUpdate>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                >
+                <Button type="primary" htmlType="submit">
                   查询
                 </Button>
               </Form.Item>
@@ -367,7 +423,7 @@ const Generator: React.FC = () => {
                   htmlType="button"
                   onClick={() => {
                     form.resetFields();
-                    handleRequestImportData({current: 1, pageSize: 10});
+                    handleRequestImportData({ current: 1, pageSize: 10 });
                   }}
                 >
                   重置
@@ -376,38 +432,50 @@ const Generator: React.FC = () => {
             </Form>
           </Card>
           <Table
-            rowKey={"tableName"}
+            rowKey={'tableName'}
             columns={importColumns}
             dataSource={importData}
             pagination={{
               total: importTotal,
               pageSize: 10,
-              onChange: (current: number, pageSize: number) => handleRequestImportData({current, pageSize})
+              onChange: (current: number, pageSize: number) =>
+                handleRequestImportData({ current, pageSize }),
             }}
             loading={loading}
             rowSelection={importRowSelection}
           />
         </Modal>
 
-        <Modal title="编辑" width={"90%"} visible={updateModalVisible} onOk={async () => {
-          const genTable = Object.assign({}, basicForm, genForm);
-          genTable.columns = tableColumns;
-          genTable.params = {
-            treeCode: genTable.treeCode,
-            treeName: genTable.treeName,
-            treeParentCode: genTable.treeParentCode,
-            parentMenuId: genTable.parentMenuId
-          };
-          const resData = await updateGenTable({...currentRow, ...genTable});
-          if (resData.code === 200) {
-            message.success('提交成功');
-            handleUpdateModalVisible(false);
-          } else {
-            message.error('提交失败');
-          }
-          console.log("resData: ", resData);
-        }} onCancel={() => handleUpdateModalVisible(false)}>
-          <Tabs defaultActiveKey="1" onChange={(key) => {console.log(key)}}>
+        <Modal
+          title="编辑"
+          width={'90%'}
+          visible={updateModalVisible}
+          onOk={async () => {
+            const genTable = Object.assign({}, basicForm, genForm);
+            genTable.columns = tableColumns;
+            genTable.params = {
+              treeCode: genTable.treeCode,
+              treeName: genTable.treeName,
+              treeParentCode: genTable.treeParentCode,
+              parentMenuId: genTable.parentMenuId,
+            };
+            const resData = await updateGenTable({ ...currentRow, ...genTable });
+            if (resData.code === 200) {
+              message.success('提交成功');
+              handleUpdateModalVisible(false);
+            } else {
+              message.error('提交失败');
+            }
+            console.log('resData: ', resData);
+          }}
+          onCancel={() => handleUpdateModalVisible(false)}
+        >
+          <Tabs
+            defaultActiveKey="1"
+            onChange={(key) => {
+              console.log(key);
+            }}
+          >
             <TabPane tab="基本信息" key="1">
               <ProForm<{
                 tableName?: string;
@@ -424,7 +492,7 @@ const Generator: React.FC = () => {
                   const val2 = await formRef.current?.validateFieldsReturnFormatValue?.();
                   console.log('validateFieldsReturnFormatValue:', val2);
                   message.success('提交成功');*/
-                  console.log("基本信息values: ", values);
+                  console.log('基本信息values: ', values);
                   /*const genTable = Object.assign({}, values, genForm.model);
                   genTable.columns = this.columns;*/
                   // setBasicForm({...values});
@@ -434,7 +502,7 @@ const Generator: React.FC = () => {
                 formKey="base-form-use-demo"
                 submitter={false}
                 onValuesChange={(values) => {
-                  setBasicForm({...basicForm, ...values});
+                  setBasicForm({ ...basicForm, ...values });
                 }}
                 /*request={async () => {
                   await waitTime(100);
@@ -455,7 +523,15 @@ const Generator: React.FC = () => {
                     placeholder="请输入表名称"
                     rules={[{ required: true, message: '这是必填项' }]}
                   />
-                  <ProFormText initialValue={currentRow?.tableComment} width="md" name="tableComment" label="表描述" placeholder="请输入表描述" required rules={[{ required: true, message: '这是必填项' }]} />
+                  <ProFormText
+                    initialValue={currentRow?.tableComment}
+                    width="md"
+                    name="tableComment"
+                    label="表描述"
+                    placeholder="请输入表描述"
+                    required
+                    rules={[{ required: true, message: '这是必填项' }]}
+                  />
                 </ProForm.Group>
 
                 <ProForm.Group>
@@ -468,15 +544,31 @@ const Generator: React.FC = () => {
                     placeholder="请输入实体类名称"
                     rules={[{ required: true, message: '这是必填项' }]}
                   />
-                  <ProFormText initialValue={currentRow?.functionAuthor} width="md" name="functionAuthor" label="作者" placeholder="请输入作者" required rules={[{ required: true, message: '这是必填项' }]} />
+                  <ProFormText
+                    initialValue={currentRow?.functionAuthor}
+                    width="md"
+                    name="functionAuthor"
+                    label="作者"
+                    placeholder="请输入作者"
+                    required
+                    rules={[{ required: true, message: '这是必填项' }]}
+                  />
                 </ProForm.Group>
-                <ProFormTextArea initialValue={currentRow?.remark} width={"md"} name={"remark"} label={"备注"} />
+                <ProFormTextArea
+                  initialValue={currentRow?.remark}
+                  width={'md'}
+                  name={'remark'}
+                  label={'备注'}
+                />
               </ProForm>
             </TabPane>
             <TabPane tab="字段信息" key="2">
-              <EditTable values={tableColumn} onChange={(values) => {
-                setTableColumns(values);
-              }} />
+              <EditTable
+                values={tableColumn}
+                onChange={(values) => {
+                  setTableColumns(values);
+                }}
+              />
             </TabPane>
             <TabPane tab="生成信息" key="3">
               <ProForm<{
@@ -497,7 +589,7 @@ const Generator: React.FC = () => {
                   const val2 = await formRef.current?.validateFieldsReturnFormatValue?.();
                   console.log('validateFieldsReturnFormatValue:', val2);
                   message.success('提交成功');*/
-                  console.log("生成信息values: ", values);
+                  console.log('生成信息values: ', values);
                   // setGenForm({...values});
                 }}
                 formRef={genFormRef}
@@ -513,8 +605,8 @@ const Generator: React.FC = () => {
                 autoFocusFirstInput
                 submitter={false}
                 onValuesChange={(values) => {
-                  console.log(genFormRef.current?.getFieldsValue().genType)
-                  setGenForm({...genForm, ...values});
+                  console.log(genFormRef.current?.getFieldsValue().genType);
+                  setGenForm({ ...genForm, ...values });
                 }}
               >
                 <ProForm.Group>
@@ -527,7 +619,15 @@ const Generator: React.FC = () => {
                     placeholder="请输入生成模板"
                     rules={[{ required: true, message: '这是必填项' }]}
                   />
-                  <ProFormText initialValue={currentRow?.packageName} width="md" name="packageName" label="生成包路径" placeholder="请输入生成路径" required rules={[{ required: true, message: '这是必填项' }]} />
+                  <ProFormText
+                    initialValue={currentRow?.packageName}
+                    width="md"
+                    name="packageName"
+                    label="生成包路径"
+                    placeholder="请输入生成路径"
+                    required
+                    rules={[{ required: true, message: '这是必填项' }]}
+                  />
                 </ProForm.Group>
 
                 <ProForm.Group>
@@ -540,7 +640,15 @@ const Generator: React.FC = () => {
                     placeholder="请输入生成模块名"
                     rules={[{ required: true, message: '这是必填项' }]}
                   />
-                  <ProFormText initialValue={currentRow?.businessName} width="md" name="businessName" label="生成业务名" placeholder="请输入生成业务名" required rules={[{ required: true, message: '这是必填项' }]} />
+                  <ProFormText
+                    initialValue={currentRow?.businessName}
+                    width="md"
+                    name="businessName"
+                    label="生成业务名"
+                    placeholder="请输入生成业务名"
+                    required
+                    rules={[{ required: true, message: '这是必填项' }]}
+                  />
                 </ProForm.Group>
                 <ProForm.Group>
                   <ProFormText
@@ -552,10 +660,16 @@ const Generator: React.FC = () => {
                     placeholder="请输入生成功能名"
                     rules={[{ required: true, message: '这是必填项' }]}
                   />
-                  <ProFormText initialValue={currentRow?.parentMenuId} width="md" name="parentMenuId" label="上级菜单" placeholder="请输入上级菜单" />
+                  {/* <ProFormText
+                    initialValue={currentRow?.parentMenuId}
+                    width="md"
+                    name="parentMenuId"
+                    label="上级菜单"
+                    placeholder="请输入上级菜单"
+                  /> */}
                 </ProForm.Group>
                 <ProFormRadio.Group
-                  initialValue={currentRow?.genType || "0"}
+                  initialValue={currentRow?.genType || '0'}
                   name="genType"
                   label="生成方式"
                   options={[
@@ -566,11 +680,10 @@ const Generator: React.FC = () => {
                     {
                       label: '自定义路径',
                       value: '1',
-                    }
+                    },
                   ]}
                 />
-                {
-                  genFormRef.current?.getFieldsValue().genType === "1" &&
+                {genFormRef.current?.getFieldsValue().genType === '1' && (
                   <ProForm.Group>
                     <ProFormText
                       initialValue={currentRow?.genPath}
@@ -580,36 +693,35 @@ const Generator: React.FC = () => {
                       placeholder="请输入自定义路径"
                     />
                   </ProForm.Group>
-                }
+                )}
               </ProForm>
             </TabPane>
           </Tabs>
-
         </Modal>
 
-      <Drawer
-        width={600}
-        visible={showDetail}
-        onClose={() => {
-          setCurrentRow(undefined);
-          setShowDetail(false);
-        }}
-        closable={false}
-      >
-        {currentRow?.tableName && (
-          <ProDescriptions<Tool.GenTable>
-            column={2}
-            title={currentRow?.tableName}
-            request={async () => ({
-              data: currentRow || {},
-            })}
-            params={{
-              id: currentRow?.tableName,
-            }}
-            columns={columns as ProDescriptionsItemProps<Tool.GenTable>[]}
-          />
-        )}
-      </Drawer>
+        <Drawer
+          width={600}
+          visible={showDetail}
+          onClose={() => {
+            setCurrentRow(undefined);
+            setShowDetail(false);
+          }}
+          closable={false}
+        >
+          {currentRow?.tableName && (
+            <ProDescriptions<Tool.GenTable>
+              column={2}
+              title={currentRow?.tableName}
+              request={async () => ({
+                data: currentRow || {},
+              })}
+              params={{
+                id: currentRow?.tableName,
+              }}
+              columns={columns as ProDescriptionsItemProps<Tool.GenTable>[]}
+            />
+          )}
+        </Drawer>
       </>
     </PageContainer>
   );

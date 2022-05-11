@@ -39,6 +39,7 @@ public class GenUtils {
         // 设置默认类型
         column.setJavaType(GenConstants.TYPE_STRING);
         column.setQueryType(GenConstants.QUERY_EQ);
+        column.setTypeScriptType(GenConstants.TYPE_SCRIPT_STRING);
 
         if (arraysContains(GenConstants.COLUMNTYPE_STR, dataType) || arraysContains(GenConstants.COLUMNTYPE_TEXT, dataType)) {
             // 字符串长度超过500设置为文本域
@@ -64,6 +65,7 @@ public class GenUtils {
             else {
                 column.setJavaType(GenConstants.TYPE_LONG);
             }
+            column.setTypeScriptType(GenConstants.TYPE_SCRIPT_NUMBER);
         }
 
         // 插入字段（默认所有字段都需要插入）
