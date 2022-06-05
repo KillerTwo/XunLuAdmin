@@ -6,11 +6,11 @@ import ${import};
 import lombok.Data;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import com.ruoyi.common.annotation.Excel;
+// import com.ruoyi.common.annotation.Excel;
 #if($table.crud || $table.sub)
-import com.ruoyi.common.core.domain.BaseEntity;
+import org.wm.entity.BaseEntity;
 #elseif($table.tree)
-import com.ruoyi.common.core.domain.TreeEntity;
+// import com.ruoyi.common.core.domain.TreeEntity;
 #end
 import lombok.RequiredArgsConstructor;
 
@@ -41,12 +41,12 @@ public class ${ClassName} extends ${Entity} {
 #set($comment=$column.columnComment)
 #end
 #if($parentheseIndex != -1)
-    @Excel(name = "${comment}", readConverterExp = "$column.readConverterExp()")
+    // @Excel(name = "${comment}", readConverterExp = "$column.readConverterExp()")
 #elseif($column.javaType == 'Date')
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @Excel(name = "${comment}", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
+    // @Excel(name = "${comment}", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
 #else
-    @Excel(name = "${comment}")
+    // @Excel(name = "${comment}")
 #end
 #end
     private $column.javaType $column.javaField;
