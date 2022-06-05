@@ -21,7 +21,6 @@ import {
     ProFormTextArea,
     ProFormSelect,
     ProFormCheckbox,
-    ProFormRadio,
     ProFormDatePicker
 } from '@ant-design/pro-form';
 import type { ProDescriptionsItemProps } from '@ant-design/pro-descriptions';
@@ -163,14 +162,6 @@ const ${ClassName}List: React.FC = () => {
                         <EditOutlined />
                         修改
                     </a>
-                    <a
-                        onClick={() => {
-                            handleModalVisible(true);
-                        }}
-                    >
-                        <PlusOutlined />
-                        新增
-                    </a>
                     <Popconfirm
                         title="确定要删除${BusinessName}?"
                         onConfirm={async () => {
@@ -263,6 +254,15 @@ const ${ClassName}List: React.FC = () => {
                         </Form.Item>
                     </Form>
                 </Card>
+                <Button
+                    type="primary"
+                    htmlType="button"
+                    onClick={() => {
+                        handleModalVisible(true);
+                    }}
+                >
+                    新增
+                </Button>
                 <Table
                     rowKey="${pkColumn.javaField}"
                     columns={columns}
