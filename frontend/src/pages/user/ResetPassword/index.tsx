@@ -65,7 +65,7 @@ const ResetPassword: React.FC = () => {
       <div className={styles.content}>
         <LoginForm
           formRef={formRef}
-          logo={<img alt="logo" style={{borderRadius: 30}} src="/logo1.jpg" />}
+          logo={<img alt="logo" style={{borderRadius: 30}} src="/logo1.png" />}
           title="寻 路"
           subTitle={intl.formatMessage({ id: 'pages.layouts.userLayout.title' })}
           submitter={{

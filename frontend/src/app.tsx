@@ -262,6 +262,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
       })*/
 
       // const data = [...menuItems, ...menuDataIcon||[]]
+      console.log("menuDataIcon: ", menuDataIcon)
       const data = [...(menuDataIcon || [])];
       // const menuData = await fetchMenuData();
       // return [menuItems, initialState?.customMenuData];
@@ -290,7 +291,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
       return (
         <>
           {children}
-          {!props.location?.pathname?.includes('/login') && (
+          {!props.location?.pathname?.includes('/login') ? (
             <SettingDrawer
               enableDarkTheme
               settings={initialState?.settings}
@@ -301,7 +302,21 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
                 }));
               }}
             />
-          )}
+          ) :
+            (
+              <SettingDrawer
+                enableDarkTheme
+                settings={initialState?.settings}
+                themeOnly={true}
+                onSettingChange={(settings) => {
+                  setInitialState((preInitialState) => ({
+                    ...preInitialState,
+                    settings,
+                  }));
+                }}
+              />
+            )
+          }
         </>
       );
     },
