@@ -136,10 +136,10 @@ const Login: React.FC = () => {
       <div className={styles.content}>
         <LoginForm
           formRef={loginFormRef}
-          logo={<img alt="logo" style={{ borderRadius: 30 }} src="/logo1.jpg" />}
-          title="寻 路"
+          logo={<img alt="logo" style={{ width: '127px', height: '47px' }} src="/logo1.png" />}
+          /*title="寻 路"*/
           subTitle={
-            '寻路 基于spring-boot、ant-design-pro、RuoYi-Vue的中后台管理系统(admin/admin123)'
+            '寻路 基于spring-boot、react、ant-design-pro、RuoYi-Vue的中后台管理系统(admin/admin123)'
           }
           request={async () => {
             const data = getCookies();

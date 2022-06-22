@@ -17,7 +17,7 @@ const Settings: LayoutSettings & {
   title: '寻 路',
   pwa: false,
   // logo: 'https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg',
-  logo: '/logo1.jpg',
+  logo: '/logo1.png',
   iconfontUrl: '',
 };
 
