@@ -13,6 +13,7 @@ import {SYSTEM} from "@/services/system/typings";
 import {addSysJob, removeSysJob, runJob, sysJobList, updateSysJob} from "@/services/system/sysJob";
 import {useDict} from "@/hooks/Dict"
 import {history} from "umi";
+import {random} from "lodash";
 
 /**
  * @en-US Add node
@@ -169,7 +170,7 @@ const JobList: React.FC = () => {
       key: "option",
       render: (_, record) => [
         <a
-          key="config"
+          key={random(100)}
           onClick={() => {
             handleUpdateModalVisible(true);
             setCurrentRow(record);
@@ -178,6 +179,7 @@ const JobList: React.FC = () => {
           <EditOutlined />修改
         </a>,
         <Popconfirm
+          key={random(100)}
           title="确定要删除定时任务?"
           onConfirm={async () => {
             await handleRemove([record]);
@@ -188,11 +190,12 @@ const JobList: React.FC = () => {
           okText="确定"
           cancelText="取消"
         >
-          <a>
+          <a key={record.jobId}>
             <DeleteOutlined />删除
           </a>
         </Popconfirm>,
         <Popconfirm
+          key={random(100)}
           title="确定要执行定时任务?"
           onConfirm={async () => {
             const resData = await runJob(record.jobId || 0, record.jobGroup || "");
@@ -206,13 +209,13 @@ const JobList: React.FC = () => {
           cancelText="取消"
         >
           <a
-            key="runJob"
+            key={random(100)}
           >
-            <PlayCircleOutlined />执行一次
+            <PlayCircleOutlined  key={random(100)} />执行一次
           </a>,
         </Popconfirm>,
         <a
-          key="logs"
+          key={random(100)}
           onClick={() => {
             setCurrentRow(record);
             history.push({
@@ -224,7 +227,7 @@ const JobList: React.FC = () => {
             })
           }}
         >
-          <PicLeftOutlined />调度日志
+          <PicLeftOutlined  key={random(100)} />调度日志
         </a>,
       ],
     },

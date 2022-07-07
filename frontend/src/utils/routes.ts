@@ -4,18 +4,27 @@ import React from "react";
 // import {dynamic} from "umi";
 
 import * as allIcons from '@ant-design/icons';
+// import { UserAddOutlined } from "@ant-design/icons";
 
 export function handleIconAndComponent(routes: SYSTEM.Router[]) {
   return routes.map(ele => {
     if (ele.iconName) {
       // const iconNode: React.ReactNode = iconMapping[ele.iconName];
-      const iconNode: React.ReactNode = React.createElement(allIcons[ele.iconName]);
-      if (iconNode) {
-        ele.icon = iconNode;
+      const icon = allIcons[ele.iconName];
+      if (!icon) {
+        console.log("icon: ", icon);
       }
-      if (ele.isFrame === "0") {
-        ele.target = "_blank";
+      if (icon) {
+        const iconNode: React.ReactNode = React.createElement(icon);
+        if (iconNode) {
+          ele.icon = iconNode;
+        }
       }
+
+
+    }
+    if (ele.isFrame === "0") {
+      ele.target = "_blank";
     }
     delete ele.component
     /*if (ele.component) {

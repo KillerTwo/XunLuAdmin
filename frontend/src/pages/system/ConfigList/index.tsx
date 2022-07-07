@@ -155,7 +155,7 @@ const ConfigList: React.FC = () => {
       valueType: 'option',
       render: (_, record) => [
         <a
-          key="config"
+          key={record.configId}
           onClick={() => {
             handleUpdateModalVisible(true);
             setCurrentRow(record);
@@ -164,6 +164,7 @@ const ConfigList: React.FC = () => {
           <EditOutlined />修改
         </a>,
         <Popconfirm
+          key={record.configKey}
           title="确定要删除配置?"
           onConfirm={async () => {
             await handleRemove([record]);
@@ -174,7 +175,7 @@ const ConfigList: React.FC = () => {
           okText="确定"
           cancelText="取消"
         >
-          <a>
+          <a key={record.configName}>
             <DeleteOutlined />删除
           </a>
         </Popconfirm>
