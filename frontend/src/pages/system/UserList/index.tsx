@@ -120,10 +120,12 @@ const UserList: React.FC = () => {
         />
       ),
       dataIndex: 'userName',
+      key: 'userName',
       tip: 'The rule name is the unique key',
       render: (dom, entity) => {
         return (
           <a
+            key={entity.userId}
             onClick={() => {
               setCurrentRow(entity);
               setShowDetail(true);
@@ -138,6 +140,7 @@ const UserList: React.FC = () => {
       title: <FormattedMessage id="pages.system.user.searchTable.nickname" defaultMessage="用户昵称" />,
       dataIndex: 'nickName',
       valueType: 'text',
+      key: 'nickName',
     },
     {
       title: (
@@ -149,6 +152,7 @@ const UserList: React.FC = () => {
       dataIndex: 'dept',
       // hideInSearch: true,
       valueType: 'treeSelect',
+      key: 'treeSelect',
       request: async () => {
         const resData = await sysDeptSelectList();
         return resData.data;
@@ -169,6 +173,7 @@ const UserList: React.FC = () => {
       dataIndex: 'phonenumber',
       hideInSearch: true,
       valueType: 'text',
+      key: 'phonenumber'
     },
 
     {
@@ -176,6 +181,7 @@ const UserList: React.FC = () => {
       dataIndex: 'status',
       hideInForm: true,
       hideInSearch: true,
+      key: 'status',
       valueEnum: {
         0: {
           text: (
@@ -208,15 +214,17 @@ const UserList: React.FC = () => {
       sorter: true,
       dataIndex: 'createTime',
       hideInSearch: true,
-      valueType: 'dateTime'
+      valueType: 'dateTime',
+      key: 'createTime'
     },
     {
       title: <FormattedMessage id="pages.system.user.searchTable.operation" defaultMessage="操作" />,
       dataIndex: 'option',
       valueType: 'option',
+      key: 'option',
       render: (_, record) => [
         <a
-          key="modify"
+          key={record.userId}
           onClick={async () => {
             const resData = await getSysUserInfo(record.userId);
             setCurrentRow({...record, roleIds: resData.data?.roleIds, postIds: resData.data?.postIds});
@@ -227,6 +235,7 @@ const UserList: React.FC = () => {
           <EditOutlined /><FormattedMessage id="pages.system.user.searchTable.modify" defaultMessage="修改" />
         </a>,
         <Popconfirm
+          key={record.nickName}
           title="确定要删除用户?"
           onConfirm={async () => {
             await handleRemove([record]);
@@ -237,7 +246,7 @@ const UserList: React.FC = () => {
           okText="确定"
           cancelText="取消"
         >
-          <a>
+          <a key={record.phonenumber}>
             <DeleteOutlined />删除
           </a>
         </Popconfirm>,

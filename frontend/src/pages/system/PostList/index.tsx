@@ -149,7 +149,7 @@ const PostList: React.FC = () => {
       valueType: 'option',
       render: (_, record) => [
         <a
-          key="config"
+          key={record.postId}
           onClick={() => {
             handleUpdateModalVisible(true);
             setCurrentRow(record);
@@ -158,6 +158,7 @@ const PostList: React.FC = () => {
           <EditOutlined />修改
         </a>,
         <Popconfirm
+          key={record.postName}
           title="确定要删除岗位?"
           onConfirm={async () => {
             await handleRemove([record]);
@@ -168,7 +169,7 @@ const PostList: React.FC = () => {
           okText="确定"
           cancelText="取消"
         >
-          <a>
+          <a key={record.postCode}>
             <DeleteOutlined />删除
           </a>
         </Popconfirm>

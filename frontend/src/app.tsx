@@ -26,6 +26,7 @@ import { handleIconAndComponent } from '@/utils/routes';
 import { clearToken, getToken } from '@/utils/auth';
 import { notification } from 'antd';
 import { stringify } from 'querystring';
+import {merge} from "lodash";
 
 // const isDev = process.env.NODE_ENV === 'development';
 const isDev = false;
@@ -161,9 +162,60 @@ export async function getInitialState(): Promise<{
   };
 }
 
+let extraRoutes: any[];
+export function patchRoutes({ routes }: any) {
+  console.log('patchRoutes routes: ', routes)
+  /*routes.unshift({
+    path: '/foo',
+    exact: true,
+    name: 'foo',
+    component: require('@/pages/foo').default,
+  });*/
+  merge(routes, extraRoutes);
+}
+
+export function render(oldRender: any) {
+  // const menuData = await fetchMenuData();
+  // console.log('fetchMenuDatas.menuData: ', menuData);
+  // const menus = menuData.data;
+  /*for (let menu of menus) {
+    if (menu.component) {
+      menu.component = require(`@/pages/${menu.component}`).default
+    }
+
+  }*/
+  extraRoutes = [{
+    component: require(`@/pages/Welcome`).default,
+    hideInMenu: false,
+    iconName: "HomeOutlined",
+    name: "首页1",
+    path: "/welcome1"
+  }];
+  console.log('menuData.data: ', extraRoutes);
+  oldRender();
+  /*fetch('/api/routes').then(res=>res.json()).then((res) => {
+    extraRoutes = res.routes;
+    oldRender();
+  })*/
+}
+
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
 export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) => {
   return {
+    /*menu: {
+      // 每当 initialState?.currentUser?.userid 发生修改时重新执行 request
+      params: {
+        userId: ""//initialState?.currentUser?.userid,
+      },
+      request: async (params, defaultMenuData) => {
+        console.log("menu params", params);
+        console.log("menu defaultMenuData: ", defaultMenuData);
+        // initialState.currentUser 中包含了所有用户信息
+        // const menuData = await fetchMenuData();
+        // return menuData;
+        return defaultMenuData;
+      },
+    },*/
     /*menu: {
       // 每当 initialState?.currentUser?.userid 发生修改时重新执行 request
       params: {
@@ -230,10 +282,9 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
         ]
       : [],
     menuDataRender: (menuItems) => {
-      console.log('initialState?.settings: ', initialState?.settings);
-      console.log('menuItems', menuItems);
+      // console.log('initialState?.settings: ', initialState?.settings);
+      console.log('menuDataRender menuItems1', menuItems);
       const resMenuData = initialState?.customMenuData || [];
-
       const menuDataIcon = handleIconAndComponent(resMenuData);
 
       /*const menuDataIcon = resMenuData?.map(ele => {

@@ -171,7 +171,7 @@ const NoticeList: React.FC = () => {
       valueType: 'option',
       render: (_, record) => [
         <a
-          key="config"
+          key={record.noticeId}
           onClick={() => {
             handleUpdateModalVisible(true);
             setCurrentRow(record);
@@ -180,6 +180,7 @@ const NoticeList: React.FC = () => {
           <EditOutlined />修改
         </a>,
         <Popconfirm
+          key={record.noticeTitle}
           title="确定要删除通知公告?"
           onConfirm={async () => {
             await handleRemove([record]);
@@ -190,7 +191,7 @@ const NoticeList: React.FC = () => {
           okText="确定"
           cancelText="取消"
         >
-          <a>
+          <a key={record.noticeId}>
             <DeleteOutlined />删除
           </a>
         </Popconfirm>,

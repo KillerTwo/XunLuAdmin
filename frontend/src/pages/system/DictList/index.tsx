@@ -183,7 +183,7 @@ const DictList: React.FC = () => {
       key: "option",
       render: (_, record) => [
         <a
-          key="config"
+          key={record.dictId}
           onClick={() => {
             handleUpdateModalVisible(true);
             setCurrentRow(record);
@@ -192,6 +192,7 @@ const DictList: React.FC = () => {
           <EditOutlined />修改
         </a>,
         <Popconfirm
+          key={record.dictName}
           title="确定要删除字典类型?"
           onConfirm={async () => {
             await handleRemove([record]);
@@ -202,7 +203,7 @@ const DictList: React.FC = () => {
           okText="确定"
           cancelText="取消"
         >
-          <a>
+          <a key={record.dictId}>
             <DeleteOutlined />删除
           </a>
         </Popconfirm>,
