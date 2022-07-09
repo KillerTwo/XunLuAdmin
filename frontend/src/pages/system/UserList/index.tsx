@@ -1,7 +1,6 @@
-import {DeleteOutlined, EditOutlined, PlusOutlined} from '@ant-design/icons';
-import {Button, message, Drawer, Tag, TreeSelect, Space, Popconfirm} from 'antd';
-import React, {useState, useRef} from 'react';
-import { useIntl, FormattedMessage } from 'umi';
+import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
+import { Button, message, Drawer, Tag, TreeSelect, Space, Popconfirm } from 'antd';
+import React, { useState, useRef } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
@@ -12,27 +11,34 @@ import {
   ProFormSelect,
   ProForm,
   ProFormTreeSelect,
-  ProFormInstance
+  ProFormInstance,
 } from '@ant-design/pro-form';
 import type { ProDescriptionsItemProps } from '@ant-design/pro-descriptions';
 import ProDescriptions from '@ant-design/pro-descriptions';
 import type { FormValueType } from './components/UpdateForm';
 import UpdateForm from './components/UpdateForm';
-import {addUser, getSysUserInfo, removeUser, sysUserList, updateUser} from "@/services/system/sysUser";
-import {SYSTEM} from "@/services/system/typings";
-import {sysRoleSelectList} from "@/services/system/sysRole";
-import {sysPostSelectList} from "@/services/system/sysPost";
-import {sysDeptSelectList} from "@/services/system/sysDept";
-
+import {
+  addUser,
+  getSysUserInfo,
+  removeUser,
+  sysUserList,
+  updateUser,
+} from '@/services/system/sysUser';
+import { SYSTEM } from '@/services/system/typings';
+import { sysRoleSelectList } from '@/services/system/sysRole';
+import { sysPostSelectList } from '@/services/system/sysPost';
+import { sysDeptSelectList } from '@/services/system/sysDept';
 /**
  * @en-US Add User
  * @zh-CN 添加用户
  * @param fields
  */
+
 const handleAdd = async (fields: SYSTEM.SysUser) => {
   const hide = message.loading('正在添加');
+
   try {
-    console.log('用户信息： ', fields)
+    console.log('用户信息： ', fields);
     await addUser({ ...fields });
     hide();
     message.success('添加成功！');
@@ -43,15 +49,16 @@ const handleAdd = async (fields: SYSTEM.SysUser) => {
     return false;
   }
 };
-
 /**
  * @en-US Update node
  * @zh-CN 更新节点
  *
  * @param fields
  */
+
 const handleUpdate = async (fields: FormValueType) => {
   const hide = message.loading('更新中');
+
   try {
     await updateUser(fields);
     hide();
@@ -63,16 +70,17 @@ const handleUpdate = async (fields: FormValueType) => {
     return false;
   }
 };
-
 /**
  *  Delete node
  * @zh-CN 删除节点
  *
  * @param selectedRows
  */
+
 const handleRemove = async (selectedRows: SYSTEM.SysUser[]) => {
   const hide = message.loading('正在删除');
   if (!selectedRows) return true;
+
   try {
     const userIds = selectedRows.map((row) => row.userId);
     if (!userIds) return true;
@@ -97,28 +105,20 @@ const UserList: React.FC = () => {
    * @en-US The pop-up window of the distribution update window
    * @zh-CN 分布更新窗口的弹窗
    * */
+
   const [updateModalVisible, handleUpdateModalVisible] = useState<boolean>(false);
-
   const [showDetail, setShowDetail] = useState<boolean>(false);
-
   const actionRef = useRef<ActionType>();
   const [currentRow, setCurrentRow] = useState<SYSTEM.SysUser>();
   const [selectedRowsState, setSelectedRows] = useState<SYSTEM.SysUser[]>([]);
-
   /**
    * @en-US International configuration
    * @zh-CN 国际化配置
    * */
-  const intl = useIntl();
 
   const columns: ProColumns<SYSTEM.SysUser>[] = [
     {
-      title: (
-        <FormattedMessage
-          id="pages.system.user.searchTable.username"
-          defaultMessage="用户名称"
-        />
-      ),
+      title: '用户名称',
       dataIndex: 'userName',
       key: 'userName',
       tip: 'The rule name is the unique key',
@@ -137,18 +137,13 @@ const UserList: React.FC = () => {
       },
     },
     {
-      title: <FormattedMessage id="pages.system.user.searchTable.nickname" defaultMessage="用户昵称" />,
+      title: '用户昵称',
       dataIndex: 'nickName',
       valueType: 'text',
       key: 'nickName',
     },
     {
-      title: (
-        <FormattedMessage
-          id="pages.system.user.searchTable.dept"
-          defaultMessage="部门"
-        />
-      ),
+      title: '部门',
       dataIndex: 'dept',
       // hideInSearch: true,
       valueType: 'treeSelect',
@@ -161,64 +156,46 @@ const UserList: React.FC = () => {
         fieldNames: {
           label: 'label',
           value: 'id',
-          children: 'children'
+          children: 'children',
         },
-        showCheckedStrategy: TreeSelect.SHOW_PARENT
+        showCheckedStrategy: TreeSelect.SHOW_PARENT,
       },
-      renderText: (val: SYSTEM.SysDept) =>
-        `${val.deptName}`,
+      renderText: (val: SYSTEM.SysDept) => `${val.deptName}`,
     },
     {
-      title: <FormattedMessage id="pages.system.user.searchTable.mobile" defaultMessage="手机号码" />,
+      title: '手机号码',
       dataIndex: 'phonenumber',
       hideInSearch: true,
       valueType: 'text',
-      key: 'phonenumber'
+      key: 'phonenumber',
     },
-
     {
-      title: <FormattedMessage id="pages.system.user.searchTable.status" defaultMessage="状态" />,
+      title: '状态',
       dataIndex: 'status',
       hideInForm: true,
       hideInSearch: true,
       key: 'status',
       valueEnum: {
         0: {
-          text: (
-            <Tag color={'green'}>
-              <FormattedMessage
-                id="pages.system.user.searchTable.status.valid"
-                defaultMessage="有效"
-              />
-            </Tag>
-          ),
+          text: <Tag color={'green'}>有效</Tag>,
           status: 'Default',
         },
         1: {
-          text: (
-            <Tag color={'red'}>
-              <FormattedMessage id="pages.system.user.searchTable.status.invalid" defaultMessage="无效" />
-            </Tag>
-          ),
+          text: <Tag color={'red'}>无效</Tag>,
           status: 'Processing',
         },
       },
     },
     {
-      title: (
-        <FormattedMessage
-          id="pages.system.user.searchTable.createTime"
-          defaultMessage="创建时间"
-        />
-      ),
+      title: '创建时间',
       sorter: true,
       dataIndex: 'createTime',
       hideInSearch: true,
       valueType: 'dateTime',
-      key: 'createTime'
+      key: 'createTime',
     },
     {
-      title: <FormattedMessage id="pages.system.user.searchTable.operation" defaultMessage="操作" />,
+      title: '操作',
       dataIndex: 'option',
       valueType: 'option',
       key: 'option',
@@ -227,12 +204,16 @@ const UserList: React.FC = () => {
           key={record.userId}
           onClick={async () => {
             const resData = await getSysUserInfo(record.userId);
-            setCurrentRow({...record, roleIds: resData.data?.roleIds, postIds: resData.data?.postIds});
+            setCurrentRow({
+              ...record,
+              roleIds: resData.data?.roleIds,
+              postIds: resData.data?.postIds,
+            });
             handleUpdateModalVisible(true);
-
           }}
         >
-          <EditOutlined /><FormattedMessage id="pages.system.user.searchTable.modify" defaultMessage="修改" />
+          <EditOutlined />
+          修改
         </a>,
         <Popconfirm
           key={record.nickName}
@@ -241,21 +222,19 @@ const UserList: React.FC = () => {
             await handleRemove([record]);
             actionRef.current?.reloadAndRest?.();
           }}
-          onCancel={() => {
-          }}
+          onCancel={() => {}}
           okText="确定"
           cancelText="取消"
         >
           <a key={record.phonenumber}>
-            <DeleteOutlined />删除
+            <DeleteOutlined />
+            删除
           </a>
         </Popconfirm>,
       ],
     },
   ];
-
-  const tableRef = useRef<ProFormInstance>();
-  // const [deptTreeData, setDeptTreeData] = useState<SYSTEM.DeptTree[]|[]>([]);
+  const tableRef = useRef<ProFormInstance>(); // const [deptTreeData, setDeptTreeData] = useState<SYSTEM.DeptTree[]|[]>([]);
 
   /*useEffect(() => {
     sysDeptSelectList().then(res => {
@@ -275,8 +254,15 @@ const UserList: React.FC = () => {
   return (
     <PageContainer>
       {/*<DeptTree data={deptTreeData} onSelect={onSelect} />*/}
-      <ProTable<SYSTEM.SysUser, SYSTEM.PageParams & {dept: number, userName: string, nickName: string}>
-        headerTitle={"用户信息"}
+      <ProTable<
+        SYSTEM.SysUser,
+        SYSTEM.PageParams & {
+          dept: number;
+          userName: string;
+          nickName: string;
+        }
+      >
+        headerTitle={'用户信息'}
         actionRef={actionRef}
         pagination={{
           pageSize: 10,
@@ -295,16 +281,17 @@ const UserList: React.FC = () => {
               handleModalVisible(true);
             }}
           >
-            <PlusOutlined /> <FormattedMessage id="pages.searchTable.new" defaultMessage="New" />
+            <PlusOutlined /> 新建
           </Button>,
         ]}
         request={(params, sorter, filter) => {
           console.log(params, sorter, filter);
           const { dept: deptId = null, ...rest } = params;
-          return sysUserList({deptId, ...rest});
-        }
-
-        }
+          return sysUserList({
+            deptId,
+            ...rest,
+          });
+        }}
         columns={columns}
         rowSelection={{
           onChange: (_, selectedRows) => {
@@ -313,12 +300,17 @@ const UserList: React.FC = () => {
         }}
         tableAlertRender={({ selectedRowKeys, onCleanSelected }) => (
           <Space size={24}>
-          <span>
-            已选 {selectedRowKeys.length} 项
-            <a style={{ marginLeft: 8 }} onClick={onCleanSelected}>
-              取消选择
-            </a>
-          </span>
+            <span>
+              已选 {selectedRowKeys.length} 项
+              <a
+                style={{
+                  marginLeft: 8,
+                }}
+                onClick={onCleanSelected}
+              >
+                取消选择
+              </a>
+            </span>
           </Space>
         )}
         tableAlertOptionRender={() => {
@@ -331,34 +323,32 @@ const UserList: React.FC = () => {
                   actionRef.current?.reloadAndRest?.();
                 }}
               >
-                <FormattedMessage
-                  id="pages.searchTable.batchDeletion"
-                  defaultMessage="Batch deletion"
-                />
+                批量删除
               </Button>
             </Space>
           );
         }}
       />
       <ModalForm
-        title={intl.formatMessage({
-          id: 'pages.system.user.searchTable.createForm.newUser',
-          defaultMessage: '新增用户',
-        })}
-        {
-          ...{
-            labelCol: { span: 6 },
-            wrapperCol: { span: 18 },
-          }
-        }
+        title={'新增用户'}
+        {...{
+          labelCol: {
+            span: 6,
+          },
+          wrapperCol: {
+            span: 18,
+          },
+        }}
         width="60%"
         layout={'horizontal'}
         visible={createModalVisible}
         onVisibleChange={handleModalVisible}
         onFinish={async (value) => {
           const success = await handleAdd(value as SYSTEM.SysUser);
+
           if (success) {
             handleModalVisible(false);
+
             if (actionRef.current) {
               actionRef.current.reload();
             }
@@ -366,92 +356,60 @@ const UserList: React.FC = () => {
         }}
       >
         <ProForm.Group>
-        <ProFormText
-          rules={[
-            {
-              required: true,
-              message: (
-                <FormattedMessage
-                  id="pages.system.user.searchTable.rule.username"
-                  defaultMessage="username is required"
-                />
-              ),
-            },
-          ]}
-          width="md"
-          name="userName"
-          label={intl.formatMessage({
-            id: 'pages.system.user.searchTable.username',
-            defaultMessage: '用户名称',
-          })}
-        />
-        <ProFormText
-          rules={[
-            {
-              required: true,
-              message: (
-                <FormattedMessage
-                  id="pages.system.user.searchTable.rule.nickName"
-                  defaultMessage="nick name is required"
-                />
-              ),
-            },
-          ]}
-          width="md"
-          name="nickName"
-          label={intl.formatMessage({
-            id: 'pages.system.user.searchTable.nickname',
-            defaultMessage: '用户昵称',
-          })}
-        />
+          <ProFormText
+            rules={[
+              {
+                required: true,
+                message: '用户名不能为空',
+              },
+            ]}
+            width="md"
+            name="userName"
+            label={'用户名称'}
+          />
+          <ProFormText
+            rules={[
+              {
+                required: true,
+                message: '用户昵称不能为空',
+              },
+            ]}
+            width="md"
+            name="nickName"
+            label={'用户昵称'}
+          />
         </ProForm.Group>
         <ProForm.Group>
-        <ProFormText
-          rules={[
-            {
-              required: true,
-              message: (
-                <FormattedMessage
-                  id="pages.system.user.searchTable.rule.mobile"
-                  defaultMessage="mobile is required"
-                />
-              ),
-            },
-          ]}
-          width="md"
-          name="phonenumber"
-          label={intl.formatMessage({
-            id: 'pages.system.user.searchTable.mobile',
-            defaultMessage: '用户手机号',
-          })}
-        />
-        <ProFormText
-          rules={[
-            {
-              required: true,
-              message: (
-                <FormattedMessage
-                  id="pages.system.user.searchTable.rule.email"
-                  defaultMessage="email is required"
-                />
-              ),
-            },
-            {
-              type: 'email',
-              message: '邮箱格式不合法!',
-            },
-          ]}
-          width="md"
-          name="email"
-          label={intl.formatMessage({
-            id: 'pages.system.user.searchTable.email',
-            defaultMessage: '用户邮箱',
-          })}
-        />
+          <ProFormText
+            rules={[
+              {
+                required: true,
+                message: '手机号不能为空',
+              },
+            ]}
+            width="md"
+            name="phonenumber"
+            label={'手机号码'}
+          />
+          <ProFormText
+            rules={[
+              {
+                required: true,
+                message: '邮箱不能为空',
+              },
+              {
+                type: 'email',
+                message: '邮箱格式不合法!',
+              },
+            ]}
+            width="md"
+            name="email"
+            label={'用户邮箱'}
+          />
         </ProForm.Group>
         <ProForm.Group>
           <ProFormTreeSelect
-            width={"md"}
+            width={'md'}
             label="所属部门"
             request={async () => {
               const resData = await sysDeptSelectList();
@@ -461,37 +419,37 @@ const UserList: React.FC = () => {
               fieldNames: {
                 label: 'label',
                 value: 'id',
-                children: 'children'
+                children: 'children',
               },
-              showCheckedStrategy: TreeSelect.SHOW_PARENT
+              showCheckedStrategy: TreeSelect.SHOW_PARENT,
             }}
             rules={[
               {
                 required: true,
-                message: "所属部门不能为空"
-              }
+                message: '所属部门不能为空',
+              },
             ]}
-            name={"deptId"}
+            name={'deptId'}
           />
           <ProFormSelect
             request={async () => {
               const resData = await sysPostSelectList();
-              return resData.data.map((ele: { postId: number; postName: string; }) => {
+              return resData.data.map((ele: { postId: number; postName: string }) => {
                 return {
                   value: ele.postId,
-                  label: ele.postName
-                }
-              })
+                  label: ele.postName,
+                };
+              });
             }}
-            mode={"multiple"}
+            mode={'multiple'}
             width="md"
             name="postIds"
             label="所在岗位"
             rules={[
               {
                 required: true,
-                message: "所属岗位不能为空"
-              }
+                message: '所属岗位不能为空',
+              },
             ]}
           />
         </ProForm.Group>
@@ -499,12 +457,12 @@ const UserList: React.FC = () => {
           <ProFormSelect
             request={async () => {
               const resData = await sysRoleSelectList();
-              return resData.data.map((ele: { roleId: any; roleName: any; }) => {
+              return resData.data.map((ele: { roleId: any; roleName: any }) => {
                 return {
                   value: ele.roleId,
-                  label: ele.roleName
-                }
-              })
+                  label: ele.roleName,
+                };
+              });
             }}
             width="md"
             name="roleIds"
@@ -512,8 +470,8 @@ const UserList: React.FC = () => {
             rules={[
               {
                 required: true,
-                message: "所属角色不能为空"
-              }
+                message: '所属角色不能为空',
+              },
             ]}
           />
           <ProFormSelect
@@ -533,8 +491,8 @@ const UserList: React.FC = () => {
             rules={[
               {
                 required: true,
-                message: "用户性别不能为空"
-              }
+                message: '用户性别不能为空',
+              },
             ]}
           />
         </ProForm.Group>
@@ -543,30 +501,24 @@ const UserList: React.FC = () => {
             rules={[
               {
                 required: true,
-                message: (
-                  <FormattedMessage
-                    id="pages.system.user.searchTable.rule.password"
-                    defaultMessage="password is required"
-                  />
-                ),
-              }
+                message: '用户密码不能为空',
+              },
             ]}
             width="md"
             name="password"
-            label={intl.formatMessage({
-              id: 'pages.system.user.searchTable.password',
-              defaultMessage: '用户密码',
-            })}
+            label={'用户密码'}
           />
-        <ProFormTextArea width="md" label="用户备注" name="remark" />
+          <ProFormTextArea width="md" label="用户备注" name="remark" />
         </ProForm.Group>
       </ModalForm>
       <UpdateForm
         onSubmit={async (value) => {
-          const success = await handleUpdate({...currentRow, ...value});
+          const success = await handleUpdate({ ...currentRow, ...value });
+
           if (success) {
             handleUpdateModalVisible(false);
             setCurrentRow(undefined);
+
             if (actionRef.current) {
               actionRef.current.reload();
             }
@@ -575,6 +527,7 @@ const UserList: React.FC = () => {
         onCancel={(value) => {
           if (!value) {
             handleUpdateModalVisible(false);
+
             if (!showDetail) {
               setCurrentRow(undefined);
             }
