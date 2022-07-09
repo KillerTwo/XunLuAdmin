@@ -26,7 +26,6 @@ import { handleIconAndComponent } from '@/utils/routes';
 import { clearToken, getToken } from '@/utils/auth';
 import { notification } from 'antd';
 import { stringify } from 'querystring';
-import {merge} from "lodash";
 
 // const isDev = process.env.NODE_ENV === 'development';
 const isDev = false;
@@ -162,96 +161,24 @@ export async function getInitialState(): Promise<{
   };
 }
 
-let extraRoutes: any[];
-export function patchRoutes({ routes }: any) {
-  console.log('patchRoutes routes: ', routes)
-  /*routes.unshift({
-    path: '/foo',
-    exact: true,
-    name: 'foo',
-    component: require('@/pages/foo').default,
-  });*/
-  merge(routes, extraRoutes);
-}
-
-export function render(oldRender: any) {
-  // const menuData = await fetchMenuData();
-  // console.log('fetchMenuDatas.menuData: ', menuData);
-  // const menus = menuData.data;
-  /*for (let menu of menus) {
-    if (menu.component) {
-      menu.component = require(`@/pages/${menu.component}`).default
-    }
-
-  }*/
-  extraRoutes = [{
-    component: require(`@/pages/Welcome`).default,
-    hideInMenu: false,
-    iconName: "HomeOutlined",
-    name: "首页1",
-    path: "/welcome1"
-  }];
-  console.log('menuData.data: ', extraRoutes);
-  oldRender();
-  /*fetch('/api/routes').then(res=>res.json()).then((res) => {
-    extraRoutes = res.routes;
-    oldRender();
-  })*/
-}
-
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
 export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) => {
   return {
-    /*menu: {
+    menu: {
       // 每当 initialState?.currentUser?.userid 发生修改时重新执行 request
-      params: {
-        userId: ""//initialState?.currentUser?.userid,
-      },
+      params: initialState,
       request: async (params, defaultMenuData) => {
         console.log("menu params", params);
         console.log("menu defaultMenuData: ", defaultMenuData);
         // initialState.currentUser 中包含了所有用户信息
         // const menuData = await fetchMenuData();
         // return menuData;
-        return defaultMenuData;
+        const resMenuData = initialState?.customMenuData || [];
+        console.log("resMenuData: ", resMenuData);
+        const menus = handleIconAndComponent(resMenuData);
+        return menus;
       },
-    },*/
-    /*menu: {
-      // 每当 initialState?.currentUser?.userid 发生修改时重新执行 request
-      params: {
-        username: initialState?.currentUser?.user.userName,
-      },
-      request: async (params, defaultMenuData) => {
-        // console.log(params, defaultMenuData)
-        console.log('customMenuData: ', initialState?.customMenuData)
-        const menuData = initialState?.customMenuData;
-        const menuDataIcon = menuData?.map(ele => {
-          if (ele.iconName) {
-            const iconNode: React.ReactNode = iconMapping[ele.iconName];
-            if (iconNode) {
-              ele.icon = iconNode;
-            }
-          }
-          if (ele.name === '系统管理') {
-            console.log('ele?.routes?[0]: ', ele?.routes||[][0]);
-            const component = (ele?.routes||[])[0].component;
-            // console.log('component:', component)
-            (ele?.routes||[])[0].component = dynamic({ loader: () => import(component||''), loading: LoadingComponent})
-          }
-
-          // ele?.routes||[][0].component = dynamic({ loader: () => import(ele?.routes||[][0].component||''), loading: LoadingComponent})
-          // ele.icon = <BorderLeftOutlined />
-          return ele;
-        })
-        // initialState.currentUser 中包含了所有用户信息
-        // const menuData = await fetchMenuData();
-        const data = [...defaultMenuData, ...menuDataIcon||[]]
-        console.log('menu data: ', data)
-        console.log('iconMap: ', iconMap)
-        console.log('iconMap: ', iconMap['BorderLeftOutlined'])
-        return data;
-      },
-    },*/
+    },
     rightContentRender: () => <RightContent />,
     disableContentMargin: false,
     waterMarkProps: {
@@ -281,44 +208,6 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
           </Link>,
         ]
       : [],
-    menuDataRender: (menuItems) => {
-      // console.log('initialState?.settings: ', initialState?.settings);
-      console.log('menuDataRender menuItems1', menuItems);
-      const resMenuData = initialState?.customMenuData || [];
-      const menuDataIcon = handleIconAndComponent(resMenuData);
-
-      /*const menuDataIcon = resMenuData?.map(ele => {
-        if (ele.iconName) {
-          const iconNode: React.ReactNode = iconMapping[ele.iconName];
-          if (iconNode) {
-            ele.icon = iconNode;
-          }
-        }
-        if (ele.name === '系统管理') {
-          console.log('ele?.routes?[0]: ', ele?.routes||[][0]);
-          const component = (ele?.routes||[])[0].component;
-          // console.log('component:', component)
-          // (ele?.routes||[])[0].component = dynamic({ loader: () => import(component||''), loading: LoadingComponent})
-          (ele?.routes||[])[0].component = dynamic({
-            loader: async function() {
-              const { default: HugeA } = await import(component||'');
-              return HugeA;
-            },
-          });
-        }
-
-        // ele?.routes||[][0].component = dynamic({ loader: () => import(ele?.routes||[][0].component||''), loading: LoadingComponent})
-        // ele.icon = <BorderLeftOutlined />
-        return ele;
-      })*/
-
-      // const data = [...menuItems, ...menuDataIcon||[]]
-      console.log("menuDataIcon: ", menuDataIcon)
-      const data = [...(menuDataIcon || [])];
-      // const menuData = await fetchMenuData();
-      // return [menuItems, initialState?.customMenuData];
-      return data;
-    },
     menuHeaderRender: undefined,
     menuItemRender: (menuItemProps, defaultDom) => {
       if (menuItemProps.isUrl || !menuItemProps.path) {

@@ -15,23 +15,18 @@ import {
   LoginForm,
   ProFormInstance,
 } from '@ant-design/pro-form';
-import { history, FormattedMessage, useModel } from 'umi';
+import { history, useModel } from 'umi';
 import Footer from '@/components/Footer';
 import { getCaptchaImage, getFakeCaptcha, login } from '@/services/system/login';
-
 import styles from './index.less';
 import { SYSTEM } from '@/services/system/typings';
-
 import { setToken } from '@/utils/auth';
 import Cookies from 'js-cookie';
 
 const Login: React.FC = () => {
   const [type, setType] = useState<string>('account');
   const { initialState, setInitialState } = useModel('@@initialState');
-
-  const loginFormRef = useRef<ProFormInstance<SYSTEM.LoginBody>>();
-
-  // const [loginForm, setLoginForm] = useState<{username?: string, password?: string, rememberMe?: boolean}>({username: "", password: "", rememberMe: false});
+  const loginFormRef = useRef<ProFormInstance<SYSTEM.LoginBody>>(); // const [loginForm, setLoginForm] = useState<{username?: string, password?: string, rememberMe?: boolean}>({username: "", password: "", rememberMe: false});
 
   const [captchaOnOff, setCaptchaOnOff] = useState<boolean>(true);
   const [imgSrc, setImgSrc] = useState<string>('');
@@ -42,15 +37,22 @@ const Login: React.FC = () => {
     const username = Cookies.get('username');
     const password = Cookies.get('password');
     const phone = Cookies.get('phone');
-    const rememberMe = Cookies.get('rememberMe');
-    // setLoginForm({username, password, rememberMe: rememberMe === "true"});
-    return { username, password, rememberMe: rememberMe === 'true', phone };
+    const rememberMe = Cookies.get('rememberMe'); // setLoginForm({username, password, rememberMe: rememberMe === "true"});
+
+    return {
+      username,
+      password,
+      rememberMe: rememberMe === 'true',
+      phone,
+    };
   };
 
   const captchaImage = async () => {
     const resData = await getCaptchaImage();
+
     if (resData.code === 200) {
       const data = resData.data;
+
       if (!data.captchaOnOff) {
         setCaptchaOnOff(data.captchaOnOff);
       } else {
@@ -66,21 +68,17 @@ const Login: React.FC = () => {
 
   const fetchUserInfo = async () => {
     const userInfo = await initialState?.fetchUserInfo?.();
+
     if (userInfo) {
-      await setInitialState((s) => ({
-        ...s,
-        currentUser: userInfo,
-      }));
+      await setInitialState((s) => ({ ...s, currentUser: userInfo }));
     }
   };
 
   const fetchMenuInfo = async () => {
     const menuDataInfo = await initialState?.fetchMenuInfo?.();
+
     if (menuDataInfo) {
-      await setInitialState((s) => ({
-        ...s,
-        customMenuData: menuDataInfo,
-      }));
+      await setInitialState((s) => ({ ...s, customMenuData: menuDataInfo }));
     }
   };
 
@@ -89,38 +87,52 @@ const Login: React.FC = () => {
       message.error('请填写验证码');
       return;
     }
+
     try {
       if (values.autoLogin === true) {
         if (type === 'account') {
-          Cookies.set('username', values.username || '', { expires: 30 });
-          Cookies.set('password', values.password || '', { expires: 30 });
+          Cookies.set('username', values.username || '', {
+            expires: 30,
+          });
+          Cookies.set('password', values.password || '', {
+            expires: 30,
+          });
         } else if (type === 'mobile') {
-          Cookies.set('phone', values.phone || '', { expires: 30 });
+          Cookies.set('phone', values.phone || '', {
+            expires: 30,
+          });
         }
-        Cookies.set('rememberMe', 'true', { expires: 30 });
+
+        Cookies.set('rememberMe', 'true', {
+          expires: 30,
+        });
       } else {
         Cookies.remove('username');
         Cookies.remove('password');
         Cookies.remove('phone');
         Cookies.remove('rememberMe');
-      }
-      // 登录
+      } // 登录
+
       const msg = await login({ ...values, code: captcha, uuid: codeUuid });
       console.log('login msg: ', msg);
 
       if (msg?.code === 200) {
         setToken(msg?.data?.token || '');
         message.success('登录成功！');
-        await fetchUserInfo();
-        // 请求默认菜单
+        await fetchUserInfo(); // 请求默认菜单
+
         await fetchMenuInfo();
         /** 此方法会跳转到 redirect 参数所在的位置 */
+
         if (!history) return;
         const { query } = history.location;
-        const { redirect } = query as { redirect: string };
+        const { redirect } = query as {
+          redirect: string;
+        };
         history.push(redirect || '/');
         return;
       }
+
       await captchaImage();
       setCaptcha('');
     } catch (error) {
@@ -128,15 +140,25 @@ const Login: React.FC = () => {
       message.error('登录失败，请重试!');
     }
   };
+
   return (
     <div className={styles.container}>
       {/*<div className={styles.lang} data-lang>
-        {SelectLang && <SelectLang />}
+       {SelectLang && <SelectLang />}
       </div>*/}
       <div className={styles.content}>
         <LoginForm
           formRef={loginFormRef}
-          logo={<img alt="logo" style={{ width: '127px', height: '47px' }} src="/logo1.png" />}
+          logo={
+            <img
+              alt="logo"
+              style={{
+                width: '127px',
+                height: '47px',
+              }}
+              src="/logo1.png"
+            />
+          }
           /*title="寻 路"*/
           subTitle={
             '寻路 基于spring-boot、react、ant-design-pro、RuoYi-Vue的中后台管理系统(admin/admin123)'
@@ -151,11 +173,7 @@ const Login: React.FC = () => {
             };
           }}
           actions={[
-            <FormattedMessage
-              key="loginWith"
-              id="pages.login.loginWith"
-              defaultMessage="其他登录方式"
-            />,
+            '其他登录方式 :',
             <AlipayCircleOutlined key="AlipayCircleOutlined" className={styles.icon} />,
             <TaobaoCircleOutlined key="TaobaoCircleOutlined" className={styles.icon} />,
             <WeiboCircleOutlined key="WeiboCircleOutlined" className={styles.icon} />,
@@ -233,6 +251,7 @@ const Login: React.FC = () => {
                   if (timing) {
                     return `${count}获取验证码`;
                   }
+
                   return '获取验证码';
                 }}
                 name="captcha"
@@ -244,19 +263,23 @@ const Login: React.FC = () => {
                 ]}
                 onGetCaptcha={async () => {
                   const mobile = loginFormRef.current?.getFieldsValue().phone || '';
+
                   if (!mobile) {
                     message.error('请填写手机号！');
                     throw new Error('请填写手机号！');
                   }
+
                   if (!captcha) {
                     message.error('请填写验证码！');
                     throw new Error('请填写验证码！');
                   }
+
                   const result = await getFakeCaptcha({
                     phone: mobile,
                     uuid: codeUuid,
                     code: captcha,
                   });
+
                   if (result.code === 200) {
                     message.success(`获取验证码成功！验证码为：${result.data}`);
                     return;
@@ -268,11 +291,21 @@ const Login: React.FC = () => {
             </>
           )}
           {captchaOnOff && (
-            <div className="ant-row ant-form-item" style={{ rowGap: '0px' }}>
+            <div
+              className="ant-row ant-form-item"
+              style={{
+                rowGap: '0px',
+              }}
+            >
               <div className="ant-col ant-form-item-control">
                 <div className="ant-form-item-control-input">
                   <div className="ant-form-item-control-input-content">
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                      }}
+                    >
                       <span
                         className="ant-input-affix-wrapper ant-input-affix-wrapper-lg"
                         style={{
