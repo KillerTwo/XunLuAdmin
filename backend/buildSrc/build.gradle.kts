@@ -7,11 +7,11 @@ plugins {
     `kotlin-dsl`
     id("org.springframework.boot") version "2.7.3"
 }
-apply(plugin = "io.spring.dependency-management")
+/*apply(plugin = "io.spring.dependency-management")
 
 tasks.named<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
     mainClass.set("org.wm.WebAppApplication")
-}
+}*/
 
 repositories {
     maven {
