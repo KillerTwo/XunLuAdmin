@@ -15,7 +15,7 @@ import org.wm.service.IGenTableColumnService;
 import org.wm.service.IGenTableService;
 import org.wm.utils.Convert;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;

@@ -15,7 +15,7 @@ import org.wm.utils.Convert;
 import org.wm.utils.RedisCache;
 import org.wm.utils.StringUtils;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import java.util.Collection;
 import java.util.List;
 

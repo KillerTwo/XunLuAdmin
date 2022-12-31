@@ -1,6 +1,5 @@
 package org.wm.aspect;
 
-import com.alibaba.fastjson2.JSON;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.AfterThrowing;
@@ -18,13 +17,14 @@ import org.wm.domain.SysOperLog;
 import org.wm.entity.vo.LoginUser;
 import org.wm.enums.BusinessStatus;
 import org.wm.threads.AsyncFactory;
+import org.wm.utils.ObjectMapperUtil;
 import org.wm.utils.SecurityUtils;
 import org.wm.utils.ServletUtils;
 import org.wm.utils.StringUtils;
 import org.wm.utils.ip.IpUtils;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.Collection;
 import java.util.Map;
 
@@ -117,7 +117,7 @@ public class LogAspect {
         }
         // 是否需要保存response，参数和值
         if (log.isSaveResponseData() && StringUtils.isNotNull(jsonResult)) {
-            operLog.setJsonResult(StringUtils.substring(JSON.toJSONString(jsonResult), 0, 2000));
+            operLog.setJsonResult(StringUtils.substring(ObjectMapperUtil.objectMapper().writeValueAsString(jsonResult), 0, 2000));
         }
     }
 
@@ -147,7 +147,7 @@ public class LogAspect {
             for (Object o : paramsArray) {
                 if (StringUtils.isNotNull(o) && !isFilterObject(o)) {
                     try {
-                        Object jsonObj = JSON.toJSON(o);
+                        Object jsonObj = ObjectMapperUtil.objectMapper().writeValueAsString(o);
                         params += jsonObj.toString() + " ";
                     } catch (Exception e) {
                     }

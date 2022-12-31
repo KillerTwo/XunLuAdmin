@@ -3,7 +3,7 @@ package org.wm.entity;
 import java.util.Date;
 import java.util.List;
 
-import com.alibaba.fastjson2.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 /**
@@ -58,7 +58,7 @@ public class SysUser extends BaseEntity {
     /**
      * 密码
      */
-    @JSONField(serialize = false)
+    @JsonIgnore
     private String password;
 
     /**

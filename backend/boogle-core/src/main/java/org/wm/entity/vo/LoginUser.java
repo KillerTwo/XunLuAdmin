@@ -3,8 +3,8 @@ package org.wm.entity.vo;
 import java.util.Collection;
 import java.util.Set;
 
-import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.annotation.JSONField;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -90,7 +90,7 @@ public class LoginUser implements UserDetails {
         this.permissions = permissions;
     }
 
-    @JSONField(serialize = false)
+    @JsonIgnore
     @Override
     public String getPassword() {
         return user.getPassword();
@@ -104,7 +104,7 @@ public class LoginUser implements UserDetails {
     /**
      * 账户是否未过期,过期无法验证
      */
-    @JSONField(serialize = false)
+    @JsonIgnore
     @Override
     public boolean isAccountNonExpired() {
         return true;
@@ -115,7 +115,7 @@ public class LoginUser implements UserDetails {
      *
      * @return
      */
-    @JSONField(serialize = false)
+    @JsonIgnore
     @Override
     public boolean isAccountNonLocked() {
         return true;
@@ -126,7 +126,7 @@ public class LoginUser implements UserDetails {
      *
      * @return
      */
-    @JSONField(serialize = false)
+    @JsonIgnore
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
@@ -137,7 +137,7 @@ public class LoginUser implements UserDetails {
      *
      * @return
      */
-    @JSONField(serialize = false)
+    @JsonIgnore
     @Override
     public boolean isEnabled() {
         return true;
@@ -154,8 +154,8 @@ public class LoginUser implements UserDetails {
         LoginUser loginUser = new LoginUser();
         loginUser.setUser(user);
         loginUser.setUserId(1L);
-        String s = JSON.toJSONString(loginUser);
-        System.err.println(s);
+//        String s = ObjectMapperUtil.objectMapper().writeValueAsString(loginUser);
+//        System.err.println(s);
 
     }
 }
