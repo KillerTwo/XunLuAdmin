@@ -33,9 +33,9 @@ import org.wm.utils.SecurityUtils;
 import org.wm.utils.StringUtils;
 import org.wm.utils.uuid.IdUtils;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import javax.imageio.ImageIO;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 
 /**

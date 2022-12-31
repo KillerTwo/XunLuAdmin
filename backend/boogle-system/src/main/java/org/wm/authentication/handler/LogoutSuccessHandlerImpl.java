@@ -1,11 +1,10 @@
 package org.wm.authentication.handler;
 
 import java.io.IOException;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
-import com.alibaba.fastjson2.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.Authentication;
@@ -17,6 +16,7 @@ import org.wm.constants.HttpStatus;
 import org.wm.entity.vo.LoginUser;
 import org.wm.response.ResponseResult;
 import org.wm.threads.AsyncFactory;
+import org.wm.utils.ObjectMapperUtil;
 import org.wm.utils.ServletUtils;
 import org.wm.utils.StringUtils;
 
@@ -47,6 +47,6 @@ public class LogoutSuccessHandlerImpl implements LogoutSuccessHandler {
             // 记录用户退出日志
             AsyncManager.me().execute(AsyncFactory.recordLogininfor(userName, Constants.LOGOUT, "退出成功"));
         }
-        ServletUtils.renderString(response, JSON.toJSONString(ResponseResult.error(HttpStatus.SUCCESS, "退出成功")));
+        ServletUtils.renderString(response, ObjectMapperUtil.objectMapper().writeValueAsString(ResponseResult.error(HttpStatus.SUCCESS, "退出成功")));
     }
 }

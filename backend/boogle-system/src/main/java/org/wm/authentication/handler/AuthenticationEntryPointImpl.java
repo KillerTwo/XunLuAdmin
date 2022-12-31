@@ -2,15 +2,15 @@ package org.wm.authentication.handler;
 
 import java.io.IOException;
 import java.io.Serializable;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
-import com.alibaba.fastjson2.JSON;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 import org.wm.response.ResponseResult;
+import org.wm.utils.ObjectMapperUtil;
 import org.wm.utils.ServletUtils;
 import org.wm.utils.StringUtils;
 
@@ -29,6 +29,6 @@ public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint, S
             throws IOException {
         int code = HttpStatus.UNAUTHORIZED.value();
         String msg = StringUtils.format("请求访问：{}，认证失败，无法访问系统资源", request.getRequestURI());
-        ServletUtils.renderString(response, JSON.toJSONString(ResponseResult.error(code, msg)));
+        ServletUtils.renderString(response, ObjectMapperUtil.objectMapper().writeValueAsString(ResponseResult.error(code, msg)));
     }
 }

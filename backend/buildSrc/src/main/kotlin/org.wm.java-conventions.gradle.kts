@@ -32,18 +32,20 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok:1.18.24")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.24")
     implementation("io.netty:netty-all:4.1.76.Final")
-    implementation("com.github.pagehelper:pagehelper-spring-boot-starter:1.4.1")
-    implementation("com.alibaba.fastjson2:fastjson2:2.0.2")
-    implementation("com.alibaba.fastjson2:fastjson2-extension:2.0.2")
+    implementation("com.github.pagehelper:pagehelper-spring-boot-starter:1.4.6")
     implementation("javax.validation:validation-api:2.0.1.Final")
     implementation("org.hibernate.validator:hibernate-validator:6.1.7.Final")
     implementation("javax.xml.bind:jaxb-api:2.3.1")
     implementation("org.glassfish.jaxb:jaxb-runtime:2.3.1")
     implementation("com.sun.xml.ws:rt:2.3.3")
-    implementation("org.springdoc:springdoc-openapi-ui:1.6.8")
-    implementation("org.springdoc:springdoc-openapi-javadoc:1.6.8")
+    implementation("org.springdoc:springdoc-openapi-ui:1.6.14")
+    implementation("org.springdoc:springdoc-openapi-javadoc:1.6.14")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("io.projectreactor:reactor-test:3.4.17")
+    testImplementation("io.projectreactor:reactor-test:3.5.1")
+    api("com.fasterxml.jackson.core:jackson-databind:2.14.1")
+    api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.1")
+    compileOnlyApi("jakarta.servlet:jakarta.servlet-api:6.0.0")
+
 }
 
 group = "org.wm"

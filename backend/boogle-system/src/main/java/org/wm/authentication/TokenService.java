@@ -3,10 +3,8 @@ package org.wm.authentication;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
-import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONObject;
 import eu.bitwalker.useragentutils.UserAgent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +15,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import org.wm.constants.Constants;
 import org.wm.entity.vo.LoginUser;
 import org.wm.exception.ServiceException;
+import org.wm.utils.ObjectMapperUtil;
 import org.wm.utils.RedisCache;
 import org.wm.utils.ServletUtils;
 import org.wm.utils.StringUtils;
@@ -64,10 +63,10 @@ public class TokenService {
                 // 解析对应的权限以及用户信息
                 String uuid = (String) claims.get(Constants.LOGIN_USER_KEY);
                 String userKey = getTokenKey(uuid);
-                JSONObject object = redisCache.getCacheObject(userKey);
-                String s = JSON.toJSONString(object);
+                var object = redisCache.getCacheObject(userKey);
+                String s = ObjectMapperUtil.writeValueAsString(object);
                 // LoginUser user = redisCache.getCacheObject(userKey);
-                LoginUser user = JSON.parseObject(s, LoginUser.class);
+                LoginUser user = ObjectMapperUtil.readValue(s, LoginUser.class);
                 return user;
             } catch (Exception e) {
                 throw new ServiceException(e.getMessage());

@@ -1,7 +1,7 @@
 package org.wm.service;
 
-import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONObject;
+
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.velocity.Template;
@@ -23,6 +23,7 @@ import org.wm.util.GenUtils;
 import org.wm.util.VelocityInitializer;
 import org.wm.util.VelocityUtils;
 import org.wm.utils.CharsetKit;
+import org.wm.utils.ObjectMapperUtil;
 import org.wm.utils.SecurityUtils;
 import org.wm.utils.StringUtils;
 
@@ -116,7 +117,7 @@ public class GenTableServiceImpl implements IGenTableService {
     @Override
     @Transactional
     public void updateGenTable(GenTable genTable) {
-        String options = JSON.toJSONString(genTable.getParams());
+        String options = ObjectMapperUtil.writeValueAsString(genTable.getParams());
         genTable.setOptions(options);
         int row = genTableMapper.updateGenTable(genTable);
         if (row > 0) {
@@ -356,13 +357,13 @@ public class GenTableServiceImpl implements IGenTableService {
     @Override
     public void validateEdit(GenTable genTable) {
         if (GenConstants.TPL_TREE.equals(genTable.getTplCategory())) {
-            String options = JSON.toJSONString(genTable.getParams());
-            JSONObject paramsObj = JSON.parseObject(options);
-            if (StringUtils.isEmpty(paramsObj.getString(GenConstants.TREE_CODE))) {
+            String options = ObjectMapperUtil.writeValueAsString(genTable.getParams());
+            var paramsObj = ObjectMapperUtil.readValue(options, new TypeReference<Map<String, String>>(){});
+            if (StringUtils.isEmpty(paramsObj.get(GenConstants.TREE_CODE))) {
                 throw new ServiceException("树编码字段不能为空");
-            } else if (StringUtils.isEmpty(paramsObj.getString(GenConstants.TREE_PARENT_CODE))) {
+            } else if (StringUtils.isEmpty(paramsObj.get(GenConstants.TREE_PARENT_CODE))) {
                 throw new ServiceException("树父编码字段不能为空");
-            } else if (StringUtils.isEmpty(paramsObj.getString(GenConstants.TREE_NAME))) {
+            } else if (StringUtils.isEmpty(paramsObj.get(GenConstants.TREE_NAME))) {
                 throw new ServiceException("树名称字段不能为空");
             } else if (GenConstants.TPL_SUB.equals(genTable.getTplCategory())) {
                 if (StringUtils.isEmpty(genTable.getSubTableName())) {
@@ -420,13 +421,13 @@ public class GenTableServiceImpl implements IGenTableService {
      * @param genTable 设置后的生成对象
      */
     public void setTableFromOptions(GenTable genTable) {
-        JSONObject paramsObj = JSON.parseObject(genTable.getOptions());
+        var paramsObj = ObjectMapperUtil.readValue(genTable.getOptions(), new TypeReference<Map<String, String>>(){});
         if (StringUtils.isNotNull(paramsObj)) {
-            String treeCode = paramsObj.getString(GenConstants.TREE_CODE);
-            String treeParentCode = paramsObj.getString(GenConstants.TREE_PARENT_CODE);
-            String treeName = paramsObj.getString(GenConstants.TREE_NAME);
-            String parentMenuId = paramsObj.getString(GenConstants.PARENT_MENU_ID);
-            String parentMenuName = paramsObj.getString(GenConstants.PARENT_MENU_NAME);
+            String treeCode = paramsObj.get(GenConstants.TREE_CODE);
+            String treeParentCode = paramsObj.get(GenConstants.TREE_PARENT_CODE);
+            String treeName = paramsObj.get(GenConstants.TREE_NAME);
+            String parentMenuId = paramsObj.get(GenConstants.PARENT_MENU_ID);
+            String parentMenuName = paramsObj.get(GenConstants.PARENT_MENU_NAME);
 
             genTable.setTreeCode(treeCode);
             genTable.setTreeParentCode(treeParentCode);

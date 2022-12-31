@@ -1,6 +1,6 @@
 package org.wm.authentication;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,6 +1,7 @@
 package org.wm.service.impl;
 
 
+import jakarta.annotation.PostConstruct;
 import org.quartz.JobDataMap;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
@@ -16,7 +17,6 @@ import org.wm.service.ISysJobService;
 import org.wm.util.CronUtils;
 import org.wm.util.ScheduleUtils;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
 
 /**
