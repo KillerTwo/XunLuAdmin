@@ -32,7 +32,6 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok:1.18.24")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.24")
     implementation("io.netty:netty-all:4.1.76.Final")
-    implementation("com.github.pagehelper:pagehelper-spring-boot-starter:1.4.6")
     implementation("javax.validation:validation-api:2.0.1.Final")
     implementation("org.hibernate.validator:hibernate-validator:6.1.7.Final")
     implementation("javax.xml.bind:jaxb-api:2.3.1")
