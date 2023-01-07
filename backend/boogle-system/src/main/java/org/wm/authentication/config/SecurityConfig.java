@@ -3,11 +3,13 @@ package org.wm.authentication.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -18,6 +20,8 @@ import org.springframework.web.filter.CorsFilter;
 import org.wm.authentication.filter.JwtAuthenticationTokenFilter;
 import org.wm.authentication.handler.AuthenticationEntryPointImpl;
 import org.wm.authentication.handler.LogoutSuccessHandlerImpl;
+import org.wm.jks.JKSPathProperties;
+import org.wm.jks.RSAGenerator;
 
 
 /**
@@ -55,6 +59,8 @@ public class SecurityConfig {
      */
     private final CorsFilter corsFilter;
 
+
+
     /**
      * 解决 无法直接注入 AuthenticationManager
      *
@@ -64,6 +70,28 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManagerBean(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
+    }
+
+    @Bean
+    public WebSecurityCustomizer ignoringCustomizer() {
+        return (web) -> web.ignoring().requestMatchers(
+                HttpMethod.GET,
+                "/*.html",
+                "/*/*.html",
+                "/*/*.css",
+                "/*/*.js",
+                "/*/*.png",
+                "/*/*.jpg",
+                "/*/*.jpeg",
+                "/*/*.gif",
+                "/*/*.ico",
+                "/profile/**",
+                "/swagger-ui.html",
+                "/swagger-ui/",
+                "/favicon.ico",
+                "/swagger-resources/**",
+                "/v3/api-docs/*"
+        );
     }
 
     /**
@@ -94,28 +122,6 @@ public class SecurityConfig {
                 .authorizeRequests()
                 // 对于登录login 注册register 验证码captchaImage 发送短信验证码captcha 重置密码resetPassword 允许匿名访问
                 .requestMatchers("/login", "/register", "/captchaImage", "/captcha", "/resetPassword").permitAll()
-                .requestMatchers(
-                        HttpMethod.GET,
-                        "/",
-                        "/*.html",
-                        "/**/*.html",
-                        "/**/*.css",
-                        "/**/*.js",
-                        "/profile/**"
-                ).permitAll()
-                .requestMatchers(HttpMethod.GET, // Swagger的资源路径需要允许访问
-                        "/",
-                        "/swagger-ui.html",
-                        "/swagger-ui/",
-                        "/*.html",
-                        "/favicon.ico",
-                        "/**/*.html",
-                        "/**/*.css",
-                        "/**/*.js",
-                        "/swagger-resources/**",
-                        "/v3/api-docs/**"
-                )
-                .permitAll()
                 .requestMatchers("/swagger-ui.html").permitAll()
                 .requestMatchers("/swagger-resources/**").permitAll()
                 .requestMatchers("/webjars/**").permitAll()

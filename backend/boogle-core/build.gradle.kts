@@ -9,7 +9,8 @@ plugins {
 dependencies {
     api("org.springframework.boot:spring-boot-starter-security")
     api("org.apache.commons:commons-lang3:3.12.0")
-    api("io.jsonwebtoken:jjwt:0.9.1")
+    // api("io.jsonwebtoken:jjwt:0.9.1")
+    api("com.nimbusds:nimbus-jose-jwt:9.27")
     api("org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.1")
     api("com.github.pagehelper:pagehelper-spring-boot-starter:1.4.6")
     // testImplementation("org.springframework.security:spring-security-test:5.6.3")

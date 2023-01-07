@@ -1,7 +1,6 @@
 package org.wm.constants;
 
 
-import io.jsonwebtoken.Claims;
 
 /**
  * 通用常量信息
@@ -107,7 +106,7 @@ public class Constants {
     /**
      * 用户名称
      */
-    public static final String JWT_USERNAME = Claims.SUBJECT;
+    public static final String JWT_USERNAME = "sub";
 
     /**
      * 用户头像
