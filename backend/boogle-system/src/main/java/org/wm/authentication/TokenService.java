@@ -65,6 +65,9 @@ public class TokenService {
         if (StringUtils.isNotEmpty(token)) {
             try {
                 JWTClaimsSet claims = parseToken(token);
+                if (claims == null) {
+                    return null;
+                }
                 // 解析对应的权限以及用户信息
                 String uuid = claims.getStringClaim(Constants.LOGIN_USER_KEY);
                 String userKey = getTokenKey(uuid);
