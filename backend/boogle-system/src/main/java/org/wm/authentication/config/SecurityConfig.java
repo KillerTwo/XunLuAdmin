@@ -20,8 +20,7 @@ import org.springframework.web.filter.CorsFilter;
 import org.wm.authentication.filter.JwtAuthenticationTokenFilter;
 import org.wm.authentication.handler.AuthenticationEntryPointImpl;
 import org.wm.authentication.handler.LogoutSuccessHandlerImpl;
-import org.wm.jks.JKSPathProperties;
-import org.wm.jks.RSAGenerator;
+
 
 
 /**
