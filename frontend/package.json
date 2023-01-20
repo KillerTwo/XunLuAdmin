@@ -52,6 +52,7 @@
     "@ant-design/pro-form": "^1.52.0",
     "@ant-design/pro-layout": "^6.32.0",
     "@ant-design/pro-table": "^2.61.0",
+    "@element-plus/icons-vue": "^2.0.10",
     "@types/file-saver": "^2.0.5",
     "@types/highlight.js": "^10.1.0",
     "@types/js-cookie": "^3.0.1",

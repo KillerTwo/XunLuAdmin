@@ -206,6 +206,10 @@ public class TokenService {
      * @return 数据声明
      */
     private JWTClaimsSet parseToken(String token) {
+        if (StringUtils.isEmpty(token)) {
+            return null;
+        }
+        System.err.println("token: " + token);
         try {
             var decodeJWT = SignedJWT.parse(token);
 
@@ -220,7 +224,8 @@ public class TokenService {
             return null;
         } catch (ParseException | JOSEException e) {
             e.printStackTrace();
-            throw new ServiceException(e.getMessage());
+            // throw new ServiceException(e.getMessage());
+            return null;
         }
     }
 
