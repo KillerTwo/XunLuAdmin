@@ -20,7 +20,7 @@ const Footer: React.FC = () => {
         {
           key: 'github',
           title: <GithubOutlined />,
-          href: 'https://github.com/KillerTwo/we-master',
+          href: 'https://github.com/KillerTwo/XunLuAdmin.git',
           blankTarget: true,
         },
         /*{
