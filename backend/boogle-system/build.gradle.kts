@@ -9,6 +9,9 @@ plugins {
 dependencies {
     api(project(":boogle-common"))
     api(project(":boogle-logging"))
+    // https://mvnrepository.com/artifact/com.tencentcloudapi/tencentcloud-sdk-java
+    implementation("com.tencentcloudapi:tencentcloud-sdk-java:4.0.11")
+
 }
 
 description = "系统管理模块"

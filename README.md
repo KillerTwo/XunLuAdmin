@@ -18,7 +18,6 @@
 * 权限认证使用Jwt，支持多终端认证系统。
 * 支持加载动态权限菜单，多方式轻松权限控制。
 * 高效率开发，使用代码生成器可以一键生成前后端代码(暂不支持生成react代码)。
-* 特别鸣谢：[RuoYi-Vue](https://gitee.com/y_project/RuoYi-Vue)，[eladmin](https://gitee.com/elunez/eladmin.git)，[ant design pro](https://pro.ant.design/zh-CN)。
 
 ## 内置功能
 
@@ -41,6 +40,12 @@
 - admin/admin123
 
 演示地址：http://182.43.35.198:8000/welcome
+
+## 特别鸣谢
+* 感谢 [RuoYi-Vue](https://gitee.com/y_project/RuoYi-Vue)
+* 感谢 [eladmin](https://gitee.com/elunez/eladmin.git) 
+* 感谢 [ant design pro](https://pro.ant.design/zh-CN)
+* 感谢 [JetBrains](https://www.jetbrains.com) 提供的非商业开源软件开发授权
 
 ## 演示图
 
