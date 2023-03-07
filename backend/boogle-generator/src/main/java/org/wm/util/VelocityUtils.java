@@ -73,14 +73,20 @@ public class VelocityUtils {
 
     public static void setMenuVelocityContext(VelocityContext context, GenTable genTable) {
         String options = genTable.getOptions();
-        var paramsObj = ObjectMapperUtil.readValue(options, new TypeReference<Map<String, String>>(){});
+        var paramsObj = new HashMap<String, String>();
+        if (StringUtils.isNotEmpty(options)) {
+            paramsObj = ObjectMapperUtil.readValue(options, new TypeReference<HashMap<String, String>>(){});
+        }
         String parentMenuId = getParentMenuId(paramsObj);
         context.put("parentMenuId", parentMenuId);
     }
 
     public static void setTreeVelocityContext(VelocityContext context, GenTable genTable) {
         String options = genTable.getOptions();
-        var paramsObj = ObjectMapperUtil.readValue(options, new TypeReference<Map<String, String>>(){});
+        var paramsObj = new HashMap<String, String>();
+        if (StringUtils.isNotEmpty(options)) {
+            paramsObj = ObjectMapperUtil.readValue(options, new TypeReference<HashMap<String, String>>(){});
+        }
         String treeCode = getTreecode(paramsObj);
         String treeParentCode = getTreeParentCode(paramsObj);
         String treeName = getTreeName(paramsObj);
@@ -340,7 +346,10 @@ public class VelocityUtils {
      */
     public static int getExpandColumn(GenTable genTable) {
         String options = genTable.getOptions();
-        var paramsObj = ObjectMapperUtil.readValue(options, new TypeReference<Map<String, String>>(){});
+        var paramsObj = new HashMap<String, String>();
+        if (StringUtils.isNotEmpty(options)) {
+            paramsObj = ObjectMapperUtil.readValue(options, new TypeReference<HashMap<String, String>>(){});
+        }
         String treeName = paramsObj.get(GenConstants.TREE_NAME);
         int num = 0;
         for (GenTableColumn column : genTable.getColumns()) {

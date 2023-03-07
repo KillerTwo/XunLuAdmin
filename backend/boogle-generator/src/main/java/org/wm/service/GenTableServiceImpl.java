@@ -421,19 +421,21 @@ public class GenTableServiceImpl implements IGenTableService {
      * @param genTable 设置后的生成对象
      */
     public void setTableFromOptions(GenTable genTable) {
-        var paramsObj = ObjectMapperUtil.readValue(genTable.getOptions(), new TypeReference<Map<String, String>>(){});
-        if (StringUtils.isNotNull(paramsObj)) {
-            String treeCode = paramsObj.get(GenConstants.TREE_CODE);
-            String treeParentCode = paramsObj.get(GenConstants.TREE_PARENT_CODE);
-            String treeName = paramsObj.get(GenConstants.TREE_NAME);
-            String parentMenuId = paramsObj.get(GenConstants.PARENT_MENU_ID);
-            String parentMenuName = paramsObj.get(GenConstants.PARENT_MENU_NAME);
+        if (StringUtils.isNotEmpty(genTable.getOptions())) {
+            var paramsObj = ObjectMapperUtil.readValue(genTable.getOptions(), new TypeReference<Map<String, String>>(){});
+            if (StringUtils.isNotNull(paramsObj)) {
+                String treeCode = paramsObj.get(GenConstants.TREE_CODE);
+                String treeParentCode = paramsObj.get(GenConstants.TREE_PARENT_CODE);
+                String treeName = paramsObj.get(GenConstants.TREE_NAME);
+                String parentMenuId = paramsObj.get(GenConstants.PARENT_MENU_ID);
+                String parentMenuName = paramsObj.get(GenConstants.PARENT_MENU_NAME);
 
-            genTable.setTreeCode(treeCode);
-            genTable.setTreeParentCode(treeParentCode);
-            genTable.setTreeName(treeName);
-            genTable.setParentMenuId(parentMenuId);
-            genTable.setParentMenuName(parentMenuName);
+                genTable.setTreeCode(treeCode);
+                genTable.setTreeParentCode(treeParentCode);
+                genTable.setTreeName(treeName);
+                genTable.setParentMenuId(parentMenuId);
+                genTable.setParentMenuName(parentMenuName);
+            }
         }
     }
 
