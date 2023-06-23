@@ -6,7 +6,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.authentication.configurers.userdetails.DaoAuthenticationConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -17,6 +20,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.filter.CorsFilter;
+import org.wm.authentication.auth.SmsAuthenticationProvider;
 import org.wm.authentication.filter.JwtAuthenticationTokenFilter;
 import org.wm.authentication.handler.AuthenticationEntryPointImpl;
 import org.wm.authentication.handler.LogoutSuccessHandlerImpl;
@@ -59,6 +63,29 @@ public class SecurityConfig {
     private final CorsFilter corsFilter;
 
 
+    @Bean
+    public SmsAuthenticationProvider smsAuthenticationProvider() {
+        var smsAuthenticationProvider = new SmsAuthenticationProvider();
+        smsAuthenticationProvider.setUserDetailsService(userDetailsService);
+        return smsAuthenticationProvider;
+    }
+
+
+    /*@Bean
+    public DaoAuthenticationProvider daoAuthenticationProvider() {
+        return new DaoAuthenticationProvider();
+    }*/
+
+    @Bean
+    public AuthenticationManager authManager(HttpSecurity http) throws Exception {
+        AuthenticationManagerBuilder authenticationManagerBuilder =
+                http.getSharedObject(AuthenticationManagerBuilder.class);
+        // authenticationManagerBuilder.apply(new DaoAuthenticationConfigurer<>(userDetailsService));
+        authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder());   // 如果不配置，则默认的DaoAuthenticationProvider不会被配置
+        authenticationManagerBuilder.authenticationProvider(smsAuthenticationProvider());
+        return authenticationManagerBuilder.build();
+    }
+
 
     /**
      * 解决 无法直接注入 AuthenticationManager
@@ -66,7 +93,7 @@ public class SecurityConfig {
      * @return
      * @throws Exception
      */
-    @Bean
+    // @Bean
     public AuthenticationManager authenticationManagerBean(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
@@ -137,6 +164,9 @@ public class SecurityConfig {
         httpSecurity.addFilterBefore(corsFilter, LogoutFilter.class);
 
         httpSecurity.userDetailsService(userDetailsService);
+
+        // httpSecurity.authenticationProvider(smsAuthenticationProvider());
+
 
         return httpSecurity.build();
     }

@@ -2,6 +2,8 @@ package org.wm.authentication;
 
 import jakarta.annotation.Resource;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -10,6 +12,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.ServletWebRequest;
+import org.wm.authentication.auth.SmsAuthenticationToken;
+import org.wm.authentication.sms.context.CodeSmsStrategy;
 import org.wm.config.thread.AsyncManager;
 import org.wm.constants.Constants;
 import org.wm.entity.SysUser;
@@ -147,6 +152,44 @@ public class SysLoginService {
             }
         }
         AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success")));
+        LoginUser loginUser = (LoginUser) authentication.getPrincipal();
+        recordLoginInfo(loginUser.getUserId());
+        // 生成token
+        return tokenService.createToken(loginUser);
+    }
+
+    /**
+     * 手机验证码登录
+     * @param mobile 手机号
+     * @param code 短信验证码
+     * @return token
+     */
+    public String phoneLogin(String mobile, String code, HttpServletRequest request, HttpServletResponse response) {
+
+        // 验证验证码
+        boolean success = CodeSmsStrategy.TEN_CENT.smsProcess()
+                .validateCaptcha(new ServletWebRequest(request, response), mobile, code);
+
+        if (!success) {
+            throw new ServiceException("验证码不正确");
+        }
+
+        // 用户验证
+        Authentication authentication = null;
+        try {
+            // 该方法会去调用UserDetailsServiceImpl.loadUserByUsername
+            authentication = authenticationManager
+                    .authenticate(new SmsAuthenticationToken(mobile, null));
+        } catch (Exception e) {
+            if (e instanceof BadCredentialsException) {
+                AsyncManager.me().execute(AsyncFactory.recordLogininfor(mobile, Constants.LOGIN_FAIL, MessageUtils.message("user.password.not.match")));
+                throw new UserPasswordNotMatchException();
+            } else {
+                AsyncManager.me().execute(AsyncFactory.recordLogininfor(mobile, Constants.LOGIN_FAIL, e.getMessage()));
+                throw new ServiceException(e.getMessage());
+            }
+        }
+        AsyncManager.me().execute(AsyncFactory.recordLogininfor(mobile, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success")));
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
         recordLoginInfo(loginUser.getUserId());
         // 生成token

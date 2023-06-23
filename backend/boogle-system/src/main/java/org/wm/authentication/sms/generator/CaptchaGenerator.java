@@ -7,7 +7,7 @@ public interface CaptchaGenerator {
 
     /**
      *
-     * @return 生成的验证码
+     * @return 生成短信验证码
      */
     String generatorCaptcha();
 
