@@ -15,11 +15,6 @@ import javax.crypto.SecretKey;
 public class SmsProperty {
 
     /**
-     *  发送短信的方式
-     */
-    // private String sendSmsWay = "aliyun";
-
-    /**
      *  短信地址
      */
     private String url = "";

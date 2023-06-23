@@ -10,13 +10,16 @@ import java.util.concurrent.TimeUnit;
 
 import cn.hutool.core.codec.Base64;
 import com.google.code.kaptcha.Producer;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.FastByteArrayOutputStream;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.ServletWebRequest;
 import org.wm.annotation.Log;
 import org.wm.authentication.SysLoginService;
 import org.wm.authentication.SysPermissionService;
+import org.wm.authentication.sms.context.CodeSmsStrategy;
 import org.wm.constants.Constants;
 import org.wm.entity.SysMenu;
 import org.wm.entity.SysUser;
@@ -113,8 +116,16 @@ public class SysLoginController {
      * 获取短信验证码
      */
     @PostMapping("captcha")
-    public ResponseResult<String> getPhoneCode(@RequestBody  PhoneCodeBody phoneCodeBody) {
+    public ResponseResult<String> getPhoneCode(@RequestBody  PhoneCodeBody phoneCodeBody,
+                                               HttpServletRequest request, HttpServletResponse response) {
         String phoneCode = loginService.getPhoneCode(phoneCodeBody);
+
+        // 发送短信验证码，用手机号为key将缓存验证码
+        /*** 生产环境中启用该段代码发送短信
+        var templateId = "";
+        CodeSmsStrategy.TEN_CENT.smsProcess().dealWithSendCaptcha(new ServletWebRequest(request, response), templateId,
+                phoneCode, new String[]{phoneCode});*/
+
         return ResponseResult.success("验证码发送成功", phoneCode);
     }
 
@@ -125,17 +136,25 @@ public class SysLoginController {
      * @return 结果
      */
     @PostMapping("/login")
-    public ResponseResult<Map<String, Object>> login(@RequestBody LoginBody loginBody) {
+    public ResponseResult<Map<String, Object>> login(@RequestBody LoginBody loginBody, HttpServletRequest request, HttpServletResponse response) {
         // 生成令牌
-        String token;
-        if(StringUtils.isEmpty(loginBody.getCode())) {
-            token = loginService.login(loginBody.getUsername(), loginBody.getPassword());
-        } else {
-            token = loginService.login(loginBody.getUsername(), loginBody.getPassword(), loginBody.getCode(),
-                    loginBody.getUuid());
-        }
+        String token = null;
         Map<String, Object> map = new HashMap<>();
+        if (loginBody.getType().equals("account")) {
+            if(StringUtils.isEmpty(loginBody.getCode())) {
+                token = loginService.login(loginBody.getUsername(), loginBody.getPassword());
+            } else {
+                token = loginService.login(loginBody.getUsername(), loginBody.getPassword(), loginBody.getCode(),
+                        loginBody.getUuid());
+            }
+
+        } else if (loginBody.getType().equals("mobile")) {
+            // 手机验证码登录
+            token = loginService.phoneLogin(loginBody.getUsername(), loginBody.getCode(), request, response);
+        }
+
         map.put(Constants.TOKEN, token);
+
         return ResponseResult.success(map);
     }
 

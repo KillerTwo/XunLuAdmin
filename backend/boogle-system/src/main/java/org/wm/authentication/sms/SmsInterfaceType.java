@@ -8,9 +8,9 @@ public enum SmsInterfaceType {
     ALICLOUD("aLiCloud"),
 
     /**
-     * 云片网短信接口
+     * 腾讯云短信接口
      */
-    CLOUDNETWORK("cloudNetwork");
+    TENCENT("TENCENT");
 
     private String type;
 

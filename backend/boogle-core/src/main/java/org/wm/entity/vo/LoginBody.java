@@ -20,7 +20,7 @@ public class LoginBody {
     private String password;
 
     /**
-     * 验证码
+     * 验证码：登录验证码和手机短信验证码都用该字段
      */
     private String code;
 
@@ -38,9 +38,4 @@ public class LoginBody {
      *  登录方式
      */
     private String type = "account";
-
-    /**
-     *  手机验证码
-     */
-    private String phoneCode;
 }

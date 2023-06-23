@@ -83,11 +83,13 @@ const Login: React.FC = () => {
   };
 
   const handleSubmit = async (values: SYSTEM.LoginParams) => {
+    console.log("values: ", values);
     if (!captcha) {
       message.error('请填写验证码');
       return;
     }
 
+    let username = values.username;
     try {
       if (values.autoLogin === true) {
         if (type === 'account') {
@@ -113,7 +115,12 @@ const Login: React.FC = () => {
         Cookies.remove('rememberMe');
       } // 登录
 
-      const msg = await login({ ...values, code: captcha, uuid: codeUuid });
+      if (type === 'mobile') {
+        username = values.phone
+      }
+
+      console.log("login param: ", { ...values, code: captcha, uuid: codeUuid, type: type, username: username })
+      const msg = await login({ ...values, code: captcha, uuid: codeUuid, type: type, username: username });
       console.log('login msg: ', msg);
 
       if (msg?.code === 200) {
