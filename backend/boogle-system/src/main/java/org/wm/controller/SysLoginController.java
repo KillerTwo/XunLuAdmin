@@ -107,6 +107,7 @@ public class SysLoginController {
         catch (IOException e) {
             return ResponseResult.error(e.getMessage());
         }
+        map.put("code", capStr);
         map.put("uuid", uuid);
         map.put("img", Base64.encode(os.toByteArray()));
         return ResponseResult.success(map);
