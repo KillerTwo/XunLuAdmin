@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.wm.mapper.Oauth2RegisteredClientMapper">
+    
+    <resultMap type="org.wm.domain.Oauth2RegisteredClient" id="Oauth2RegisteredClientResult">
+        <result property="id"    column="id"    />
+        <result property="clientId"    column="client_id"    />
+        <result property="clientIdIssuedAt"    column="client_id_issued_at"    />
+        <result property="clientSecret"    column="client_secret"    />
+        <result property="clientSecretExpiresAt"    column="client_secret_expires_at"    />
+        <result property="clientName"    column="client_name"    />
+        <result property="clientAuthenticationMethods"    column="client_authentication_methods"    />
+        <result property="authorizationGrantTypes"    column="authorization_grant_types"    />
+        <result property="redirectUris"    column="redirect_uris"    />
+        <result property="scopes"    column="scopes"    />
+        <result property="clientSettings"    column="client_settings"    />
+        <result property="tokenSettings"    column="token_settings"    />
+    </resultMap>
+
+    <sql id="selectOauth2RegisteredClientVo">
+        select id, client_id, client_id_issued_at, client_secret, client_secret_expires_at, client_name, client_authentication_methods, authorization_grant_types, redirect_uris, scopes, client_settings, token_settings from oauth2_registered_client
+    </sql>
+
+    <select id="selectOauth2RegisteredClientList" parameterType="org.wm.domain.Oauth2RegisteredClient" resultMap="Oauth2RegisteredClientResult">
+        <include refid="selectOauth2RegisteredClientVo"/>
+        <where>  
+            <if test="clientId != null  and clientId != ''"> and client_id = #{clientId}</if>
+            <if test="clientIdIssuedAt != null "> and client_id_issued_at = #{clientIdIssuedAt}</if>
+            <if test="clientSecret != null  and clientSecret != ''"> and client_secret = #{clientSecret}</if>
+            <if test="clientSecretExpiresAt != null "> and client_secret_expires_at = #{clientSecretExpiresAt}</if>
+            <if test="clientName != null  and clientName != ''"> and client_name like concat('%', #{clientName}, '%')</if>
+            <if test="clientAuthenticationMethods != null  and clientAuthenticationMethods != ''"> and client_authentication_methods = #{clientAuthenticationMethods}</if>
+            <if test="authorizationGrantTypes != null  and authorizationGrantTypes != ''"> and authorization_grant_types = #{authorizationGrantTypes}</if>
+            <if test="redirectUris != null  and redirectUris != ''"> and redirect_uris = #{redirectUris}</if>
+            <if test="scopes != null  and scopes != ''"> and scopes = #{scopes}</if>
+            <if test="clientSettings != null  and clientSettings != ''"> and client_settings = #{clientSettings}</if>
+            <if test="tokenSettings != null  and tokenSettings != ''"> and token_settings = #{tokenSettings}</if>
+        </where>
+    </select>
+    
+    <select id="selectOauth2RegisteredClientById" parameterType="String" resultMap="Oauth2RegisteredClientResult">
+        <include refid="selectOauth2RegisteredClientVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertOauth2RegisteredClient" parameterType="org.wm.domain.Oauth2RegisteredClient">
+        insert into oauth2_registered_client
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="clientId != null and clientId != ''">client_id,</if>
+            <if test="clientIdIssuedAt != null">client_id_issued_at,</if>
+            <if test="clientSecret != null">client_secret,</if>
+            <if test="clientSecretExpiresAt != null">client_secret_expires_at,</if>
+            <if test="clientName != null and clientName != ''">client_name,</if>
+            <if test="clientAuthenticationMethods != null and clientAuthenticationMethods != ''">client_authentication_methods,</if>
+            <if test="authorizationGrantTypes != null and authorizationGrantTypes != ''">authorization_grant_types,</if>
+            <if test="redirectUris != null">redirect_uris,</if>
+            <if test="scopes != null and scopes != ''">scopes,</if>
+            <if test="clientSettings != null and clientSettings != ''">client_settings,</if>
+            <if test="tokenSettings != null and tokenSettings != ''">token_settings,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="clientId != null and clientId != ''">#{clientId},</if>
+            <if test="clientIdIssuedAt != null">#{clientIdIssuedAt},</if>
+            <if test="clientSecret != null">#{clientSecret},</if>
+            <if test="clientSecretExpiresAt != null">#{clientSecretExpiresAt},</if>
+            <if test="clientName != null and clientName != ''">#{clientName},</if>
+            <if test="clientAuthenticationMethods != null and clientAuthenticationMethods != ''">#{clientAuthenticationMethods},</if>
+            <if test="authorizationGrantTypes != null and authorizationGrantTypes != ''">#{authorizationGrantTypes},</if>
+            <if test="redirectUris != null">#{redirectUris},</if>
+            <if test="scopes != null and scopes != ''">#{scopes},</if>
+            <if test="clientSettings != null and clientSettings != ''">#{clientSettings},</if>
+            <if test="tokenSettings != null and tokenSettings != ''">#{tokenSettings},</if>
+         </trim>
+    </insert>
+
+    <update id="updateOauth2RegisteredClient" parameterType="org.wm.domain.Oauth2RegisteredClient">
+        update oauth2_registered_client
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="clientId != null and clientId != ''">client_id = #{clientId},</if>
+            <if test="clientIdIssuedAt != null">client_id_issued_at = #{clientIdIssuedAt},</if>
+            <if test="clientSecret != null">client_secret = #{clientSecret},</if>
+            <if test="clientSecretExpiresAt != null">client_secret_expires_at = #{clientSecretExpiresAt},</if>
+            <if test="clientName != null and clientName != ''">client_name = #{clientName},</if>
+            <if test="clientAuthenticationMethods != null and clientAuthenticationMethods != ''">client_authentication_methods = #{clientAuthenticationMethods},</if>
+            <if test="authorizationGrantTypes != null and authorizationGrantTypes != ''">authorization_grant_types = #{authorizationGrantTypes},</if>
+            <if test="redirectUris != null">redirect_uris = #{redirectUris},</if>
+            <if test="scopes != null and scopes != ''">scopes = #{scopes},</if>
+            <if test="clientSettings != null and clientSettings != ''">client_settings = #{clientSettings},</if>
+            <if test="tokenSettings != null and tokenSettings != ''">token_settings = #{tokenSettings},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteOauth2RegisteredClientById" parameterType="String">
+        delete from oauth2_registered_client where id = #{id}
+    </delete>
+
+    <delete id="deleteOauth2RegisteredClientByIds" parameterType="String">
+        delete from oauth2_registered_client where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

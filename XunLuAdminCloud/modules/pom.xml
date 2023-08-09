@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.wm</groupId>
+        <artifactId>xun-lu-admin-cloud</artifactId>
+        <version>2023.0.1</version>
+    </parent>
+
+    <artifactId>modules</artifactId>
+    <description>工具模块</description>
+
+    <packaging>pom</packaging>
+
+
+    <modules>
+        <module>commons-core</module>
+        <module>commons-logging</module>
+        <module>commons-web</module>
+        <module>commons-redis</module>
+        <module>commons-token</module>
+        <module>commons-data</module>
+        <module>commons-messaging</module>
+        <module>commons-security</module>
+    </modules>
+
+</project>
