@@ -4,6 +4,24 @@ spring:
   profiles:
     active: prod
   cloud:
+    sentinel:
+      eager: true
+      enabled: true
+      filter:
+        enabled: false
+      transport:
+        port: 8717
+        dashboard: localhost:7777
+      # nacos配置持久化
+      datasource:
+        ds1:
+          nacos:
+            server-addr: 192.168.1.5:8848
+            namespace: prod
+            dataId: sentinel-rules-gateway-prod
+            groupId: DEFAULT_GROUP
+            data-type: json
+            rule-type: gw-flow
     nacos:
       config:
         #nacos 地址
