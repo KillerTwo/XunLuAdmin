@@ -14,9 +14,20 @@ spring:
         group: DEFAULT_GROUP
         # 配置文件名后缀
         file-extension: yml
+    sentinel:
+      eager: true
+      enabled: true
+      transport:
+        port: 8716
+        dashboard: localhost:7777
+
   #        shared-configs:
   #          - common-test.yml
   config:
     import:
       - optional:nacos:common-${spring.profiles.active}.${spring.cloud.nacos.config.file-extension}
       - optional:nacos:${spring.application.name}-${spring.profiles.active}.${spring.cloud.nacos.config.file-extension}
+
+feign:
+  sentinel:
+    enabled: true

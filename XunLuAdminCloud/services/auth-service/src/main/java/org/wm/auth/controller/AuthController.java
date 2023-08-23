@@ -61,9 +61,9 @@ public class AuthController {
     @GetMapping("/captcha")
     public ResponseResult<?> captcha() {
 
-        var map = authService.captcha();
+        // var map = authService.captcha();
 
-        return ResponseResult.success(map);
+        return ResponseResult.success("hello captcha");
     }
 
 
