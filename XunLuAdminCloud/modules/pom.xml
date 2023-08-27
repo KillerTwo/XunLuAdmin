@@ -24,6 +24,7 @@
         <module>commons-data</module>
         <module>commons-messaging</module>
         <module>commons-security</module>
+        <module>commons-seata</module>
     </modules>
 
 </project>
