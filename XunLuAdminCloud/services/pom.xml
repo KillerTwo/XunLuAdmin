@@ -15,18 +15,6 @@
 
     <dependencies>
 
-        <!--<dependency>
-            <groupId>org.wm</groupId>
-            <artifactId>commons</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.wm</groupId>
-            <artifactId>logging</artifactId>
-            <version>${project.version}</version>
-        </dependency>-->
-
         <!--nacos服务注册、发现-->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
@@ -43,6 +31,7 @@
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
         </dependency>
+
 
     </dependencies>
 
