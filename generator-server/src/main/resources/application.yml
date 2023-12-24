@@ -1,0 +1,5 @@
+gen:
+  author: wm
+  packageName: org.wm.system
+  autoRemovePre: false
+  tablePrefix: sys_

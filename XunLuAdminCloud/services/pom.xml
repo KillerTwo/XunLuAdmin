@@ -37,7 +37,7 @@
 
     <modules>
         <module>generator-service</module>
-        <module>auth-service</module>
+        <module>validator-service</module>
         <module>monitoring-service</module>
         <module>system-service</module>
         <module>job-service</module>

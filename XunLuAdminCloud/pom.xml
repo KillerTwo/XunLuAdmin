@@ -41,6 +41,7 @@
         <quartz.version>2.3.2</quartz.version>
         <mysql.connector.j.version>8.0.32</mysql.connector.j.version>
         <jackson.version>2.15.2</jackson.version>
+        <tencentcloudapi.version>4.0.11</tencentcloudapi.version>
     </properties>
     <dependencies>
         <dependency>
@@ -227,6 +228,12 @@
                 <version>${jackson.version}</version>
             </dependency>
             <!-- ******************* -->
+
+            <dependency>
+                <groupId>com.tencentcloudapi</groupId>
+                <artifactId>tencentcloud-sdk-java</artifactId>
+                <version>${tencentcloudapi.version}</version>
+            </dependency>
 
         </dependencies>
     </dependencyManagement>
