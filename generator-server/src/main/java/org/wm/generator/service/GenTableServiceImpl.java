@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.wm.generator.constant.GenConstants;
 import org.wm.generator.domain.GenTable;
 import org.wm.generator.domain.GenTableColumn;
+import org.wm.generator.exception.ServiceException;
 import org.wm.generator.mapper.GenTableColumnMapper;
 import org.wm.generator.mapper.GenTableMapper;
 import org.wm.generator.util.*;
@@ -25,6 +26,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -142,7 +145,8 @@ public class GenTableServiceImpl implements IGenTableService {
     @Override
     @Transactional
     public void importGenTable(List<GenTable> tableList) {
-        String operName = SecurityUtils.getUsername();
+        // TODO 获取当前用户
+        String operName = "";
         try {
             for (GenTable table : tableList) {
                 String tableName = table.getTableName();
@@ -186,7 +190,7 @@ public class GenTableServiceImpl implements IGenTableService {
         for (String template : templates) {
             // 渲染模板
             StringWriter sw = new StringWriter();
-            Template tpl = Velocity.getTemplate(template, Constants.UTF8);
+            Template tpl = Velocity.getTemplate(template, StandardCharsets.UTF_8.name());
             tpl.merge(context, sw);
             dataMap.put(template, sw.toString());
         }
@@ -232,11 +236,11 @@ public class GenTableServiceImpl implements IGenTableService {
             if (!StringUtils.containsAny(template, "sql.vm", "api.js.vm", "index.vue.vm", "index-tree.vue.vm")) {
                 // 渲染模板
                 StringWriter sw = new StringWriter();
-                Template tpl = Velocity.getTemplate(template, Constants.UTF8);
+                Template tpl = Velocity.getTemplate(template, StandardCharsets.UTF_8.name());
                 tpl.merge(context, sw);
                 try {
                     String path = getGenPath(table, template);
-                    FileUtils.writeStringToFile(new File(path), sw.toString(), CharsetKit.UTF_8);
+                    FileUtils.writeStringToFile(new File(path), sw.toString(), StandardCharsets.UTF_8.name());
                 } catch (IOException e) {
                     throw new ServiceException("渲染模板失败，表名：" + table.getTableName());
                 }
@@ -328,12 +332,12 @@ public class GenTableServiceImpl implements IGenTableService {
         for (String template : templates) {
             // 渲染模板
             StringWriter sw = new StringWriter();
-            Template tpl = Velocity.getTemplate(template, Constants.UTF8);
+            Template tpl = Velocity.getTemplate(template, StandardCharsets.UTF_8.displayName());
             tpl.merge(context, sw);
             try {
                 // 添加到zip
                 zip.putNextEntry(new ZipEntry(VelocityUtils.getFileName(template, table)));
-                IOUtils.write(sw.toString(), zip, Constants.UTF8);
+                IOUtils.write(sw.toString(), zip, StandardCharsets.UTF_8.displayName());
                 IOUtils.closeQuietly(sw);
                 zip.flush();
                 zip.closeEntry();
