@@ -23,9 +23,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="htmlType"       column="html_type"      />
         <result property="dictType"       column="dict_type"      />
         <result property="sort"           column="sort"           />
-        <result property="createBy"       column="create_by"      />
         <result property="createTime"     column="create_time"    />
-        <result property="updateBy"       column="update_by"      />
         <result property="updateTime"     column="update_time"    />
         <result property="typeScriptType"     column="type_script_type"    />
     </resultMap>

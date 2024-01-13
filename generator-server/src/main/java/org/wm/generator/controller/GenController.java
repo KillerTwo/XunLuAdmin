@@ -1,7 +1,6 @@
 package org.wm.generator.controller;
 
 import com.github.pagehelper.Page;
-import lombok.extern.java.Log;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
