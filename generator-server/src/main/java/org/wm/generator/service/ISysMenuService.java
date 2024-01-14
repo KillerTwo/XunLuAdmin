@@ -69,4 +69,7 @@ public interface ISysMenuService {
      */
     int updateMenu(SysMenu sysMenu);
 
+
+    List<SysMenu> listMenu();
+
 }

@@ -1,17 +1,20 @@
 create table sys_menu
 (
-    id        int auto_increment comment '主键',
-    name      varchar(100) not null comment '菜单名',
-    path      varchar(500) not null comment '菜单路由',
-    component varchar(50)  null comment '前端组件名',
-    redirect  varchar(500) null comment '重定向路径',
-    meta      json         not null comment '元信息',
-    parent_id int          not null default 0 comment '父菜单ID',
-    title     varchar(50)  null comment '前端国际化标题',
-    constraint sys_menu_pk
-        primary key (id)
+    id          int auto_increment comment '主键'
+        primary key,
+    name        varchar(100)  not null comment '菜单名',
+    path        varchar(500)  not null comment '菜单路由',
+    component   varchar(50)   null comment '前端组件名',
+    redirect    varchar(500)  null comment '重定向路径',
+    meta        json          not null comment '元信息',
+    parent_id   int default 0 not null comment '父菜单ID',
+    title       varchar(50)   null comment '前端国际化标题',
+    update_time datetime      null comment '更新时间',
+    create_time datetime      null comment '创建时间'
 )
     comment '菜单表';
+
+
 
 
 create table gen_table

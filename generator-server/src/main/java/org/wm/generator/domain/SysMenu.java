@@ -3,6 +3,7 @@ package org.wm.generator.domain;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 功能描述：<功能描述>
@@ -32,6 +33,8 @@ public class SysMenu {
     private LocalDateTime createTime;
 
     private LocalDateTime updateTime;
+
+    private List<SysMenu> children;
 
     @Data
     public static class Meta {

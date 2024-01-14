@@ -41,3 +41,12 @@ spring:
 #          max-active: 8
 #          # #连接池最大阻塞等待时间（使用负值表示没有限制）
 #          max-wait: -1ms
+
+mybatis:
+  type-aliases-package: org.wm.generator.domain
+  type-handlers-package: org.wm.generator.typehandler
+  configuration:
+    map-underscore-to-camel-case: true
+    default-fetch-size: 100
+    default-statement-timeout: 30
+  mapper-locations: classpath:mapper/*.xml
