@@ -22,9 +22,10 @@ import java.util.Map;
  * @date 2023/7/11 00:47
  * @since 1.0
  **/
-@RestController
-@RequestMapping
+// @RestController
+// @RequestMapping
 @RequiredArgsConstructor
+@Deprecated
 public class AuthController {
 
     private final MenuServiceClient menuServiceClient;

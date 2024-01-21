@@ -13,6 +13,7 @@ import java.util.Map;
  * @date 2023/07/16 17:28
  * @since 1.0
 **/
+@Deprecated
 public interface AuthService {
 
 

@@ -2,35 +2,30 @@ package org.wm.auth.service.impl;
 
 import cn.hutool.core.codec.Base64;
 import com.google.code.kaptcha.Producer;
-import eu.bitwalker.useragentutils.UserAgent;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FastByteArrayOutputStream;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.wm.auth.code.captcha.enums.CaptchaType;
 import org.wm.auth.code.captcha.facade.CaptchaFacade;
 import org.wm.auth.feignClient.UserServiceClient;
-import org.wm.auth.service.AuthService;
+import org.wm.auth.service.ValidatorService;
 import org.wm.commons.constants.Constants;
 import org.wm.commons.constants.RedisKeyConstants;
-import org.wm.commons.dto.LoginUser;
-import org.wm.commons.enums.UserStatus;
 import org.wm.commons.exception.ServiceException;
 import org.wm.commons.exception.user.CaptchaException;
 import org.wm.commons.exception.user.CaptchaExpireException;
 import org.wm.commons.utils.StringUtils;
-import org.wm.commons.web.utils.AddressUtils;
-import org.wm.commons.web.utils.IpUtils;
 import org.wm.commons.utils.uuid.IdUtils;
-import org.wm.commons.web.utils.ServletUtils;
 import org.wm.redis.service.RedisCache;
 import org.wm.token.TokenParser;
-import org.wm.token.domain.TokenPayload;
-
-import jakarta.annotation.Resource;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -41,19 +36,16 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * 功能描述：<功能描述>
- * 认证授权service
- *
- * @author dove
- * @date 2023/07/16 17:28
+ * 验证器Service
+ * @author dove 
+ * @date 2024/01/22 00:20
  * @since 1.0
- **/
+**/
 @RefreshScope
 @Slf4j
 @RequiredArgsConstructor
 @Service
-@Deprecated
-public class AuthServiceImpl implements AuthService {
-
+public class ValidatorServiceImpl implements ValidatorService {
 
     private final RedisCache redisCache;
 
@@ -73,69 +65,8 @@ public class AuthServiceImpl implements AuthService {
     @Value("${captcha.captcha-type}")
     private String captchaType;
 
-
-
-
-    /**
-     * 功能描述：<功能描述>
-     * 用户名密码登录
-     *
-     * @param username 用户名
-     * @param password 密码
-     * @param code     验证码
-     * @param uuid     验证码存储的uuid
-     * @return TokenPayload jwt token信息
-     * @throws ServiceException 用户验证失败
-     * @author dove
-     * @date 2023/7/20 00:13
-     */
     @Override
-    public TokenPayload login(String username, String password, String code, String uuid) {
-        boolean captchaOnOff = redisCache.getCacheObject(RedisKeyConstants.CAPTCHA_ON_OFF);
-        // 验证码开关
-        if (captchaOnOff) {
-            validateCaptcha(username, code, uuid);
-        }
-
-        var result = userServiceClient.userInfoByUsername(username);
-        var user = result.getData();
-
-        /*LoginUser sysUserVo = new LoginUser();
-        sysUserVo.setRoles(roles);
-        sysUserVo.setPermissions(permissions);*/
-
-        if (StringUtils.isNull(user)) {
-            // TODO 需要重新设置调用记录日志的方式：服务调用或者消息中间件的方式
-            // AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL, MessageUtils.message("user.password.not.match")));
-            log.info("登录用户：{} 不存在.", username);
-            throw new ServiceException("登录用户：" + username + " 不存在");
-        } else if (UserStatus.DELETED.getCode().equals(user.getDelFlag())) {
-            log.info("登录用户：{} 已被删除.", username);
-            // AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL, MessageUtils.message("user.password.not.match")));
-            throw new ServiceException("对不起，您的账号：" + username + " 已被删除");
-        } else if (UserStatus.DISABLE.getCode().equals(user.getStatus())) {
-            log.info("登录用户：{} 已被停用.", username);
-            // AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL, MessageUtils.message("user.password.not.match")));
-            throw new ServiceException("对不起，您的账号：" + username + " 已停用");
-        }
-        // AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success")));
-
-        // TODO 密码匹配
-        /*if (!SecurityUtils.matchesPassword(password, user.getPassword())) {
-            log.error("登录用户：{} , {} 密码不正确.", username, password);
-            throw new ServiceException("用户不存在/密码错误");
-        }*/
-
-        // 记录客户端浏览器信息
-        setUserAgent(user);
-        // 生成token
-        var token = tokenParser.createToken(user);
-        return token;
-    }
-
-
-    @Override
-    public Map<String, Object> captcha() {
+    public Map<String, Object> captcha(HttpServletRequest request, @Nullable HttpServletResponse response) {
         boolean captchaOnOff = redisCache.getCacheObject(RedisKeyConstants.CAPTCHA_ON_OFF);
         Map<String, Object> map = new HashMap<>();
         map.put("captchaOnOff", captchaOnOff);
@@ -150,7 +81,7 @@ public class AuthServiceImpl implements AuthService {
         String capStr = null, code = null;
         BufferedImage image = null;
 
-        // 生成验证码
+        // 生成验证码  TODO 取消这个方式
         if ("math".equals(captchaType)) {
             String capText = captchaProducerMath.createText();
             capStr = capText.substring(0, capText.lastIndexOf("@"));
@@ -161,8 +92,11 @@ public class AuthServiceImpl implements AuthService {
             image = captchaProducer.createImage(capStr);
         }
 
-        var res = captchaFacade.obtainCodeBase64(CaptchaType.getCaptchaType(captchaType),
-                new ServletWebRequest(null, null), verifyKey);
+        /// TODO 需要使用这个方式生成验证码
+        /*var res = captchaFacade.obtainCodeBase64(CaptchaType.getCaptchaType(captchaType),
+                new ServletWebRequest(request, response), verifyKey);*/
+
+        // BufferedImage image = res.getImageBase64();
 
         redisCache.setCacheObject(verifyKey, code, Constants.CAPTCHA_EXPIRATION, TimeUnit.MINUTES);
         // 转换流信息写出
@@ -186,6 +120,7 @@ public class AuthServiceImpl implements AuthService {
      * @param code     验证码
      * @param uuid     唯一标识
      */
+    @Override
     public void validateCaptcha(String username, String code, String uuid) {
         String verifyKey = Constants.CAPTCHA_CODE_KEY + StringUtils.nvl(uuid, "");
         String captcha = redisCache.getCacheObject(verifyKey);
@@ -200,15 +135,5 @@ public class AuthServiceImpl implements AuthService {
             throw new CaptchaException();
         }
     }
-
-    public void setUserAgent(LoginUser loginUser) {
-        UserAgent userAgent = UserAgent.parseUserAgentString(ServletUtils.getRequest().getHeader("User-Agent"));
-        String ip = IpUtils.getIpAddr(ServletUtils.getRequest());
-        loginUser.setIpaddr(ip);
-        loginUser.setLoginLocation(AddressUtils.getRealAddressByIP(ip));
-        loginUser.setBrowser(userAgent.getBrowser().getName());
-        loginUser.setOs(userAgent.getOperatingSystem().getName());
-    }
-
 
 }
