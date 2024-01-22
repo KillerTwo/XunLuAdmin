@@ -31,12 +31,12 @@ public interface ValidatorService {
      *       校验验证码
      * @author dove
      * @date 2024/1/22 00:24
-     * @param username 用户名
      * @param code 验证码
      * @param uuid 验证码uuid
      * @return void
      * @throws
      */
-    void validateCaptcha(String username, String code, String uuid);
+    void validateCaptcha(String code, String uuid,
+                         HttpServletRequest request, @Nullable HttpServletResponse response);
 
 }
