@@ -3,12 +3,15 @@ package org.wm.security.utils;
 
 import io.micrometer.core.instrument.util.StringUtils;
 
-import org.wm.commons.constants.SecurityConstants;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.wm.commons.constants.TokenConstants;
 import org.wm.commons.dto.LoginUser;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.wm.commons.utils.SpringContextHolder;
 import org.wm.commons.web.utils.ServletUtils;
+import org.wm.security.feignClient.UserServiceClient;
 
 /**
  * 功能描述：<功能描述>
@@ -41,8 +44,16 @@ public class SecurityUtils {
      * 获取登录用户信息
      */
     public static LoginUser getLoginUser() {
-        // TODO
-        return null;
+        // 通过查询数据库的方式 TODO 需要验证
+        var user = SecurityContextHolder.getContext().getAuthentication();
+        var userServiceClient = SpringContextHolder.getBean(UserServiceClient.class);
+
+        var principal = (Jwt) user.getPrincipal();
+
+        var username = principal.getClaim("sub");
+
+        var sysUser = userServiceClient.userInfoByUsername(String.valueOf(username));
+        return sysUser.getData();
     }
 
     /**

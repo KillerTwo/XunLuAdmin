@@ -197,4 +197,13 @@ public class LoginUser implements Serializable {
         this.postIds = postIds;
         this.roles = roles;
     }
+
+
+    public boolean isAdmin() {
+        return isAdmin(this.userId);
+    }
+
+    public static boolean isAdmin(Long userId) {
+        return userId != null && 1L == userId;
+    }
 }

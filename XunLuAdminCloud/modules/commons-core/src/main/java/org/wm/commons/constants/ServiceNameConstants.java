@@ -23,6 +23,6 @@ public final class ServiceNameConstants {
     /**
      * OAuth2 授权服务 微服务名
      */
-    public static final String OAUTH2_SERVICE = "oatuh2-service";
+    public static final String OAUTH2_SERVICE = "oauth2-service";
 
 }

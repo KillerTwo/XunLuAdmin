@@ -25,7 +25,7 @@ public interface UserServiceClient {
 
     /**
      * 功能描述：<功能描述>
-     *     获取用户登录信息
+     *     根据用户名获取用户登录信息
      *
      * @author dove
      * @date 2023/7/19 23:59

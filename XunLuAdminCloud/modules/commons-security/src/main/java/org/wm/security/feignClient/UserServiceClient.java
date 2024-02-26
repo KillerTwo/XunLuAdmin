@@ -2,6 +2,7 @@ package org.wm.security.feignClient;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -25,7 +26,7 @@ public interface UserServiceClient {
 
     /**
      * 功能描述：<功能描述>
-     *     获取用户登录信息
+     *     根据用户名获取用户登录信息
      *
      * @author dove
      * @date 2023/7/19 23:59

@@ -41,11 +41,6 @@ public class CharCaptchaProcessor extends AbstractCaptchaProcessor {
     }
 
     @Override
-    public boolean validateCaptcha(ServletWebRequest request, String key, String captcha) {
-        return false;
-    }
-
-    @Override
     protected RedisCache getCacheObject() {
         return redisCache;
     }

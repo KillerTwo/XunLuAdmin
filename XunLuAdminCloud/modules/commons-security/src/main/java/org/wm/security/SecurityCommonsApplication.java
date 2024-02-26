@@ -2,6 +2,7 @@ package org.wm.security;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 
 /**
  * 功能描述：<功能描述>
@@ -11,6 +12,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @since 1.0
  *
 **/
+@EnableFeignClients   // TODO 需要验证这个工具类使用@SpringBootApplication是否合适
 @SpringBootApplication
 public class SecurityCommonsApplication {
 

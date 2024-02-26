@@ -42,7 +42,7 @@ export async function getFakeCaptcha(data: SYSTEM.PhoneCodeBody) {
 
 /** 获取验证码 **/
 export async function getCaptchaImage() {
-  return request<SYSTEM.ResponseResult>(`/api/captchaImage`, {
+  return request<SYSTEM.ResponseResult>(`/api/validator/captchaImage`, {
     method: 'GET'
   });
 }

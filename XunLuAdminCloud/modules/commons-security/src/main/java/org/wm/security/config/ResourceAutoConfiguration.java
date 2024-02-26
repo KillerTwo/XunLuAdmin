@@ -19,6 +19,7 @@ import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
+import org.springframework.security.oauth2.server.resource.authentication.JwtBearerTokenAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.oauth2.server.resource.authentication.OpaqueTokenAuthenticationProvider;
 import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
@@ -31,6 +32,8 @@ import org.wm.security.authentication.settings.OAuth2TokenType;
 import org.wm.security.config.properties.PermitAllUrlProperties;
 import org.wm.security.constans.OAuth2TokenConstants;
 
+import java.time.Duration;
+import java.util.Collections;
 import java.util.Random;
 
 /**
@@ -116,8 +119,24 @@ public class ResourceAutoConfiguration {
         // OAuth2TokenValidator<Jwt> audienceValidator = audienceValidator();
         // OAuth2TokenValidator<Jwt> withIssuer = JwtValidators.createDefaultWithIssuer(issuerUri);
 
+
+        // 配置一个时间容忍差，在该时间范围内都认为token是有效的
+        /*OAuth2TokenValidator<Jwt> withClockSkew = new DelegatingOAuth2TokenValidator<>(
+                new JwtTimestampValidator(Duration.ofSeconds(60)),
+                new JwtIssuerValidator(issuerUri));
+
+        jwtDecoder.setJwtValidator(withClockSkew);*/
+
+
         OAuth2TokenValidator<Jwt> withAudience = new DelegatingOAuth2TokenValidator<>(new JwtTimestampValidator());
         jwtDecoder.setJwtValidator(withAudience);
+
+
+        /*MappedJwtClaimSetConverter converter = MappedJwtClaimSetConverter
+                .withDefaults(Collections.singletonMap("sub", this::lookupUserIdBySub));
+
+        jwtDecoder.setClaimSetConverter(converter);*/
+
         return jwtDecoder;
     }
 

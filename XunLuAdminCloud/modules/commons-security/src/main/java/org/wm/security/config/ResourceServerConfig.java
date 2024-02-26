@@ -123,10 +123,12 @@ public class ResourceServerConfig {
                 .oauth2ResourceServer((oauth2) -> oauth2
                                 .authenticationManagerResolver(tokenAuthenticationManagerResolver)
                                 .authenticationEntryPoint(unauthorizedHandler)
+
                         // 统一异常处理器中处理SecurityExceptionHandler
                         // .accessDeniedHandler(customAccessDeniedHandler)
 
-                );
+                )
+        ;
 
         // .oauth2ResourceServer()
         // .jwt();

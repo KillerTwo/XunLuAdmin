@@ -31,7 +31,7 @@ public class ValidatorController {
      * @date 2023/7/24 23:20
      * @return org.wm.commons.response.ResponseResult<?>
      */
-    @GetMapping("/captcha")
+    @GetMapping("/captchaImage")
     public ResponseResult<?> captcha(HttpServletRequest request, @Nullable HttpServletResponse response) {
 
         var map = validatorService.captcha(request, response);
