@@ -28,7 +28,7 @@ public class SecurityUtils {
      */
     public static Long getUserId() {
         // TODO
-        return null;
+        return getLoginUser().getUserId();
     }
 
     /**
@@ -36,7 +36,12 @@ public class SecurityUtils {
      */
     public static String getUsername() {
         // TODO
-        return null;
+        var user = SecurityContextHolder.getContext().getAuthentication();
+
+        var principal = (Jwt) user.getPrincipal();
+
+        var username = principal.getClaim("sub");
+        return username != null ? String.valueOf(username): null;
     }
 
 
