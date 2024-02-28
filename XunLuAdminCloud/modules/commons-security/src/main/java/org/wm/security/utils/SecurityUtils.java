@@ -11,7 +11,10 @@ import org.wm.commons.dto.LoginUser;
 import jakarta.servlet.http.HttpServletRequest;
 import org.wm.commons.utils.SpringContextHolder;
 import org.wm.commons.web.utils.ServletUtils;
+import org.wm.redis.service.RedisCache;
 import org.wm.security.feignClient.UserServiceClient;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * 功能描述：<功能描述>
@@ -51,14 +54,25 @@ public class SecurityUtils {
     public static LoginUser getLoginUser() {
         // 通过查询数据库的方式 TODO 需要验证
         var user = SecurityContextHolder.getContext().getAuthentication();
-        var userServiceClient = SpringContextHolder.getBean(UserServiceClient.class);
 
-        var principal = (Jwt) user.getPrincipal();
+        var redisCache = SpringContextHolder.getBean(RedisCache.class);
+        if (user != null) {
+            var principal = (Jwt) user.getPrincipal();
+            var username = principal.getClaim("sub");
+            var userKey = "LOGIN_USER:" + username;
+            LoginUser sysUser = redisCache.getCacheObject(userKey);
+            if (sysUser != null) {
+                return sysUser;
+            }
+            var userServiceClient = SpringContextHolder.getBean(UserServiceClient.class);
+            var res = userServiceClient.userInfoByUsername(String.valueOf(username));
+            sysUser = res.getData();
 
-        var username = principal.getClaim("sub");
-
-        var sysUser = userServiceClient.userInfoByUsername(String.valueOf(username));
-        return sysUser.getData();
+            // TODO 需要配置当前用户过期时间
+            redisCache.setCacheObject(userKey, sysUser, 30, TimeUnit.MINUTES);
+            return sysUser;
+        }
+        return null;
     }
 
     /**
