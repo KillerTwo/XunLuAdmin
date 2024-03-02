@@ -1,92 +1,68 @@
 <!DOCTYPE html>
-<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <title>登录统一认证服务平台</title>
-    <meta name="description" content="统一认证服务平台">
-
-    <link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.css"
-          th:href="@{/webjars/bootstrap/css/bootstrap.css}"/>
-
-    <link rel="stylesheet" href="/webjars/font-awesome/css/fontawesome.css"
-          th:href="@{/webjars/font-awesome/css/fontawesome.css}"/>
-
-    <link href="/css/style.min.css" rel="stylesheet"/>
-    <link href="../static/css/login.css" th:href="@{/css/login.min.css}" rel="stylesheet"/>
-    <link href="../static/css/web-ui.css" th:href="@{/css/web-ui.css}" rel="stylesheet"/>
-
-    <!-- 360浏览器急速模式 -->
-    <meta name="renderer" content="webkit">
-    <!-- 避免IE使用兼容模式 -->
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <link rel="shortcut icon" href="../static/favicon.ico" th:href="@{/favicon.ico}"/>
-    <style type="text/css">label.error { position:inherit;  }</style>
-    <!--<script>
-        if(window.top!==window.self){alert('未登录或登录超时。请重新登录');window.top.location=window.location};
-    </script>-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acme Inc Sign Up</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="signin">
-    <div class="signinpanel">
-        <div class="row">
-            <div class="col-sm-7">
-                <div class="signin-info">
-                    <div class="logopanel m-b">
-                        <h1><img alt="[ 钦差 ]" src="../static/img/钦差logo.jpeg" th:src="@{/img/钦差logo.jpeg}"
-                                 style="width: 168px;height: 122px;"></h1>
-                    </div>
-                    <div class="m-b"></div>
-                    <h4>欢迎使用 <strong>统一认证服务平台</strong></h4>
-                    <ul class="m-b">
-                        <li><i class="fa fa-arrow-circle-o-right m-r-xs"></i> SpringBoot</li>
-                        <li><i class="fa fa-arrow-circle-o-right m-r-xs"></i> Mybatis</li>
-                        <li><i class="fa fa-arrow-circle-o-right m-r-xs"></i> Spring Security</li>
-                        <li><i class="fa fa-arrow-circle-o-right m-r-xs"></i> Spring Authorization Server</li>
-                        <li><i class="fa fa-arrow-circle-o-right m-r-xs"></i> JWT</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="col-sm-5">
-                <form id="signupForm" autocomplete="off" action="/oauth2/doLogin" method="post">
-                    <input type="hidden" name="uuid" id="uuid" value="">
-                    <h4 class="no-margins">登录：</h4>
-                    <p class="m-t-md">两袖清风存正气，五湖皓月照丹心</p>
-                    <p th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></p>
-                    <input type="text"     name="username" class="form-control uname"     placeholder="用户名" value="admin"    />
-                    <input type="password" name="password" class="form-control pword"     placeholder="密码"   value="admin123" />
-                    <!--th:if="${captchaEnabled==true}"-->
-					<div class="row m-t">
-						<div class="col-6">
-						    <input type="text" name="code" class="form-control code" placeholder="验证码" maxlength="5" />
-						</div>
-						<div class="col-6">
-							<a href="javascript:void(0);" title="点击更换验证码">
-								<!--<img th:src="@{/captchaImage(type=${captchaType})}" class="imgcode" width="85%"/>-->
-								<img class="imgcode" width="85%"/>
-							</a>
-						</div>
-					</div>
-                    <div class="checkbox-custom" th:if="${isRemembered}" th:classappend="${captchaEnabled==false} ? 'm-t'">
-				        <input type="checkbox" id="rememberme" name="rememberme"> <label for="rememberme">记住我</label>
-				    </div>
-                    <button class="btn btn-success btn-block" id="btnSubmit" data-loading="正在验证登录，请稍候...">登录</button>
-                </form>
-            </div>
+<body class="bg-gray-800 font-sans">
+
+<div class="flex h-screen overflow-hidden">
+    <!-- Left Side -->
+    <div class="w-1/2 bg-zinc-900 flex flex-col justify-between p-8 text-white bg-[url('https://vben.vvbin.cn/assets/login-box-bg-BwcHql23.svg')] bg-no-repeat bg-[length:400px_250px] bg-[center_top_8rem]">
+        <div>
+            <h1 class="text-4xl font-bold mb-2"><img src="https://vben.vvbin.cn/assets/logo-C4i4nT_7.png" class="w-[30px] inline-block" />XunLu Admin</h1>
         </div>
-        <div class="signup-footer">
-            <div class="pull-left">
-                Copyright © 2022-2022 t All Rights Reserved. <br>
+        <div class="text-center">
+            <p class="text-white mb-2 ">用户统一认证管理系统</p>
+            <ul class="list-image-[url(checkmark.png)]">
+                <li>SpringBoot</li>
+                <li>Mybatis</li>
+                <li>Spring Security</li>
+                <li>Spring Authorization Server</li>
+                <li>JWT</li>
+                <!-- ... -->
+            </ul>
+        </div>
+
+        <div>
+            <p class="text-gray-400">Copyright © 2022-2022 t All Rights Reserved.</p>
+        </div>
+
+    </div>
+
+    <!-- Right Side -->
+    <!-- <div class="w-1/2 bg-gray-700 flex flex-col justify-center p-8"> -->
+    <div class="w-1/2 bg-white flex flex-col p-8">
+        <div class="mb-[35%] self-end">
+            <button class="text-gray-500 hover:text-gray-300">注册用户</button>
+        </div>
+        <div class="max-w-md w-full mx-auto">
+            <h2 class="text-3xl font-semibold text-center mb-6 text-black">登     录</h2>
+            <p class="text-gray-400 text-center mb-8">Enter your username and password below to create your account</p>
+            <div class="mb-4">
+                <input class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50" type="input" placeholder="用户名">
             </div>
+            <div class="mb-4">
+                <input class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50" type="password" placeholder="密码">
+            </div>
+            <div class="mb-4">
+                <button class="bg-black w-full p-3 rounded text-white hover:bg-gray-800">登录</button>
+            </div>
+            <div class="flex items-center justify-between my-4">
+                <hr class="w-[35%] bg-gray-600"> <span class="p-2 text-xs text-gray-500 uppercase">或者通过</span> <hr class="w-[35%] bg-gray-600">
+            </div>
+            <div class="mb-4">
+                <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background shadow-sm hover:bg-gray-300 hover:text-accent-foreground h-9 px-4 py-2 w-full">
+                    <!-- Include GitHub icon SVG here -->
+                    <svg viewBox="0 0 438.549 438.549" class="mr-2 h-4 w-4"><path fill="currentColor" d="M409.132 114.573c-19.608-33.596-46.205-60.194-79.798-79.8-33.598-19.607-70.277-29.408-110.063-29.408-39.781 0-76.472 9.804-110.063 29.408-33.596 19.605-60.192 46.204-79.8 79.8C9.803 148.168 0 184.854 0 224.63c0 47.78 13.94 90.745 41.827 128.906 27.884 38.164 63.906 64.572 108.063 79.227 5.14.954 8.945.283 11.419-1.996 2.475-2.282 3.711-5.14 3.711-8.562 0-.571-.049-5.708-.144-15.417a2549.81 2549.81 0 01-.144-25.406l-6.567 1.136c-4.187.767-9.469 1.092-15.846 1-6.374-.089-12.991-.757-19.842-1.999-6.854-1.231-13.229-4.086-19.13-8.559-5.898-4.473-10.085-10.328-12.56-17.556l-2.855-6.57c-1.903-4.374-4.899-9.233-8.992-14.559-4.093-5.331-8.232-8.945-12.419-10.848l-1.999-1.431c-1.332-.951-2.568-2.098-3.711-3.429-1.142-1.331-1.997-2.663-2.568-3.997-.572-1.335-.098-2.43 1.427-3.289 1.525-.859 4.281-1.276 8.28-1.276l5.708.853c3.807.763 8.516 3.042 14.133 6.851 5.614 3.806 10.229 8.754 13.846 14.842 4.38 7.806 9.657 13.754 15.846 17.847 6.184 4.093 12.419 6.136 18.699 6.136 6.28 0 11.704-.476 16.274-1.423 4.565-.952 8.848-2.383 12.847-4.285 1.713-12.758 6.377-22.559 13.988-29.41-10.848-1.14-20.601-2.857-29.264-5.14-8.658-2.286-17.605-5.996-26.835-11.14-9.235-5.137-16.896-11.516-22.985-19.126-6.09-7.614-11.088-17.61-14.987-29.979-3.901-12.374-5.852-26.648-5.852-42.826 0-23.035 7.52-42.637 22.557-58.817-7.044-17.318-6.379-36.732 1.997-58.24 5.52-1.715 13.706-.428 24.554 3.853 10.85 4.283 18.794 7.952 23.84 10.994 5.046 3.041 9.089 5.618 12.135 7.708 17.705-4.947 35.976-7.421 54.818-7.421s37.117 2.474 54.823 7.421l10.849-6.849c7.419-4.57 16.18-8.758 26.262-12.565 10.088-3.805 17.802-4.853 23.134-3.138 8.562 21.509 9.325 40.922 2.279 58.24 15.036 16.18 22.559 35.787 22.559 58.817 0 16.178-1.958 30.497-5.853 42.966-3.9 12.471-8.941 22.457-15.125 29.979-6.191 7.521-13.901 13.85-23.131 18.986-9.232 5.14-18.182 8.85-26.84 11.136-8.662 2.286-18.415 4.004-29.263 5.146 9.894 8.562 14.842 22.077 14.842 40.539v60.237c0 3.422 1.19 6.279 3.572 8.562 2.379 2.279 6.136 2.95 11.276 1.995 44.163-14.653 80.185-41.062 108.068-79.226 27.88-38.161 41.825-81.126 41.825-128.906-.01-39.771-9.818-76.454-29.414-110.049z"></path></svg>
+                    <span class="ml-2">GitHub</span>
+                </button>
+            </div>
+            <p class="text-xs text-center text-gray-400">By clicking continue, you agree to our Terms of Service and Privacy Policy.</p>
         </div>
     </div>
-<script th:inline="javascript"> var ctx = [[@{/}]]; var captchaType = [[${captchaType}]]; </script>
-<!--[if lte IE 8]><script>window.location.href=ctx+'html/ie.html';</script><![endif]-->
-<!-- 全局js -->
-<script src="/webjars/jquery/jquery.js" th:src="@{/webjars/jquery/jquery.js}"></script>
-<script src="/webjars/bootstrap/js/bootstrap.min.js" th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
-<script src="/webjars/jquery-blockui/jquery.blockUI.js" th:src="@{/webjars/jquery-blockui/jquery.blockUI.js}"></script>
-<script src="../static/js/validate/jquery.validate.min.js" th:src="@{/js/validate/jquery.validate.min.js}"></script>
-<script src="../static/js/layer/layer.min.js" th:src="@{/js/layer/layer.min.js}"></script>
-<script src="../static/js/login.js" th:src="@{/js/login.js}"></script>
+</div>
 </body>
 </html>
