@@ -39,7 +39,7 @@
         <validation.api.version>3.0.2</validation.api.version>
         <velocity.engine.version>2.3</velocity.engine.version>
         <quartz.version>2.3.2</quartz.version>
-        <mysql.connector.j.version>8.0.32</mysql.connector.j.version>
+        <mysql.connector.j.version>8.3.0</mysql.connector.j.version>
         <jackson.version>2.15.2</jackson.version>
         <tencentcloudapi.version>4.0.11</tencentcloudapi.version>
     </properties>

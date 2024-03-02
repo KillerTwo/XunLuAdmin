@@ -420,7 +420,7 @@ public class AuthorizationServerConfig {
 	public AuthorizationServerSettings authorizationServerSettings() {
 		return AuthorizationServerSettings.builder()
 				// .issuer()
-				// .oidcUserInfoEndpoint("/userinfo")
+				.oidcUserInfoEndpoint("/oauth2/userinfo")
 				.build();
 	}
 
