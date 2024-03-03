@@ -90,7 +90,11 @@ public class DefaultSecurityConfig {
 								"/oauth2/doLogin")
 					.permitAll()
 					.anyRequest().authenticated()
-			);
+			).csrf(httpSecurityCsrfConfigurer -> {
+					httpSecurityCsrfConfigurer
+							.ignoringRequestMatchers("/login",
+									"/oauth2/login", "/oauth2/doLogin");
+				});
 
 		return http.build();
 	}

@@ -16,14 +16,14 @@
         </div>
         <div class="text-center">
             <p class="text-white mb-2 ">用户统一认证管理系统</p>
-            <ul class="list-image-[url(checkmark.png)]">
+            <!--<ul class="list-image-[url(checkmark.png)]">
                 <li>SpringBoot</li>
                 <li>Mybatis</li>
                 <li>Spring Security</li>
                 <li>Spring Authorization Server</li>
                 <li>JWT</li>
-                <!-- ... -->
-            </ul>
+                &lt;!&ndash; ... &ndash;&gt;
+            </ul>-->
         </div>
 
         <div>
@@ -41,15 +41,23 @@
         <div class="max-w-md w-full mx-auto">
             <h2 class="text-3xl font-semibold text-center mb-6 text-black">登     录</h2>
             <p class="text-gray-400 text-center mb-8">Enter your username and password below to create your account</p>
-            <div class="mb-4">
-                <input class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50" type="input" placeholder="用户名">
-            </div>
-            <div class="mb-4">
-                <input class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50" type="password" placeholder="密码">
-            </div>
-            <div class="mb-4">
-                <button class="bg-black w-full p-3 rounded text-white hover:bg-gray-800">登录</button>
-            </div>
+            <form id="signupForm" autocomplete="off" action="/oauth2/doLogin" method="post">
+                <div class="mb-4">
+                    <input class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm
+                    shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium
+                    placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring
+                    disabled:cursor-not-allowed disabled:opacity-50" type="text" name="username" placeholder="用户名" />
+                </div>
+                <div class="mb-4">
+                    <input class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm
+                    shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium
+                    placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring
+                    disabled:cursor-not-allowed disabled:opacity-50" type="password" name="password" placeholder="密码" />
+                </div>
+                <div class="mb-4">
+                    <button class="bg-black w-full p-3 rounded text-white hover:bg-gray-800" id="btnSubmit">登录</button>
+                </div>
+            </form>
             <div class="flex items-center justify-between my-4">
                 <hr class="w-[35%] bg-gray-600"> <span class="p-2 text-xs text-gray-500 uppercase">或者通过</span> <hr class="w-[35%] bg-gray-600">
             </div>
@@ -64,5 +72,16 @@
         </div>
     </div>
 </div>
+
+
+<script th:inline="javascript"> var ctx = [[@{/}]]; var captchaType = [[${captchaType}]]; </script>
+<!--[if lte IE 8]><script>window.location.href=ctx+'html/ie.html';</script><![endif]-->
+<!-- 全局js -->
+<script src="/webjars/jquery/jquery.js" th:src="@{/webjars/jquery/jquery.js}"></script>
+<script src="/webjars/bootstrap/js/bootstrap.min.js" th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+<script src="/webjars/jquery-blockui/jquery.blockUI.js" th:src="@{/webjars/jquery-blockui/jquery.blockUI.js}"></script>
+<script src="../static/js/validate/jquery.validate.min.js" th:src="@{/js/validate/jquery.validate.min.js}"></script>
+<script src="../static/js/layer/layer.min.js" th:src="@{/js/layer/layer.min.js}"></script>
+<script src="../static/js/login.js" th:src="@{/js/login.js}"></script>
 </body>
 </html>
