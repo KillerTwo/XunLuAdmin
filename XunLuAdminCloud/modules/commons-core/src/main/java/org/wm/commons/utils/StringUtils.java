@@ -1,5 +1,6 @@
 package org.wm.commons.utils;
 
+import org.springframework.lang.Nullable;
 import org.springframework.util.AntPathMatcher;
 import org.wm.commons.constants.Constants;
 
@@ -494,4 +495,9 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
         }
         return sb.toString();
     }
+
+    public static String[] delimitedListToStringArray(@Nullable String str, @Nullable String delimiter) {
+        return org.springframework.util.StringUtils.delimitedListToStringArray(str, delimiter, null);
+    }
+
 }

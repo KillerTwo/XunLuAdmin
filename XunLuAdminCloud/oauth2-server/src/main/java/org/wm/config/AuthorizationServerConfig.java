@@ -43,6 +43,7 @@ import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.OAuth2Token;
 import org.springframework.security.oauth2.core.oidc.OidcScopes;
+import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.security.oauth2.core.oidc.endpoint.OidcParameterNames;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.security.oauth2.server.authorization.*;
@@ -52,6 +53,8 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.jackson2.OAuth2AuthorizationServerJackson2Module;
+import org.springframework.security.oauth2.server.authorization.oidc.authentication.OidcUserInfoAuthenticationContext;
+import org.springframework.security.oauth2.server.authorization.oidc.authentication.OidcUserInfoAuthenticationToken;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
 import org.springframework.security.oauth2.server.authorization.settings.OAuth2TokenFormat;
@@ -61,6 +64,7 @@ import org.springframework.security.oauth2.server.authorization.web.authenticati
 import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2AuthorizationCodeAuthenticationConverter;
 import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2ClientCredentialsAuthenticationConverter;
 import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2RefreshTokenAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationConverter;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
@@ -78,14 +82,17 @@ import org.wm.authentication.password.OAuth2AuthorizationPasswordRequestAuthenti
 import org.wm.authentication.password.OAuth2PasswordAuthenticationConverter;
 import org.wm.authorization.RedisOAuth2AuthorizationService;
 import org.wm.domain.dto.SecurityContextUser;
+import org.wm.feignClient.UserServiceClient;
 import org.wm.jackson2.GrantedAuthorityDeserializer;
 import org.wm.jackson2.GrantedAuthoritySerializer;
 import org.wm.jackson2.SecurityContextUserMixin;
 import org.wm.jose.Jwks;
 import org.wm.utils.OAuth2ConfigurerUtils;
+import org.wm.utils.UserInfoMapperUtils;
 
 import java.time.Duration;
 import java.util.*;
+import java.util.function.Function;
 
 import static com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping.NON_FINAL;
 
@@ -100,6 +107,7 @@ import static com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping.NON_FINA
 @RequiredArgsConstructor
 public class AuthorizationServerConfig {
 
+	private static final String CUSTOM_CONSENT_PAGE_URI = "/oauth2/consent";
 
 	private final AuthenticationManager authManager;
 
@@ -110,6 +118,10 @@ public class AuthorizationServerConfig {
 	private final PasswordEncoder passwordEncoder;
 
 	private final RedisTemplate<Object, Object> redisTemplate;
+
+	private final UserServiceClient userServiceClient;
+
+
 
 
 	@Bean
@@ -123,18 +135,36 @@ public class AuthorizationServerConfig {
 
 		var authorizationServerConfigurer = http.getConfigurer(OAuth2AuthorizationServerConfigurer.class);*/
 
+		Function<OidcUserInfoAuthenticationContext, OidcUserInfo> userInfoMapper = (context) -> {
+			OidcUserInfoAuthenticationToken authentication = context.getAuthentication();
+			JwtAuthenticationToken principal = (JwtAuthenticationToken) authentication.getPrincipal();
+			var claims = principal.getToken().getClaims();
+			var username = claims.get("sub");
+			var res = userServiceClient.userInfoByUsername(String.valueOf(username));
+
+			// return new OidcUserInfo(principal.getToken().getClaims());
+			return UserInfoMapperUtils.loginUserToOidcUserInfo(res.getData());
+		};
 
 		// 启用OpenID Connect 1.0， 默认是禁止的
-		authorizationServerConfigurer.oidc(Customizer.withDefaults());
+		// authorizationServerConfigurer.oidc(Customizer.withDefaults());
+		// 自定义/userinfo端点的返回值
+		authorizationServerConfigurer
+				.oidc((oidc) -> oidc
+						.userInfoEndpoint((userInfo) -> userInfo
+								.userInfoMapper(userInfoMapper)
+						)
+				);
+
 
 		/*http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
 				.oidc(Customizer.withDefaults());*/
 
 		/*OAuth2AuthorizationServerConfigurer<HttpSecurity> authorizationServerConfigurer =
 				new OAuth2AuthorizationServerConfigurer<>();*/
-		/*authorizationServerConfigurer
+		authorizationServerConfigurer
 				.authorizationEndpoint(authorizationEndpoint ->
-						authorizationEndpoint.consentPage(CUSTOM_CONSENT_PAGE_URI));*/
+						authorizationEndpoint.consentPage(CUSTOM_CONSENT_PAGE_URI));
 
 //		authorizationServerConfigurer.tokenGenerator(context -> {
 //			var tokenType = context.getTokenType();
