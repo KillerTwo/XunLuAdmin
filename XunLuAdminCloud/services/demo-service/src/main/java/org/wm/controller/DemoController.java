@@ -24,7 +24,10 @@ public class DemoController {
         // var loginUser = SecurityUtils.getLoginUser();
         // return ResponseResult.success("ok", String.format("当前登录用户为%s", loginUser.getUsername()));
         var user = SecurityContextHolder.getContext().getAuthentication();
-        return ResponseResult.success(user);
+
+        var principal = user.getPrincipal();
+
+        return ResponseResult.success(principal);
     }
 
     @PreAuthorize("hasAnyAuthority('admin')")

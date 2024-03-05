@@ -17,5 +17,8 @@ public final class OAuth2TokenConstants {
     /** 权限信息属性名称 */
     public final static String AUTHORITIES_NAME = "authorities";
 
+    /** 角色列表名称 */
+    public final static String ROLES_NAME = "roles";
+
 
 }

@@ -31,6 +31,7 @@ import org.wm.security.authentication.opequeToken.UserInfoOpaqueTokenIntrospecto
 import org.wm.security.authentication.settings.OAuth2TokenType;
 import org.wm.security.config.properties.PermitAllUrlProperties;
 import org.wm.security.constans.OAuth2TokenConstants;
+import org.wm.security.utils.ResourceServerUtils;
 
 import java.time.Duration;
 import java.util.Collections;
@@ -66,30 +67,15 @@ public class ResourceAutoConfiguration {
     @ConditionalOnProperty({"oauth2.client-id", "oauth2.client-secret"})
     public OpaqueTokenIntrospector introspector() {
 
-        var url = serverUrl();
+        var url = ResourceServerUtils.serverUrl(discoveryClient);
 
         var introspectionUri = StringUtils.format("{}/oauth2/introspect", url);
 
-        return new UserInfoOpaqueTokenIntrospector(introspectionUri, clientId, clientSecret);
+        return new UserInfoOpaqueTokenIntrospector(url, introspectionUri, clientId, clientSecret);
     }
 
 
-    public String serverUrl() {
-        var instances = discoveryClient.getInstances(ServiceNameConstants.OAUTH2_SERVICE);
 
-        var issuer = "";
-        if (!instances.isEmpty()) {
-            // var instance = instances.get(0);
-            // 随机选择一个
-            var instance = instances.get(new Random().nextInt(instances.size()));
-
-            issuer = instance.getUri().toString();  // String.format("http://%s", instance.toInetAddr());
-            log.info("issuer: {}", issuer);
-        } else {
-            log.error("找不到服务{}, {}", issuer, ServiceNameConstants.OAUTH2_SERVICE);
-        }
-        return issuer;
-    }
 
 
     @Bean
@@ -102,7 +88,7 @@ public class ResourceAutoConfiguration {
         // var instances = naming.getAllInstances(ServiceNameConstants.OAUTH2_SERVICE);
         // var instances = discoveryClient.getInstances(ServiceNameConstants.OAUTH2_SERVICE);
 
-        var issuer = serverUrl();
+        var issuer = ResourceServerUtils.serverUrl(discoveryClient);
         /*if (!instances.isEmpty()) {
             // var instance = instances.get(0);
             // 随机选择一个

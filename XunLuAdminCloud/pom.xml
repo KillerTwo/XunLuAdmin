@@ -42,6 +42,7 @@
         <mysql.connector.j.version>8.3.0</mysql.connector.j.version>
         <jackson.version>2.15.2</jackson.version>
         <tencentcloudapi.version>4.0.11</tencentcloudapi.version>
+        <spring-webflux.version>6.0.4</spring-webflux.version>
     </properties>
     <dependencies>
         <dependency>
@@ -233,6 +234,12 @@
                 <groupId>com.tencentcloudapi</groupId>
                 <artifactId>tencentcloud-sdk-java</artifactId>
                 <version>${tencentcloudapi.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-webflux</artifactId>
+                <version>${spring-webflux.version}</version>
             </dependency>
 
         </dependencies>
