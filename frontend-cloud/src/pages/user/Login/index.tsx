@@ -123,8 +123,8 @@ const Login: React.FC = () => {
       const msg = await login({ ...values, code: captcha, uuid: codeUuid, type: type, username: username });
       console.log('login msg: ', msg);
 
-      if (msg?.code === 200) {
-        setToken(msg?.data?.token || '');
+      if (msg?.access_token !== null) {
+        setToken(msg?.access_token || '');
         message.success('登录成功！');
         await fetchUserInfo(); // 请求默认菜单
 

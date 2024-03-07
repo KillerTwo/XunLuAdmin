@@ -190,6 +190,12 @@ public class TransferDataMap extends HashMap<String, Object> {
         return data;
     }
 
+    public static TransferDataMap instance(Map<String, Object> map) {
+        var data = new TransferDataMap();
+        data.putAll(map);
+        return data;
+    }
+
     private static <T> List<T> castList(Object obj, Class<T> clazz) {
         List<T> result = new ArrayList<T>();
         if (obj instanceof List<?>) {
@@ -205,6 +211,11 @@ public class TransferDataMap extends HashMap<String, Object> {
         Set<T> result = new HashSet<>();
         if (obj instanceof Set<?>) {
             for (Object o : (Set<?>) obj) {
+                result.add(clazz.cast(o));
+            }
+            return result;
+        } else if (obj instanceof List<?>) {
+            for (Object o : (List<?>) obj) {
                 result.add(clazz.cast(o));
             }
             return result;

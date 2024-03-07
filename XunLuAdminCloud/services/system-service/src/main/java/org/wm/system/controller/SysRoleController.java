@@ -9,7 +9,9 @@ import org.wm.commons.constants.UserConstants;
 import org.wm.commons.dto.LoginUser;
 import org.wm.commons.response.PageResult;
 import org.wm.commons.response.ResponseResult;
+import org.wm.commons.utils.StringUtils;
 import org.wm.commons.web.controller.BaseController;
+import org.wm.security.utils.SecurityUtils;
 import org.wm.system.entity.SysRole;
 import org.wm.system.entity.SysUser;
 import org.wm.system.entity.SysUserRole;
@@ -41,7 +43,7 @@ public class SysRoleController extends BaseController {
     @Autowired
     private ISysUserService userService;
 
-    @PreAuthorize("@ss.hasPermi('system:role:list')")
+    // @PreAuthorize("@ss.hasPermi('system:role:list')")
     @GetMapping("/list")
     public PageResult<SysRole> list(SysRole role) {
         startPage();
@@ -52,7 +54,7 @@ public class SysRoleController extends BaseController {
     /**
      * 根据角色编号获取详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:role:query')")
+    // @PreAuthorize("@ss.hasPermi('system:role:query')")
     @GetMapping(value = "/{roleId}")
     public ResponseResult<SysRole> getInfo(@PathVariable Long roleId) {
         roleService.checkRoleDataScope(roleId);
@@ -62,7 +64,7 @@ public class SysRoleController extends BaseController {
     /**
      * 新增角色
      */
-    @PreAuthorize("@ss.hasPermi('system:role:add')")
+    // @PreAuthorize("@ss.hasPermi('system:role:add')")
     @PostMapping
     public ResponseResult<?> add(@Validated @RequestBody SysRole role) {
         if (UserConstants.NOT_UNIQUE.equals(roleService.checkRoleNameUnique(role))) {
@@ -70,7 +72,7 @@ public class SysRoleController extends BaseController {
         } else if (UserConstants.NOT_UNIQUE.equals(roleService.checkRoleKeyUnique(role))) {
             return ResponseResult.error("新增角色'" + role.getRoleName() + "'失败，角色权限已存在");
         }
-        role.setCreateBy(getUsername());
+        role.setCreateBy(SecurityUtils.getUsername());
         return toAjax(roleService.insertRole(role));
 
     }
@@ -78,7 +80,7 @@ public class SysRoleController extends BaseController {
     /**
      * 修改保存角色
      */
-    @PreAuthorize("@ss.hasPermi('system:role:edit')")
+    // @PreAuthorize("@ss.hasPermi('system:role:edit')")
     @PutMapping
     public ResponseResult<?> edit(@Validated @RequestBody SysRole role) {
         roleService.checkRoleAllowed(role);
@@ -88,12 +90,12 @@ public class SysRoleController extends BaseController {
         } else if (UserConstants.NOT_UNIQUE.equals(roleService.checkRoleKeyUnique(role))) {
             return ResponseResult.error("修改角色'" + role.getRoleName() + "'失败，角色权限已存在");
         }
-        role.setUpdateBy(getUsername());
+        role.setUpdateBy(SecurityUtils.getUsername());
 
         if (roleService.updateRole(role) > 0) {
             // 更新缓存用户权限
-            LoginUser loginUser = getLoginUser();
-            /*if (StringUtils.isNotNull(loginUser.getUser()) && !loginUser.getUser().isAdmin()) {
+            /*LoginUser loginUser = SecurityUtils.getLoginUser();
+            if (StringUtils.isNotNull(loginUser) && !loginUser.isAdmin()) {
                 loginUser.setPermissions(permissionService.getMenuPermission(loginUser.getUser()));
                 loginUser.setUser(userService.selectUserByUserName(loginUser.getUser().getUserName()));
                 tokenService.setLoginUser(loginUser);
@@ -106,7 +108,7 @@ public class SysRoleController extends BaseController {
     /**
      * 修改保存数据权限
      */
-    @PreAuthorize("@ss.hasPermi('system:role:edit')")
+    // @PreAuthorize("@ss.hasPermi('system:role:edit')")
     @PutMapping("/dataScope")
     public ResponseResult<Integer> dataScope(@RequestBody SysRole role) {
         roleService.checkRoleAllowed(role);
@@ -117,19 +119,19 @@ public class SysRoleController extends BaseController {
     /**
      * 状态修改
      */
-    @PreAuthorize("@ss.hasPermi('system:role:edit')")
+    // @PreAuthorize("@ss.hasPermi('system:role:edit')")
     @PutMapping("/changeStatus")
     public ResponseResult<Integer> changeStatus(@RequestBody SysRole role) {
         roleService.checkRoleAllowed(role);
         roleService.checkRoleDataScope(role.getRoleId());
-        role.setUpdateBy(getUsername());
+        role.setUpdateBy(SecurityUtils.getUsername());
         return toAjax(roleService.updateRoleStatus(role));
     }
 
     /**
      * 删除角色
      */
-    @PreAuthorize("@ss.hasPermi('system:role:remove')")
+    // @PreAuthorize("@ss.hasPermi('system:role:remove')")
     @DeleteMapping("/{roleIds}")
     public ResponseResult<Integer> remove(@PathVariable Long[] roleIds) {
         return toAjax(roleService.deleteRoleByIds(roleIds));
@@ -138,7 +140,7 @@ public class SysRoleController extends BaseController {
     /**
      * 获取角色选择框列表
      */
-    @PreAuthorize("@ss.hasPermi('system:role:query')")
+    // @PreAuthorize("@ss.hasPermi('system:role:query')")
     @GetMapping("/optionselect")
     public ResponseResult<List<SysRole>> optionselect() {
         return ResponseResult.success(roleService.selectRoleAll());
@@ -147,7 +149,7 @@ public class SysRoleController extends BaseController {
     /**
      * 查询已分配用户角色列表
      */
-    @PreAuthorize("@ss.hasPermi('system:role:list')")
+    // @PreAuthorize("@ss.hasPermi('system:role:list')")
     @GetMapping("/authUser/allocatedList")
     public PageResult<SysUser> allocatedList(SysUser user) {
         startPage();
@@ -158,7 +160,7 @@ public class SysRoleController extends BaseController {
     /**
      * 查询未分配用户角色列表
      */
-    @PreAuthorize("@ss.hasPermi('system:role:list')")
+    // @PreAuthorize("@ss.hasPermi('system:role:list')")
     @GetMapping("/authUser/unallocatedList")
     public PageResult<SysUser> unallocatedList(SysUser user) {
         startPage();
@@ -169,7 +171,7 @@ public class SysRoleController extends BaseController {
     /**
      * 取消授权用户
      */
-    @PreAuthorize("@ss.hasPermi('system:role:edit')")
+    // @PreAuthorize("@ss.hasPermi('system:role:edit')")
     @PutMapping("/authUser/cancel")
     public ResponseResult<Integer> cancelAuthUser(@RequestBody SysUserRole userRole) {
         return toAjax(roleService.deleteAuthUser(userRole));
@@ -178,7 +180,7 @@ public class SysRoleController extends BaseController {
     /**
      * 批量取消授权用户
      */
-    @PreAuthorize("@ss.hasPermi('system:role:edit')")
+    // @PreAuthorize("@ss.hasPermi('system:role:edit')")
     @PutMapping("/authUser/cancelAll")
     public ResponseResult<Integer> cancelAuthUserAll(Long roleId, Long[] userIds) {
         return toAjax(roleService.deleteAuthUsers(roleId, userIds));
@@ -187,7 +189,7 @@ public class SysRoleController extends BaseController {
     /**
      * 批量选择用户授权
      */
-    @PreAuthorize("@ss.hasPermi('system:role:edit')")
+    // @PreAuthorize("@ss.hasPermi('system:role:edit')")
     @PutMapping("/authUser/selectAll")
     public ResponseResult<Integer> selectAuthUserAll(Long roleId, Long[] userIds) {
         roleService.checkRoleDataScope(roleId);

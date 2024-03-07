@@ -8,6 +8,7 @@ import org.wm.commons.response.PageResult;
 import org.wm.commons.response.ResponseResult;
 import org.wm.commons.utils.StringUtils;
 import org.wm.commons.web.controller.BaseController;
+import org.wm.security.utils.SecurityUtils;
 import org.wm.system.entity.SysDictData;
 import org.wm.system.service.ISysDictDataService;
 import org.wm.system.service.ISysDictTypeService;
@@ -30,7 +31,7 @@ public class SysDictDataController extends BaseController {
     @Autowired
     private ISysDictTypeService dictTypeService;
 
-    @PreAuthorize("@ss.hasPermi('system:dict:list')")
+    // @PreAuthorize("@ss.hasPermi('system:dict:list')")
     @GetMapping("/list")
     public PageResult<SysDictData> list(SysDictData dictData) {
         startPage();
@@ -42,7 +43,7 @@ public class SysDictDataController extends BaseController {
     /**
      * 查询字典数据详细
      */
-    @PreAuthorize("@ss.hasPermi('system:dict:query')")
+    // @PreAuthorize("@ss.hasPermi('system:dict:query')")
     @GetMapping(value = "/{dictCode}")
     public ResponseResult<SysDictData> getInfo(@PathVariable Long dictCode) {
         return ResponseResult.success(dictDataService.selectDictDataById(dictCode));
@@ -63,27 +64,27 @@ public class SysDictDataController extends BaseController {
     /**
      * 新增字典类型
      */
-    @PreAuthorize("@ss.hasPermi('system:dict:add')")
+    // @PreAuthorize("@ss.hasPermi('system:dict:add')")
     @PostMapping
     public ResponseResult<Integer> add(@Validated @RequestBody SysDictData dict) {
-        dict.setCreateBy(getUsername());
+        dict.setCreateBy(SecurityUtils.getUsername());
         return toAjax(dictDataService.insertDictData(dict));
     }
 
     /**
      * 修改保存字典类型
      */
-    @PreAuthorize("@ss.hasPermi('system:dict:edit')")
+    // @PreAuthorize("@ss.hasPermi('system:dict:edit')")
     @PutMapping
     public ResponseResult<Integer> edit(@Validated @RequestBody SysDictData dict) {
-        dict.setUpdateBy(getUsername());
+        dict.setUpdateBy(SecurityUtils.getUsername());
         return toAjax(dictDataService.updateDictData(dict));
     }
 
     /**
      * 删除字典类型
      */
-    @PreAuthorize("@ss.hasPermi('system:dict:remove')")
+    // @PreAuthorize("@ss.hasPermi('system:dict:remove')")
     @DeleteMapping("/{dictCodes}")
     public ResponseResult<?> remove(@PathVariable Long[] dictCodes) {
         dictDataService.deleteDictDataByIds(dictCodes);

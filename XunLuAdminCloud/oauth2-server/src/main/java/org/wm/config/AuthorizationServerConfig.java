@@ -225,13 +225,15 @@ public class AuthorizationServerConfig {
 				.authorizeHttpRequests(authorizeRequests ->
 						authorizeRequests.anyRequest().authenticated()
 				)
-				.csrf(csrf -> csrf.ignoringRequestMatchers(endpointsMatcher))
+				// .csrf(csrf -> csrf.ignoringRequestMatchers(endpointsMatcher))
+				.csrf().disable()
 				.apply(authorizationServerConfigurer);
 
 		// 设置自定义token生成器
 		authorizationServerConfigurer.tokenGenerator(tokenGenerator());
 		http.formLogin(httpSecurityFormLoginConfigurer -> httpSecurityFormLoginConfigurer.loginPage("/oauth2/login"))
 				.addFilterBefore(oAuth2UsernameLoginFilter(), BasicAuthenticationFilter.class);
+		// http.csrf().disable();
 		// http.formLogin(Customizer.withDefaults()); //.addFilterBefore(usernamePasswordAuthenticationFilter(), JwtAuthenticationTokenFilter.class);
 
 		// http.addFilterBefore(usernamePasswordAuthenticationFilter(), JwtAuthenticationTokenFilter.class);

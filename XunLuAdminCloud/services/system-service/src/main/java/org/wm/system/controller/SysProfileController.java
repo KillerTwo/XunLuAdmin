@@ -37,7 +37,7 @@ public class SysProfileController extends BaseController {
      */
     @GetMapping
     public ResponseResult<Map<String, Object>> profile() {
-        LoginUser loginUser = getLoginUser();
+        LoginUser loginUser = SecurityUtils.getLoginUser();
         Map<String, Object> ajax = new HashMap<>();
         ajax.put("roleGroup", userService.selectUserRoleGroup(loginUser.getUsername()));
         ajax.put("postGroup", userService.selectUserPostGroup(loginUser.getUsername()));
@@ -49,7 +49,7 @@ public class SysProfileController extends BaseController {
      */
     @PutMapping
     public ResponseResult<?> updateProfile(@RequestBody SysUser user) {
-        LoginUser loginUser = getLoginUser();
+        LoginUser loginUser = SecurityUtils.getLoginUser();
         user.setUserName(loginUser.getUsername());
         if (StringUtils.isNotEmpty(user.getPhonenumber())
                 && UserConstants.NOT_UNIQUE.equals(userService.checkPhoneUnique(user))) {
@@ -78,7 +78,7 @@ public class SysProfileController extends BaseController {
      */
     @PutMapping("/updatePwd")
     public ResponseResult<?> updatePwd(String oldPassword, String newPassword) {
-        LoginUser loginUser = getLoginUser();
+        LoginUser loginUser = SecurityUtils.getLoginUser();
         String userName = loginUser.getUsername();
         String password = loginUser.getPassword();
         if (!SecurityUtils.matchesPassword(oldPassword, password)) {
@@ -102,7 +102,7 @@ public class SysProfileController extends BaseController {
     @PostMapping("/avatar")
     public ResponseResult avatar(@RequestParam("avatarfile") MultipartFile file) throws IOException {
         if (!file.isEmpty()) {
-            LoginUser loginUser = getLoginUser();
+            LoginUser loginUser = SecurityUtils.getLoginUser();
             String avatar = ""; // FileUploadUtils.upload(RuoYiConfig.getAvatarPath(), file);
             if (userService.updateUserAvatar(loginUser.getUsername(), avatar)) {
                 Map<String, Object> ajax = new HashMap<>();

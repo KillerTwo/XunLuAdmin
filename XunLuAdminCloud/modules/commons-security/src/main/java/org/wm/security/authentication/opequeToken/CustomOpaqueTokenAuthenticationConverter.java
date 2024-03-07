@@ -7,6 +7,8 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.security.oauth2.core.OAuth2TokenIntrospectionClaimNames;
 import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthentication;
 import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenAuthenticationConverter;
+import org.wm.commons.dto.LoginUser;
+import org.wm.commons.dto.TransferDataMap;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -16,7 +18,7 @@ import java.util.stream.Collectors;
 
 /**
  * 功能描述：<功能描述>
- *
+ *  OpaqueToken  Converter
  * @author dove 
  * @date 2023/08/09 21:45
  * @since 1.0
@@ -30,7 +32,12 @@ public class CustomOpaqueTokenAuthenticationConverter implements OpaqueTokenAuth
         Instant exp = authenticatedPrincipal.getAttribute(OAuth2TokenIntrospectionClaimNames.EXP);
         OAuth2AccessToken accessToken = new OAuth2AccessToken(OAuth2AccessToken.TokenType.BEARER, introspectedToken,
                 iat, exp);
-        return new BearerTokenAuthentication(authenticatedPrincipal, accessToken,
+
+        var attributes = authenticatedPrincipal.getAttributes();
+        var dataMap = TransferDataMap.instance(attributes);
+        var u = new LoginUser(dataMap);
+
+        return new CustomOpequeTokenAuthentication(u, accessToken,
                 extractAuthorities(authenticatedPrincipal));
     }
 

@@ -37,7 +37,7 @@ export const initialStateConfig = {
 };
 
 const authHeaderInterceptor = (url: string, options: RequestOptionsInit) => {
-  if (url.indexOf('/login/') !== -1 || url.indexOf('/logout') !== -1) {
+  if (url.indexOf('/login/') !== -1 || url.indexOf('/logout') !== -1 || url.indexOf("token") !== -1) {
     return {
       url: `${url}`,
       options: { ...options, interceptors: true },

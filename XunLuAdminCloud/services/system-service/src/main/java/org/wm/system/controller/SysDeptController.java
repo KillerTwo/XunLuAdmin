@@ -9,6 +9,7 @@ import org.wm.commons.constants.UserConstants;
 import org.wm.commons.response.ResponseResult;
 import org.wm.commons.utils.StringUtils;
 import org.wm.commons.web.controller.BaseController;
+import org.wm.security.utils.SecurityUtils;
 import org.wm.system.entity.SysDept;
 import org.wm.system.entity.vo.TreeSelect;
 import org.wm.system.service.ISysDeptService;
@@ -33,7 +34,7 @@ public class SysDeptController extends BaseController {
     /**
      * 获取部门列表
      */
-    @PreAuthorize("@ss.hasPermi('system:dept:list')")
+    // @PreAuthorize("@ss.hasPermi('system:dept:list')")
     @GetMapping("/list")
     public ResponseResult<List<SysDept>> list(SysDept dept) {
         List<SysDept> depts = deptService.selectDeptList(dept);
@@ -43,7 +44,7 @@ public class SysDeptController extends BaseController {
     /**
      * 查询部门列表（排除节点）
      */
-    @PreAuthorize("@ss.hasPermi('system:dept:list')")
+    // @PreAuthorize("@ss.hasPermi('system:dept:list')")
     @GetMapping("/list/exclude/{deptId}")
     public ResponseResult<List<SysDept>> excludeChild(@PathVariable(value = "deptId", required = false) Long deptId) {
         List<SysDept> depts = deptService.selectDeptList(new SysDept());
@@ -61,7 +62,7 @@ public class SysDeptController extends BaseController {
     /**
      * 根据部门编号获取详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:dept:query')")
+    // @PreAuthorize("@ss.hasPermi('system:dept:query')")
     @GetMapping(value = "/{deptId}")
     public ResponseResult<SysDept> getInfo(@PathVariable Long deptId) {
         deptService.checkDeptDataScope(deptId);
@@ -92,20 +93,20 @@ public class SysDeptController extends BaseController {
     /**
      * 新增部门
      */
-    @PreAuthorize("@ss.hasPermi('system:dept:add')")
+    // @PreAuthorize("@ss.hasPermi('system:dept:add')")
     @PostMapping
     public ResponseResult add(@Validated @RequestBody SysDept dept) {
         if (UserConstants.NOT_UNIQUE.equals(deptService.checkDeptNameUnique(dept))) {
             return ResponseResult.error("新增部门'" + dept.getDeptName() + "'失败，部门名称已存在");
         }
-        dept.setCreateBy(getUsername());
+        dept.setCreateBy(SecurityUtils.getUsername());
         return toAjax(deptService.insertDept(dept));
     }
 
     /**
      * 修改部门
      */
-    @PreAuthorize("@ss.hasPermi('system:dept:edit')")
+    // @PreAuthorize("@ss.hasPermi('system:dept:edit')")
     @PutMapping
     public ResponseResult edit(@Validated @RequestBody SysDept dept) {
         Long deptId = dept.getDeptId();
@@ -117,14 +118,14 @@ public class SysDeptController extends BaseController {
         } else if (StringUtils.equals(UserConstants.DEPT_DISABLE, dept.getStatus()) && deptService.selectNormalChildrenDeptById(deptId) > 0) {
             return ResponseResult.error("该部门包含未停用的子部门！");
         }
-        dept.setUpdateBy(getUsername());
+        dept.setUpdateBy(SecurityUtils.getUsername());
         return toAjax(deptService.updateDept(dept));
     }
 
     /**
      * 删除部门
      */
-    @PreAuthorize("@ss.hasPermi('system:dept:remove')")
+    // @PreAuthorize("@ss.hasPermi('system:dept:remove')")
     @DeleteMapping("/{deptId}")
     public ResponseResult remove(@PathVariable Long deptId) {
         if (deptService.hasChildByDeptId(deptId)) {

@@ -20,6 +20,7 @@ import org.wm.job.util.CronUtils;
 import org.wm.job.util.ScheduleUtils;
 import org.wm.logging.annotation.Log;
 import org.wm.logging.enums.BusinessType;
+import org.wm.security.utils.SecurityUtils;
 
 
 import java.util.List;
@@ -36,7 +37,7 @@ public class SysJobController extends BaseController {
     /**
      * 查询定时任务列表
      */
-    @PreAuthorize("@ss.hasPermi('monitor:job:list')")
+    // @PreAuthorize("@ss.hasPermi('monitor:job:list')")
     @GetMapping("/list")
     public PageResult<SysJob> list(SysJob sysJob) {
         startPage();
@@ -47,7 +48,7 @@ public class SysJobController extends BaseController {
     /**
      * 获取定时任务详细信息
      */
-    @PreAuthorize("@ss.hasPermi('monitor:job:query')")
+    // @PreAuthorize("@ss.hasPermi('monitor:job:query')")
     @GetMapping(value = "/{jobId}")
     public ResponseResult<SysJob> getInfo(@PathVariable("jobId") Long jobId) {
         return ResponseResult.success(jobService.selectJobById(jobId));
@@ -56,7 +57,7 @@ public class SysJobController extends BaseController {
     /**
      * 新增定时任务
      */
-    @PreAuthorize("@ss.hasPermi('monitor:job:add')")
+    // @PreAuthorize("@ss.hasPermi('monitor:job:add')")
     @Log(title = "定时任务", businessType = BusinessType.INSERT)
     @PostMapping
     public ResponseResult<?> add(@RequestBody SysJob job) throws SchedulerException, TaskException {
@@ -73,14 +74,14 @@ public class SysJobController extends BaseController {
         } else if (!ScheduleUtils.whiteList(job.getInvokeTarget())) {
             return error("新增任务'" + job.getJobName() + "'失败，目标字符串不在白名单内");
         }
-        job.setCreateBy(getUsername());
+        job.setCreateBy(SecurityUtils.getUsername());
         return toAjax(jobService.insertJob(job));
     }
 
     /**
      * 修改定时任务
      */
-    @PreAuthorize("@ss.hasPermi('monitor:job:edit')")
+    // @PreAuthorize("@ss.hasPermi('monitor:job:edit')")
     @Log(title = "定时任务", businessType = BusinessType.UPDATE)
     @PutMapping
     public ResponseResult<?> edit(@RequestBody SysJob job) throws SchedulerException, TaskException {
@@ -97,14 +98,14 @@ public class SysJobController extends BaseController {
         } else if (!ScheduleUtils.whiteList(job.getInvokeTarget())) {
             return error("修改任务'" + job.getJobName() + "'失败，目标字符串不在白名单内");
         }
-        job.setUpdateBy(getUsername());
+        job.setUpdateBy(SecurityUtils.getUsername());
         return toAjax(jobService.updateJob(job));
     }
 
     /**
      * 定时任务状态修改
      */
-    @PreAuthorize("@ss.hasPermi('monitor:job:changeStatus')")
+    // @PreAuthorize("@ss.hasPermi('monitor:job:changeStatus')")
     @Log(title = "定时任务", businessType = BusinessType.UPDATE)
     @PutMapping("/changeStatus")
     public ResponseResult<?> changeStatus(@RequestBody SysJob job) throws SchedulerException {
@@ -116,7 +117,7 @@ public class SysJobController extends BaseController {
     /**
      * 定时任务立即执行一次
      */
-    @PreAuthorize("@ss.hasPermi('monitor:job:changeStatus')")
+    // @PreAuthorize("@ss.hasPermi('monitor:job:changeStatus')")
     @Log(title = "定时任务", businessType = BusinessType.UPDATE)
     @PutMapping("/run")
     public ResponseResult<?> run(@RequestBody SysJob job) throws SchedulerException {
@@ -127,7 +128,7 @@ public class SysJobController extends BaseController {
     /**
      * 删除定时任务
      */
-    @PreAuthorize("@ss.hasPermi('monitor:job:remove')")
+    // @PreAuthorize("@ss.hasPermi('monitor:job:remove')")
     @Log(title = "定时任务", businessType = BusinessType.DELETE)
     @DeleteMapping("/{jobIds}")
     public ResponseResult<?> remove(@PathVariable Long[] jobIds) throws SchedulerException, TaskException {

@@ -53,7 +53,7 @@ public class SysUserController extends BaseController {
      * 获取用户列表
      */
     // @Operation(summary = "Delete user", description = "This can only be done by the logged in user.", tags = { "user" })
-    @PreAuthorize("@ss.hasPermi('system:user:list')")
+    // @PreAuthorize("@ss.hasPermi('system:user:list')")
     @GetMapping("/list")
     public PageResult<SysUser> list(SysUser user) {
         startPage();
@@ -75,7 +75,11 @@ public class SysUserController extends BaseController {
         SysUser user = userService.selectUserByUserName(username);
 
         Set<String> menuPermissions = permissionService.getMenuPermission(user);
+
+        var roleKeyList = user.getRoles().stream().map(SysRole::getRoleKey).toList();
+
         var data = TransferDataMap.instance(user);
+        data.put("roles", roleKeyList);
 
         var loginUser = new LoginUser(data);
         loginUser.setPermissions(menuPermissions);
@@ -89,7 +93,7 @@ public class SysUserController extends BaseController {
     /**
      * 根据用户编号获取详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:user:query')")
+    // @PreAuthorize("@ss.hasPermi('system:user:query')")
     @GetMapping(value = {"/", "/{userId}"})
     public ResponseResult<Map<String, Object>> getInfo(@PathVariable(value = "userId", required = false) Long userId) {
         userService.checkUserDataScope(userId);
@@ -109,7 +113,7 @@ public class SysUserController extends BaseController {
     /**
      * 新增用户
      */
-    @PreAuthorize("@ss.hasPermi('system:user:add')")
+    // @PreAuthorize("@ss.hasPermi('system:user:add')")
     @PostMapping
     public ResponseResult<?> add(@Validated @RequestBody SysUser user) {
         if (UserConstants.NOT_UNIQUE.equals(userService.checkUserNameUnique(user.getUserName()))) {
@@ -121,7 +125,7 @@ public class SysUserController extends BaseController {
                 && UserConstants.NOT_UNIQUE.equals(userService.checkEmailUnique(user))) {
             return ResponseResult.error("新增用户'" + user.getUserName() + "'失败，邮箱账号已存在");
         }
-        user.setCreateBy(getUsername());
+        user.setCreateBy(SecurityUtils.getUsername());
         user.setPassword(SecurityUtils.encryptPassword(user.getPassword()));
         return toAjax(userService.insertUser(user));
     }
@@ -129,7 +133,7 @@ public class SysUserController extends BaseController {
     /**
      * 修改用户
      */
-    @PreAuthorize("@ss.hasPermi('system:user:edit')")
+    // @PreAuthorize("@ss.hasPermi('system:user:edit')")
     @PutMapping
     public ResponseResult<?> edit(@Validated @RequestBody SysUser user) {
         userService.checkUserAllowed(user);
@@ -141,17 +145,17 @@ public class SysUserController extends BaseController {
                 && UserConstants.NOT_UNIQUE.equals(userService.checkEmailUnique(user))) {
             return ResponseResult.error("修改用户'" + user.getUserName() + "'失败，邮箱账号已存在");
         }
-        user.setUpdateBy(getUsername());
+        user.setUpdateBy(SecurityUtils.getUsername());
         return toAjax(userService.updateUser(user));
     }
 
     /**
      * 删除用户
      */
-    @PreAuthorize("@ss.hasPermi('system:user:remove')")
+    // @PreAuthorize("@ss.hasPermi('system:user:remove')")
     @DeleteMapping("/{userIds}")
     public ResponseResult<?> remove(@PathVariable Long[] userIds) {
-        if (ArrayUtils.contains(userIds, getUserId())) {
+        if (ArrayUtils.contains(userIds, SecurityUtils.getUserId())) {
             return error("当前用户不能删除");
         }
         return toAjax(userService.deleteUserByIds(userIds));
@@ -160,32 +164,32 @@ public class SysUserController extends BaseController {
     /**
      * 重置密码
      */
-    @PreAuthorize("@ss.hasPermi('system:user:resetPwd')")
+    // @PreAuthorize("@ss.hasPermi('system:user:resetPwd')")
     @PutMapping("/resetPwd")
     public ResponseResult<Integer> resetPwd(@RequestBody SysUser user) {
         userService.checkUserAllowed(user);
         userService.checkUserDataScope(user.getUserId());
         user.setPassword(SecurityUtils.encryptPassword(user.getPassword()));
-        user.setUpdateBy(getUsername());
+        user.setUpdateBy(SecurityUtils.getUsername());
         return toAjax(userService.resetPwd(user));
     }
 
     /**
      * 状态修改
      */
-    @PreAuthorize("@ss.hasPermi('system:user:edit')")
+    // @PreAuthorize("@ss.hasPermi('system:user:edit')")
     @PutMapping("/changeStatus")
     public ResponseResult<Integer> changeStatus(@RequestBody SysUser user) {
         userService.checkUserAllowed(user);
         userService.checkUserDataScope(user.getUserId());
-        user.setUpdateBy(getUsername());
+        user.setUpdateBy(SecurityUtils.getUsername());
         return toAjax(userService.updateUserStatus(user));
     }
 
     /**
      * 根据用户编号获取授权角色
      */
-    @PreAuthorize("@ss.hasPermi('system:user:query')")
+    // @PreAuthorize("@ss.hasPermi('system:user:query')")
     @GetMapping("/authRole/{userId}")
     public ResponseResult<Map<String, Object>> authRole(@PathVariable("userId") Long userId) {
         Map<String, Object> ajax = new HashMap<>();
@@ -199,7 +203,7 @@ public class SysUserController extends BaseController {
     /**
      * 用户授权角色
      */
-    @PreAuthorize("@ss.hasPermi('system:user:edit')")
+    // @PreAuthorize("@ss.hasPermi('system:user:edit')")
     @PutMapping("/authRole")
     public ResponseResult<?> insertAuthRole(Long userId, Long[] roleIds) {
         userService.checkUserDataScope(userId);

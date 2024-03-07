@@ -2,6 +2,8 @@ package org.wm.commons.web.controller;
 
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.security.SecurityUtil;
+import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.wm.commons.dto.LoginUser;
@@ -117,34 +119,5 @@ public class BaseController {
      */
     public String redirect(String url) {
         return StringUtils.format("redirect:{}", url);
-    }
-
-    /**
-     * 获取用户缓存信息
-     */
-    public LoginUser getLoginUser() {
-        // TODO 获取当前登录用户  删除该方法，用其他的实现
-        return null;
-    }
-
-    /**
-     * 获取登录用户id
-     */
-    public Long getUserId() {
-        return getLoginUser().getUserId();
-    }
-
-    /**
-     * 获取登录部门id
-     */
-    public Long getDeptId() {
-        return getLoginUser().getDeptId();
-    }
-
-    /**
-     * 获取登录用户名
-     */
-    public String getUsername() {
-        return getLoginUser().getUsername();
     }
 }

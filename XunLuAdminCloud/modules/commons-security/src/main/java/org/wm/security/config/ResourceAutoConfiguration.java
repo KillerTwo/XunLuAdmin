@@ -27,6 +27,7 @@ import org.wm.commons.constants.ServiceNameConstants;
 import org.wm.commons.utils.StringUtils;
 import org.wm.commons.web.utils.ServletUtils;
 import org.wm.security.authentication.jwt.CustomAuthenticationConverter;
+import org.wm.security.authentication.opequeToken.CustomOpaqueTokenAuthenticationConverter;
 import org.wm.security.authentication.opequeToken.UserInfoOpaqueTokenIntrospector;
 import org.wm.security.authentication.settings.OAuth2TokenType;
 import org.wm.security.config.properties.PermitAllUrlProperties;
@@ -137,6 +138,7 @@ public class ResourceAutoConfiguration {
         AuthenticationManager jwt = new ProviderManager(jwtAuthenticationProvider);
         // opaque token
         var provider = new OpaqueTokenAuthenticationProvider(opaqueTokenIntrospector);
+        provider.setAuthenticationConverter(new CustomOpaqueTokenAuthenticationConverter());
         // provider.setAuthenticationConverter();
         AuthenticationManager opaqueToken = new ProviderManager(
                 provider

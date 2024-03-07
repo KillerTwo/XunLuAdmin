@@ -36,12 +36,20 @@ declare namespace SYSTEM {
     rePassword?: string;
   }
 
-  type LoginResult = {
+  /*type LoginResult = {
     code?: number;
     msg?: string
     data?: {
       token?: string
     }
+  }*/
+  type LoginResult = {
+    access_token?: string;
+    refresh_token?: string
+    scope?: string
+    id_token?: string
+    token_type?: string
+    expires_in?: number
   }
   type LoginParams = {
     username?: string;

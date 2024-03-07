@@ -1,6 +1,7 @@
 package org.wm.security.authentication.jwt;
 
 import jakarta.annotation.Nonnull;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.lang.NonNullApi;
 import org.springframework.lang.Nullable;
@@ -11,12 +12,17 @@ import org.springframework.security.oauth2.jwt.JwtClaimNames;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.util.Assert;
+import org.wm.commons.dto.LoginUser;
+import org.wm.commons.dto.TransferDataMap;
+import org.wm.commons.utils.SpringContextHolder;
+import org.wm.commons.web.utils.ServletUtils;
+import org.wm.security.utils.ResourceServerUtils;
 
 import java.util.Collection;
 
 /**
  * 功能描述：<功能描述>
- * JwtAuthenticationConverter转换器自定义实现类，将jwt转换成AbstractAuthenticationToken
+ * JwtAuthenticationConverter转换器自定义实现类，将jwt转换成AbstractAuthenticationToken  JWT Token转换器
  * @author dove 
  * @date 2023/08/05 21:03
  * @since 1.0
@@ -32,7 +38,15 @@ public class CustomAuthenticationConverter implements Converter<Jwt, AbstractAut
         Collection<GrantedAuthority> authorities = this.jwtGrantedAuthoritiesConverter.convert(jwt);
 
         String principalClaimValue = jwt.getClaimAsString(this.principalClaimName);
-        return new CustomJwtAuthenticationToken(jwt, authorities, principalClaimValue);
+
+        var discoveryClient = SpringContextHolder.getBean(DiscoveryClient.class);
+        var issuer = ResourceServerUtils.serverUrl(discoveryClient);
+        var token = jwt.getTokenValue();
+        var data = ResourceServerUtils.getUserInfo(issuer, token);
+
+        var u = new LoginUser(TransferDataMap.instance(data));
+
+        return new CustomJwtAuthenticationToken(jwt, authorities, principalClaimValue, u);
     }
 
     /**

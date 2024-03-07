@@ -8,6 +8,7 @@ import org.wm.commons.constants.UserConstants;
 import org.wm.commons.response.ResponseResult;
 import org.wm.commons.utils.StringUtils;
 import org.wm.commons.web.controller.BaseController;
+import org.wm.security.utils.SecurityUtils;
 import org.wm.system.entity.SysMenu;
 import org.wm.system.entity.vo.TreeSelect;
 import org.wm.system.service.ISysMenuService;
@@ -32,17 +33,17 @@ public class SysMenuController extends BaseController {
     /**
      * 获取菜单列表
      */
-    @PreAuthorize("@ss.hasPermi('system:menu:list')")
+    // @PreAuthorize("@ss.hasPermi('system:menu:list')")
     @GetMapping("/list")
     public ResponseResult<List<SysMenu>> list(SysMenu menu) {
-        List<SysMenu> menus = menuService.selectMenuList(menu, getUserId());
+        List<SysMenu> menus = menuService.selectMenuList(menu, SecurityUtils.getUserId());
         return ResponseResult.success(menus);
     }
 
     /**
      * 根据菜单编号获取详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:menu:query')")
+    // @PreAuthorize("@ss.hasPermi('system:menu:query')")
     @GetMapping(value = "/{menuId}")
     public ResponseResult<SysMenu> getInfo(@PathVariable Long menuId) {
         return ResponseResult.success(menuService.selectMenuById(menuId));
@@ -53,7 +54,7 @@ public class SysMenuController extends BaseController {
      */
     @GetMapping("/treeselect")
     public ResponseResult<List<TreeSelect>> treeselect(SysMenu menu) {
-        List<SysMenu> menus = menuService.selectMenuList(menu, getUserId());
+        List<SysMenu> menus = menuService.selectMenuList(menu, SecurityUtils.getUserId());
         return ResponseResult.success(menuService.buildMenuTreeSelect(menus));
     }
 
@@ -62,7 +63,7 @@ public class SysMenuController extends BaseController {
      */
     @GetMapping(value = "/roleMenuTreeselect/{roleId}")
     public ResponseResult<Map<String, Object>> roleMenuTreeselect(@PathVariable("roleId") Long roleId) {
-        List<SysMenu> menus = menuService.selectMenuList(getUserId());
+        List<SysMenu> menus = menuService.selectMenuList(SecurityUtils.getUserId());
         Map<String, Object> ajax = new HashMap<>();
         ajax.put("checkedKeys", menuService.selectMenuListByRoleId(roleId));
         ajax.put("menus", menuService.buildMenuTreeSelect(menus));
@@ -72,7 +73,7 @@ public class SysMenuController extends BaseController {
     /**
      * 新增菜单
      */
-    @PreAuthorize("@ss.hasPermi('system:menu:add')")
+    // @PreAuthorize("@ss.hasPermi('system:menu:add')")
     @PostMapping
     public ResponseResult<?> add(@Validated @RequestBody SysMenu menu) {
         if (UserConstants.NOT_UNIQUE.equals(menuService.checkMenuNameUnique(menu))) {
@@ -80,14 +81,14 @@ public class SysMenuController extends BaseController {
         } else if (UserConstants.YES_FRAME.equals(menu.getIsFrame()) && !StringUtils.ishttp(menu.getPath())) {
             return ResponseResult.error("新增菜单'" + menu.getMenuName() + "'失败，地址必须以http(s)://开头");
         }
-        menu.setCreateBy(getUsername());
+        menu.setCreateBy(SecurityUtils.getUsername());
         return toAjax(menuService.insertMenu(menu));
     }
 
     /**
      * 修改菜单
      */
-    @PreAuthorize("@ss.hasPermi('system:menu:edit')")
+    // @PreAuthorize("@ss.hasPermi('system:menu:edit')")
     @PutMapping
     public ResponseResult<?> edit(@Validated @RequestBody SysMenu menu) {
         if (UserConstants.NOT_UNIQUE.equals(menuService.checkMenuNameUnique(menu))) {
@@ -97,14 +98,14 @@ public class SysMenuController extends BaseController {
         } else if (menu.getMenuId().equals(menu.getParentId())) {
             return ResponseResult.error("修改菜单'" + menu.getMenuName() + "'失败，上级菜单不能选择自己");
         }
-        menu.setUpdateBy(getUsername());
+        menu.setUpdateBy(SecurityUtils.getUsername());
         return toAjax(menuService.updateMenu(menu));
     }
 
     /**
      * 删除菜单
      */
-    @PreAuthorize("@ss.hasPermi('system:menu:remove')")
+    // @PreAuthorize("@ss.hasPermi('system:menu:remove')")
     @DeleteMapping("/{menuId}")
     public ResponseResult<?> remove(@PathVariable("menuId") Long menuId) {
         if (menuService.hasChildByMenuId(menuId)) {

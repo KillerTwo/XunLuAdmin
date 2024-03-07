@@ -6,9 +6,11 @@ import org.springframework.web.bind.annotation.*;
 import org.wm.commons.response.ResponseResult;
 import org.wm.security.utils.SecurityUtils;
 
+import org.wm.system.entity.SysMenu;
 import org.wm.system.entity.SysUser;
 import org.wm.system.entity.vo.ResetPasswordBody;
 import org.wm.system.entity.vo.RouterReactVo;
+import org.wm.system.service.ISysMenuService;
 import org.wm.system.service.ISysUserService;
 import org.wm.system.service.SysPermissionService;
 
@@ -34,6 +36,8 @@ public class CurrentUserController {
     private final SysPermissionService permissionService;
 
     private final ISysUserService sysUserService;
+
+    private final ISysMenuService menuService;
 
 
     /**
@@ -71,10 +75,9 @@ public class CurrentUserController {
      */
     @GetMapping("getRouters")
     public ResponseResult<List<RouterReactVo>> getRouters() {
-        /*Long userId = SecurityUtils.getUserId();
+        Long userId = SecurityUtils.getUserId();
         List<SysMenu> menus = menuService.selectMenuTreeByUserId(userId);
-        return ResponseResult.success(menuService.buildMenusReact(menus));*/
-        return null;
+        return ResponseResult.success(menuService.buildMenusReact(menus));
     }
 
     /**

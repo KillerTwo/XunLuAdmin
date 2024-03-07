@@ -29,6 +29,7 @@ public class UserInfoMapperUtils {
                 .claim("roleIds", loginUser.getRoleIds())
                 .claim("postIds", loginUser.getPostIds())
                 .claim("roles", loginUser.getRoles())
+                .claim("username", loginUser.getUsername())
                 .build();
         return user;
     }

@@ -94,7 +94,8 @@ public class SysRoleServiceImpl implements ISysRoleService {
      */
     @Override
     public List<SysRole> selectRoleAll() {
-        return SpringContextHolder.getAopProxy(this).selectRoleList(new SysRole());
+        // return SpringContextHolder.getAopProxy(this).selectRoleList(new SysRole());
+        return this.selectRoleList(new SysRole());
     }
 
     /**

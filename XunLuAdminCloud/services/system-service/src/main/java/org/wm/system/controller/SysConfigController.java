@@ -8,6 +8,7 @@ import org.wm.commons.constants.UserConstants;
 import org.wm.commons.response.PageResult;
 import org.wm.commons.response.ResponseResult;
 import org.wm.commons.web.controller.BaseController;
+import org.wm.security.utils.SecurityUtils;
 import org.wm.system.entity.SysConfig;
 import org.wm.system.service.ISysConfigService;
 
@@ -30,7 +31,7 @@ public class SysConfigController extends BaseController {
     /**
      * 获取参数配置列表
      */
-    @PreAuthorize("@ss.hasPermi('system:config:list')")
+    // @PreAuthorize("@ss.hasPermi('system:config:list')")
     @GetMapping("/list")
     public PageResult<SysConfig> list(SysConfig config) {
         startPage();
@@ -41,7 +42,7 @@ public class SysConfigController extends BaseController {
     /**
      * 根据参数编号获取详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:config:query')")
+    // @PreAuthorize("@ss.hasPermi('system:config:query')")
     @GetMapping(value = "/{configId}")
     public ResponseResult<SysConfig> getInfo(@PathVariable Long configId) {
         return ResponseResult.success(configService.selectConfigById(configId));
@@ -58,33 +59,33 @@ public class SysConfigController extends BaseController {
     /**
      * 新增参数配置
      */
-    @PreAuthorize("@ss.hasPermi('system:config:add')")
+    // @PreAuthorize("@ss.hasPermi('system:config:add')")
     @PostMapping
     public ResponseResult<SysConfig> add(@Validated @RequestBody SysConfig config) {
         if (UserConstants.NOT_UNIQUE.equals(configService.checkConfigKeyUnique(config))) {
             return ResponseResult.error("新增参数'" + config.getConfigName() + "'失败，参数键名已存在");
         }
-        config.setCreateBy(getUsername());
+        config.setCreateBy(SecurityUtils.getUsername());
         return toAjax(configService.insertConfig(config));
     }
 
     /**
      * 修改参数配置
      */
-    @PreAuthorize("@ss.hasPermi('system:config:edit')")
+    // @PreAuthorize("@ss.hasPermi('system:config:edit')")
     @PutMapping
     public ResponseResult<SysConfig> edit(@Validated @RequestBody SysConfig config) {
         if (UserConstants.NOT_UNIQUE.equals(configService.checkConfigKeyUnique(config))) {
             return ResponseResult.error("修改参数'" + config.getConfigName() + "'失败，参数键名已存在");
         }
-        config.setUpdateBy(getUsername());
+        config.setUpdateBy(SecurityUtils.getUsername());
         return toAjax(configService.updateConfig(config));
     }
 
     /**
      * 删除参数配置
      */
-    @PreAuthorize("@ss.hasPermi('system:config:remove')")
+    // @PreAuthorize("@ss.hasPermi('system:config:remove')")
     @DeleteMapping("/{configIds}")
     public ResponseResult<SysConfig> remove(@PathVariable Long[] configIds) {
         configService.deleteConfigByIds(configIds);
@@ -94,7 +95,7 @@ public class SysConfigController extends BaseController {
     /**
      * 刷新参数缓存
      */
-    @PreAuthorize("@ss.hasPermi('system:config:remove')")
+    // @PreAuthorize("@ss.hasPermi('system:config:remove')")
     @DeleteMapping("/refreshCache")
     public ResponseResult<SysConfig> refreshCache() {
         configService.resetConfigCache();

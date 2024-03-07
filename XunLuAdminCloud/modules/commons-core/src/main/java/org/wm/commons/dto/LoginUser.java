@@ -156,8 +156,8 @@ public class LoginUser implements Serializable {
         this.userId = dataMap.getLong("userId");
         this.deptId = dataMap.getLong("deptId");
         this.permissions = dataMap.getSetString("permissions");
-        this.username = dataMap.getString("userName");
-        this.nickName = dataMap.getString("nickName");
+        this.username = dataMap.containsKey("userName") ? dataMap.getString("userName") : dataMap.getString("username");
+        this.nickName = dataMap.containsKey("nickName") ? dataMap.getString("nickName") : dataMap.getString("nickname");
         this.email = dataMap.getString("email");
         this.phonenumber = dataMap.getString("phonenumber");
         this.sex = dataMap.getString("sex");

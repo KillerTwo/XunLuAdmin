@@ -39,12 +39,13 @@ public class SecurityUtils {
      */
     public static String getUsername() {
         // TODO
-        var user = SecurityContextHolder.getContext().getAuthentication();
+        /*var user = SecurityContextHolder.getContext().getAuthentication();
 
         var principal = (Jwt) user.getPrincipal();
 
         var username = principal.getClaim("sub");
-        return username != null ? String.valueOf(username): null;
+        return username != null ? String.valueOf(username): null;*/
+        return getLoginUser().getUsername();
     }
 
 
@@ -54,8 +55,11 @@ public class SecurityUtils {
     public static LoginUser getLoginUser() {
         // 通过查询数据库的方式 TODO 需要验证
         var user = SecurityContextHolder.getContext().getAuthentication();
+        if (user == null || user.getPrincipal() == null) {
+            return null;
+        }
 
-        var redisCache = SpringContextHolder.getBean(RedisCache.class);
+        /*var redisCache = SpringContextHolder.getBean(RedisCache.class);
         if (user != null) {
             var principal = (Jwt) user.getPrincipal();
             var username = principal.getClaim("sub");
@@ -71,8 +75,8 @@ public class SecurityUtils {
             // TODO 需要配置当前用户过期时间
             redisCache.setCacheObject(userKey, sysUser, 30, TimeUnit.MINUTES);
             return sysUser;
-        }
-        return null;
+        }*/
+        return (LoginUser) user.getPrincipal();
     }
 
     /**

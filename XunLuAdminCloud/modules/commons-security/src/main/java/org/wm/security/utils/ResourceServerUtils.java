@@ -2,8 +2,11 @@ package org.wm.security.utils;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.wm.commons.constants.ServiceNameConstants;
+import org.wm.commons.utils.StringUtils;
 
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -15,6 +18,8 @@ import java.util.Random;
 **/
 @Slf4j
 public class ResourceServerUtils {
+
+    private final static WebClient rest = WebClient.create();
 
     public static String serverUrl(DiscoveryClient discoveryClient) {
 
@@ -32,6 +37,18 @@ public class ResourceServerUtils {
             log.error("找不到服务{}, {}", issuer, ServiceNameConstants.OAUTH2_SERVICE);
         }
         return issuer;
+    }
+
+
+    public static Map<String, Object> getUserInfo(String issuer, String token) {
+        var userinfoUri = StringUtils.format("{}/oauth2/userinfo", issuer);
+        var response = rest.get()
+                .uri(userinfoUri)
+                .header("Authorization", "Bearer " + token)
+                .retrieve()
+                .bodyToMono(Map.class);
+
+        return response.block();
     }
 
 
