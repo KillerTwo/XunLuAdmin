@@ -5,6 +5,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.wm.auth.service.ValidatorService;
 import org.wm.commons.response.ResponseResult;
@@ -37,6 +39,27 @@ public class ValidatorController {
         var map = validatorService.captcha(request, response);
 
         return ResponseResult.success(map);
+    }
+
+    /**
+     * 功能描述：<功能描述>
+     *       验证验证码是否正确
+     * @author dove
+     * @date 2024/6/27 23:11
+     * @param code  验证码
+     * @param uuid  uuid
+     * @param request
+     * @param response
+     * @return org.wm.commons.response.ResponseResult<?>
+     * @throws
+     */
+    @GetMapping("/validateCaptcha/{uuid}/{code}")
+    public ResponseResult<?> validateCaptcha(@PathVariable String code, @PathVariable String uuid,
+                                             HttpServletRequest request, @Nullable HttpServletResponse response) {
+
+        var success = validatorService.validateCaptcha(code, uuid, request, response);
+
+        return ResponseResult.success(success);
     }
 
 }

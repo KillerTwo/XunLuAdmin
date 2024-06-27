@@ -19,12 +19,12 @@ public abstract class AbstractCaptchaProcessor implements CaptchaProcessor {
         String code = redisCache.getCacheObject(key);
         redisCache.deleteObject(key);
         if (captcha == null) {
-            // TODO 需要冲洗设置调用记录日志的方式：服务调用或者消息中间件的方式
+            // TODO 需要重新设置调用记录日志的方式：服务调用或者消息中间件的方式
             // AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL, MessageUtils.message("user.jcaptcha.expire")));
             // throw new CaptchaExpireException();
             return false;
         }
-        if (!code.equalsIgnoreCase(captcha)) {
+        if (code == null || !code.equalsIgnoreCase(captcha)) {
             // AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL, MessageUtils.message("user.jcaptcha.error")));
             // throw new CaptchaException();
             return false;

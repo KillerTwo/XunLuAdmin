@@ -73,20 +73,21 @@ public class ValidatorServiceImpl implements ValidatorService {
      * @param uuid     唯一标识
      */
     @Override
-    public void validateCaptcha(String code, String uuid,
+    public boolean validateCaptcha(String code, String uuid,
                                 HttpServletRequest request, @Nullable HttpServletResponse response) {
-        String verifyKey = Constants.CAPTCHA_CODE_KEY + StringUtils.nvl(uuid, "");
-        String captcha = redisCache.getCacheObject(verifyKey);
-        redisCache.deleteObject(verifyKey);
+        // String verifyKey = Constants.CAPTCHA_CODE_KEY + StringUtils.nvl(uuid, "");
+        // String captcha = redisCache.getCacheObject(verifyKey);
+        // redisCache.deleteObject(verifyKey);
 
         var success = captchaFacade.validateCode(CaptchaType.getCaptchaType(captchaType),
                 new ServletWebRequest(request, response), uuid, code);
 
         if (!success) {
-            // TODO 需要冲洗设置调用记录日志的方式：服务调用或者消息中间件的方式
+            // TODO 需要重新设置调用记录日志的方式：服务调用或者消息中间件的方式
             // AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL, MessageUtils.message("user.jcaptcha.expire")));
-            throw new CaptchaExpireException();
+            return false;
         }
+        return true;
     }
 
 }

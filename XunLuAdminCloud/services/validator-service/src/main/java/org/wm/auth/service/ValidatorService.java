@@ -36,7 +36,7 @@ public interface ValidatorService {
      * @return void
      * @throws
      */
-    void validateCaptcha(String code, String uuid,
+    boolean validateCaptcha(String code, String uuid,
                          HttpServletRequest request, @Nullable HttpServletResponse response);
 
 }
