@@ -11,6 +11,8 @@ export async function login(body: SYSTEM.LoginBody, options?: { [key: string]: a
   formData.append('grant_type', 'password');
   formData.append('username', body.username||'');
   formData.append('password', body.password||'');
+  formData.append('uuid', body.uuid||'');
+  formData.append('code', body.code||'');
 
 
   return request<SYSTEM.LoginResult>('/api/oauth2/token', {

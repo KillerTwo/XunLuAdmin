@@ -73,7 +73,7 @@ const demoResponseInterceptors = async (response: Response, r: RequestOptionsIni
     if (data.code === 401) {
       notification.error({
         message: `请求错误 ${data.code}`,
-        description: '您无权访问指定资源，登录状态已过期或未登录，请重新登录！',
+        description: data.msg ? data.msg : '您无权访问指定资源，登录状态已过期或未登录，请重新登录！',
       });
       await outLogin();
       clearToken(); // 清除token
@@ -92,12 +92,12 @@ const demoResponseInterceptors = async (response: Response, r: RequestOptionsIni
           }),
         });
       }
-    } else {
+    }/* else {
       notification.error({
         message: `请求错误 ${data.code}`,
         description: data.msg,
       });
-    }
+    }*/
   }
   return response;
 };

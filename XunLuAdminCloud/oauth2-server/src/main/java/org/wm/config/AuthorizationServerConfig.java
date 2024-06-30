@@ -81,8 +81,10 @@ import org.wm.authentication.handler.OAuth2LoginSuccessHandler;
 import org.wm.authentication.password.OAuth2AuthorizationPasswordRequestAuthenticationProvider;
 import org.wm.authentication.password.OAuth2PasswordAuthenticationConverter;
 import org.wm.authorization.RedisOAuth2AuthorizationService;
+import org.wm.config.configurer.ValidateCodeConfigurer;
 import org.wm.domain.dto.SecurityContextUser;
 import org.wm.feignClient.UserServiceClient;
+import org.wm.feignClient.ValidateCodeClient;
 import org.wm.jackson2.GrantedAuthorityDeserializer;
 import org.wm.jackson2.GrantedAuthoritySerializer;
 import org.wm.jackson2.SecurityContextUserMixin;
@@ -121,6 +123,9 @@ public class AuthorizationServerConfig {
 
 	private final UserServiceClient userServiceClient;
 
+	private final ValidateCodeClient validateCodeClient;
+
+	private final ValidateCodeConfigurer validateCodeConfigurer;
 
 
 
@@ -227,6 +232,7 @@ public class AuthorizationServerConfig {
 				)
 				// .csrf(csrf -> csrf.ignoringRequestMatchers(endpointsMatcher))
 				.csrf().disable()
+				.apply(validateCodeConfigurer).and()
 				.apply(authorizationServerConfigurer);
 
 		// 设置自定义token生成器

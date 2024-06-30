@@ -36,6 +36,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
+import org.wm.config.configurer.ValidateCodeConfigurer;
 import org.wm.feignClient.UserServiceClient;
 import org.wm.service.Oauth2UserDetailsService;
 
@@ -54,6 +55,8 @@ import org.wm.service.Oauth2UserDetailsService;
 public class DefaultSecurityConfig {
 
 	private final UserServiceClient userServiceClient;
+
+	private final ValidateCodeConfigurer validateCodeConfigurer;
 
 	/**
 	 * 功能描述：<功能描述>
@@ -97,6 +100,7 @@ public class DefaultSecurityConfig {
 									"/oauth2/login", "/oauth2/doLogin");
 				});*/
 
+		http.apply(validateCodeConfigurer);
 		return http.build();
 	}
 

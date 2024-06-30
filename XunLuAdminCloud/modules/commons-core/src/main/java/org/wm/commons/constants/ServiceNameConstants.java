@@ -25,4 +25,10 @@ public final class ServiceNameConstants {
      */
     public static final String OAUTH2_SERVICE = "oauth2-service";
 
+
+    /**
+     *  验证服务 微服务名
+     */
+    public static final String VALIDATOR_SERVICE = "validator-service";
+
 }

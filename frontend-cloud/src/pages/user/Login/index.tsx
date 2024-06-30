@@ -6,7 +6,7 @@ import {
   UserOutlined,
   WeiboCircleOutlined,
 } from '@ant-design/icons';
-import { message, Tabs } from 'antd';
+import {message, notification, Tabs} from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   ProFormCaptcha,
@@ -119,13 +119,25 @@ const Login: React.FC = () => {
         username = values.phone
       }
 
-      console.log("login param: ", { ...values, code: captcha, uuid: codeUuid, type: type, username: username })
+      // console.log("login param: ", { ...values, code: captcha, uuid: codeUuid, type: type, username: username })
       const msg = await login({ ...values, code: captcha, uuid: codeUuid, type: type, username: username });
       console.log('login msg: ', msg);
+      if (msg?.code && msg?.code !== 200 && msg?.code !== 0) {
+        // message.error(msg.msg ? msg.msg: '登录失败');
+        if (msg?.code !== 401) {
+          notification.error({
+            message: `请求错误 ${msg?.code}`,
+            description: msg.msg ? msg.msg: '登录失败',
+          });
+        }
+        await captchaImage();
+        setCaptcha('');
+        return;
+      }
 
       if (msg?.access_token !== null) {
         setToken(msg?.access_token || '');
-        message.success('登录成功！');
+        notification.success({ message: '登录成功'});
         await fetchUserInfo(); // 请求默认菜单
 
         await fetchMenuInfo();
@@ -139,9 +151,6 @@ const Login: React.FC = () => {
         history.push(redirect || '/');
         return;
       }
-
-      await captchaImage();
-      setCaptcha('');
     } catch (error) {
       console.log('login error ', error);
       message.error('登录失败，请重试!');

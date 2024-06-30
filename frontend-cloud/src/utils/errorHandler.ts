@@ -1,6 +1,6 @@
-import { notification } from 'antd';
+// import { notification } from 'antd';
 
-const codeMessage: Record<number, string> = {
+/*const codeMessage: Record<number, string> = {
   200: '服务器成功返回请求的数据。',
   201: '新建或修改数据成功。',
   202: '一个请求已经进入后台排队（异步任务）。',
@@ -16,7 +16,7 @@ const codeMessage: Record<number, string> = {
   502: '网关错误。',
   503: '服务不可用，服务器暂时过载或维护。',
   504: '网关超时。',
-};
+};*/
 
 interface error {
   name: string;
@@ -35,19 +35,19 @@ interface error {
 const errorHandler = (error: error) => {
   console.log('error: ', error.name);
   if (error.name === 'BizError') {
-    notification.error({
+    /*notification.error({
       message: `请求错误 ${error.data.code}`,
       description: error.data.msg,
-    });
+    });*/
     return error.data.code;
   } else if (error.name === 'SyntaxError') {
-    notification.error({
+    /*notification.error({
       message: `请求错误 ${error.name}`,
       description: '',
-    });
+    });*/
     return 500;
   }
-  const { response } = error;
+  /*const { response } = error;
   if (response) {
     console.log('response: ', response);
     const { status, url, statusText } = response;
@@ -56,6 +56,6 @@ const errorHandler = (error: error) => {
       message: `请求错误 ${status}: ${url}`,
       description: errortext,
     });
-  }
+  }*/
 };
 export default errorHandler;
