@@ -38,3 +38,9 @@ export interface GetUserInfoModel {
   // 介绍
   desc?: string
 }
+
+export interface GetPermCodeModel {
+  code: number
+  msg: string
+  data: string[]
+}

@@ -33,9 +33,12 @@
 
     <!-- action  -->
     <div :class="`${prefixCls}-action`">
-      <AppSearch :class="`${prefixCls}-action__item `" v-if="getShowSearch" />
+      <!--      <AppSearch :class="`${prefixCls}-action__item `" v-if="getShowSearch" />-->
 
-      <Notify v-if="getShowNotice" :class="`${prefixCls}-action__item notify-item`" />
+      <Notify
+        v-if="getShowNotice && projectSetting().useAuthorize"
+        :class="`${prefixCls}-action__item notify-item`"
+      />
 
       <FullScreen v-if="getShowFullScreen" :class="`${prefixCls}-action__item fullscreen-item`" />
 
@@ -46,7 +49,7 @@
         :class="`${prefixCls}-action__item`"
       />
 
-      <UserDropDown :theme="getHeaderTheme" />
+      <UserDropDown v-if="projectSetting().useAuthorize" :theme="getHeaderTheme" />
 
       <SettingDrawer v-if="getShowSetting" :class="`${prefixCls}-action__item`" />
     </div>
@@ -79,8 +82,15 @@
   import { createAsyncComponent } from '/@/utils/factory/createAsyncComponent'
   import { useLocale } from '/@/locales/useLocale'
 
+  import projectSetting from '/@/settings/projectSetting'
+
   export default defineComponent({
     name: 'LayoutHeader',
+    methods: {
+      projectSetting() {
+        return projectSetting
+      },
+    },
     components: {
       Header: Layout.Header,
       AppLogo,
@@ -91,7 +101,7 @@
       AppLocalePicker,
       FullScreen,
       Notify,
-      AppSearch,
+      // AppSearch,
       SettingDrawer: createAsyncComponent(() => import('/@/layouts/default/setting/index.vue'), {
         loading: true,
       }),

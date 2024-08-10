@@ -29,5 +29,9 @@ public class MenuController {
         return ResponseResult.success(menuList);
     }
 
+    @GetMapping("/getPermCode")
+    public ResponseResult<List<String>> getPermCode() {
+        return ResponseResult.success(List.of("1000", "3000", "5000"));
+    }
 
 }

@@ -5,7 +5,7 @@ module.exports = {
     node: true,
     es6: true,
   },
-  parser: 'vue-eslint-parser',
+  /*parser: 'vue-eslint-parser',
   parserOptions: {
     parser: '@typescript-eslint/parser',
     ecmaVersion: 2020,
@@ -14,10 +14,10 @@ module.exports = {
     ecmaFeatures: {
       jsx: true,
     },
-  },
+  },*/
   extends: [
     'plugin:vue/vue3-recommended',
-    'plugin:@typescript-eslint/recommended',
+    // 'plugin:@typescript-eslint/recommended',
     'plugin:prettier/recommended',
   ],
   rules: {
@@ -34,20 +34,7 @@ module.exports = {
     '@typescript-eslint/ban-types': 'off',
     '@typescript-eslint/no-non-null-assertion': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
-    '@typescript-eslint/no-unused-vars': [
-      'error',
-      {
-        argsIgnorePattern: '^_',
-        varsIgnorePattern: '^_',
-      },
-    ],
-    'no-unused-vars': [
-      'error',
-      {
-        argsIgnorePattern: '^_',
-        varsIgnorePattern: '^_',
-      },
-    ],
+    '@typescript-eslint/no-unused-vars': 'off',
     'space-before-function-paren': 'off',
 
     'vue/attributes-order': 'off',

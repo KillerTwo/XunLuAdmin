@@ -123,6 +123,39 @@ export const useUserStore = defineStore({
       }
       return userInfo
     },
+    async afterLoginActionFake(): Promise<GetUserInfoModel | null> {
+      this.setToken("123456");
+      this.setSessionTimeout(false);
+      // permissionStore.setDynamicAddedRoute(true);
+      const userinfo = {
+        userId: "1",
+        username: "vben",
+        realName: "Vben Admin",
+        avatar: "https://q1.qlogo.cn/g?b=qq&nk=190848757&s=640",
+        desc: "manager",
+        password: "123456",
+        token: "fakeToken1",
+        homePath: "/dashboard/analysis",
+        roles: [
+          {
+            roleName: "Super Admin",
+            value: "super"
+          }
+        ]
+      };
+      const { roles = [] } = userinfo
+      if (isArray(roles)) {
+        const roleList = roles.map((item) => item.value) as RoleEnum[]
+        this.setRoleList(roleList)
+      } else {
+        userinfo.roles = []
+        this.setRoleList([])
+      }
+      this.setUserInfo(userinfo);
+      // await router.replace(PageEnum.BASE_HOME);
+      return userinfo
+    },
+
     async getUserInfoAction(): Promise<UserInfo | null> {
       if (!this.getToken) return null
       const userInfo = await getUserInfo()

@@ -105,6 +105,7 @@ export const usePermissionStore = defineStore({
     },
     async changePermissionCode() {
       const codeList = await getPermCode()
+      console.log('codeList is ', codeList)
       this.setPermCodeList(codeList)
     },
 
@@ -222,7 +223,10 @@ export const usePermissionStore = defineStore({
           let routeList: AppRouteRecordRaw[] = []
           try {
             await this.changePermissionCode()
-            routeList = (await getMenuList()) as AppRouteRecordRaw[]
+            const menuRes = await getMenuList()
+            console.log('menuRes', menuRes)
+            routeList = menuRes as AppRouteRecordRaw[]
+            console.log('routeList is ', routeList)
           } catch (error) {
             console.error(error)
           }

@@ -11,6 +11,7 @@ import { OUTPUT_DIR } from './build/constant'
 
 function pathResolve(dir: string) {
   return resolve(process.cwd(), '.', dir)
+  return resolve(process.cwd(), '.', dir)
 }
 
 const { dependencies, devDependencies, name, version } = pkg

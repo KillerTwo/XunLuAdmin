@@ -79,6 +79,7 @@ export interface TransitionSetting {
 }
 
 export interface ProjectConfig {
+  useAuthorize: boolean
   // Storage location of permission related information
   permissionCacheType: CacheTypeEnum
   // Whether to show the configuration button

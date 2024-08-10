@@ -14,6 +14,8 @@ import { primaryColor } from '../../build/config/themeConfig'
 
 // ! You need to clear the browser cache after the change
 const setting: ProjectConfig = {
+  // 是否需要权限验证
+  useAuthorize: false,
   // Whether to show the configuration button
   showSettingButton: true,
 
