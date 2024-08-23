@@ -1,4 +1,6 @@
-#!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
+echo Start running commit-msg hook...
 
-pnpm commitlint --edit "$1"
+# Check whether the git commit information is standardized
+pnpm exec commitlint --edit "$1"
+
+echo Run commit-msg hook done.

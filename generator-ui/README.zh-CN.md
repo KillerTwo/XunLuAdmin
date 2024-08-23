@@ -1,132 +1,146 @@
-<div align="center"> <a href="https://github.com/kailong321200875/vue-element-plus-admin"> <img width="100" src="./public/logo.png"> </a> <br> <br>
+<div align="center"> <a href="https://github.com/anncwb/vue-vben-admin"> <img alt="VbenAdmin Logo" width="215" src="https://unpkg.com/@vbenjs/static-source@0.1.6/source/logo-v1.webp"> </a> <br> <br>
 
-[![license](https://img.shields.io/github/license/kailong321200875/vue-element-plus-admin.svg)](LICENSE)
+[![license](https://img.shields.io/github/license/anncwb/vue-vben-admin.svg)](LICENSE)
 
-<h1>vue-element-plus-admin</h1>
+<h1>Vue Vben Admin</h1>
 </div>
 
-[English](./README.md) | **中文**
+**中文** | [English](./README.md) | [日本語](./README.ja-JP.md)
 
-## 介绍
+## 简介
 
-vue-element-plus-admin 是一个基于 `element-plus` 免费开源的中后台模版。使用了最新的`vue3`，`vite4`，`TypeScript`等主流技术开发，开箱即用的中后台前端解决方案，可以用来作为项目的启动模版，也可用于学习参考。并且时刻关注着最新技术动向，尽可能的第一时间更新。
+Vue Vben Admin 是 Vue Vben Admin 的升级版本。作为一个免费开源的中后台模板，它采用了最新的 Vue 3、Vite、TypeScript 等主流技术开发，开箱即用，可用于中后台前端开发，也适合学习参考。
 
-vue-element-plus-admin 的定位是后台集成方案，不太适合当基础模板来进行二次开发。因为集成了很多你可能用不到的功能，会造成不少的代码冗余。如果你的项目不关注这方面的问题，也可以直接基于它进行二次开发。
+## 升级提示
 
-如需要基础模版，请切换到 `tempalte` 分支，`tempalte` 只简单集成了一些如：布局、动态菜单等常用布局功能，更适合开发者进行二次开发。
+该版本为最新版本`5.0`, 与其他版本不兼容，如果你是新项目，建议使用最新版本。如果你想查看旧版本，请使用 [v2 分支](https://github.com/vbenjs/vue-vben-admin/tree/v2)
 
 ## 特性
 
-- **最新技术栈**：使用 Vue3/vite4 等前端前沿技术开发
+- **最新技术栈**：使用 Vue3/vite 等前端前沿技术开发
 - **TypeScript**: 应用程序级 JavaScript 的语言
-- **主题**: 可配置的主题
+- **主题**：提供多套主题色彩，可配置自定义主题
 - **国际化**：内置完善的国际化方案
-- **自定义数据** 内置 Mock 数据方案
 - **权限** 内置完善的动态路由权限生成方案
-- **组件** 二次封装了多个常用的组件
-- **示例** 内置丰富的示例
 
 ## 预览
 
-- [vue-element-plus-admin](https://element-plus-admin.cn/) - 完整版 github 站点
-- [vue-element-plus-admin](https://kailong110120130.gitee.io/vue-element-plus-admin) - 完整版 gitee 站点
+- [Vben Admin](https://vben.pro/) - 完整版中文站点
 
-帐号：**admin/admin test/test**
+测试账号: vben/123456
 
-`admin` 帐号用于模拟服务端控制权限，服务端返回什么就渲染什么
+<p align="center">
+    <img alt="VbenAdmin Logo" width="100%" src="https://anncwb.github.io/anncwb/images/preview1.png">
+    <img alt="VbenAdmin Logo" width="100%" src="https://anncwb.github.io/anncwb/images/preview2.png">
+    <img alt="VbenAdmin Logo" width="100%" src="https://anncwb.github.io/anncwb/images/preview3.png">
+</p>
 
-`test` 帐号用于模拟前端控制权限，服务端只返回需要显示的菜单 key，前端进行匹配渲染
+### 使用 Gitpod
+
+在 Gitpod（适用于 GitHub 的免费在线开发环境）中打开项目，并立即开始编码.
+
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/vbenjs/vue-vben-admin)
 
 ## 文档
 
-[文档地址 Github](https://element-plus-admin-doc.cn/)
+[文档地址](https://doc.vben.pro/)
 
-[文档地址 Gitee](https://kailong110120130.gitee.io/vue-element-plus-admin-doc)
+## 安装使用
 
-## 前序准备
-
-- [node](http://nodejs.org/) 和 [git](https://git-scm.com/) - 项目开发环境
-- [Vite4](https://vitejs.dev/) - 熟悉 vite 特性
-- [Vue3](https://v3.vuejs.org/) - 熟悉 Vue 基础语法
-- [TypeScript](https://www.typescriptlang.org/) - 熟悉 `TypeScript` 基本语法
-- [Es6+](http://es6.ruanyifeng.com/) - 熟悉 es6 基本语法
-- [Vue-Router-Next](https://next.router.vuejs.org/) - 熟悉 vue-router 基本使用
-- [Element-Plus](https://element-plus.org/) - element-plus 基本使用
-- [Mock.js](https://github.com/nuysoft/Mock) - mockjs 基本语法
-
-## 安装和使用
-
-- 获取代码
+- 获取项目代码
 
 ```bash
-git clone https://github.com/kailong321200875/vue-element-plus-admin.git
+git clone https://github.com/vbenjs/vue-vben-admin.git
 ```
 
 - 安装依赖
 
 ```bash
-cd vue-element-plus-admin
+cd vue-vben-admin
+
+corepack enable
 
 pnpm install
-
 ```
 
 - 运行
 
 ```bash
-pnpm run dev
+pnpm dev
 ```
 
 - 打包
 
 ```bash
-pnpm run build:pro
+pnpm build
 ```
-
-## 更新日志
-
-[更新日志](./CHANGELOG.md)
 
 ## 如何贡献
 
-你可以[提一个 issue](https://github.com/kailong321200875/vue-element-plus-admin/issues/new) 或者提交一个 Pull Request。
+非常欢迎你的加入！[提一个 Issue](https://github.com/anncwb/vue-vben-admin/issues/new/choose) 或者提交一个 Pull Request。
 
 **Pull Request:**
 
-1. Fork 代码
-2. 创建自己的分支: `git checkout -b feat/xxxx`
+1. Fork 代码!
+2. 创建自己的分支: `git checkout -b feature/xxxx`
 3. 提交你的修改: `git commit -am 'feat(function): add xxxxx'`
-4. 推送您的分支: `git push origin feat/xxxx`
-5. 提交 `pull request`
+4. 推送您的分支: `git push origin feature/xxxx`
+5. 提交`pull request`
 
 ## Git 贡献提交规范
 
-- `feat` 新功能
-- `fix` 修补 bug
-- `docs` 文档
-- `style` 格式、样式(不影响代码运行的变动)
-- `refactor` 重构(即不是新增功能，也不是修改 BUG 的代码)
-- `perf` 优化相关，比如提升性能、体验
-- `test` 添加测试
-- `build` 编译相关的修改，对项目构建或者依赖的改动
-- `ci` 持续集成修改
-- `chore` 构建过程或辅助工具的变动
-- `revert` 回滚到上一个版本
-- `workflow` 工作流改进
-- `mod` 不确定分类的修改
-- `wip` 开发中
-- `types` 类型
+- 参考 [vue](https://github.com/vuejs/vue/blob/dev/.github/COMMIT_CONVENTION.md) 规范 ([Angular](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-angular))
+
+  - `feat` 增加新功能
+  - `fix` 修复问题/BUG
+  - `style` 代码风格相关无影响运行结果的
+  - `perf` 优化/性能提升
+  - `refactor` 重构
+  - `revert` 撤销修改
+  - `test` 测试相关
+  - `docs` 文档/注释
+  - `chore` 依赖更新/脚手架配置修改等
+  - `ci` 持续集成
+  - `types` 类型定义文件更改
+  - `wip` 开发中
 
 ## 浏览器支持
 
-本地开发推荐使用 `Chrome 80+` 浏览器
+本地开发推荐使用`Chrome 80+` 浏览器
 
 支持现代浏览器, 不支持 IE
 
-| [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/archive/internet-explorer_9-11/internet-explorer_9-11_48x48.png" alt=" Edge" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>IE | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/edge/edge_48x48.png" alt=" Edge" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Edge | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png" alt="Firefox" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Firefox | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png" alt="Chrome" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Chrome | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/safari/safari_48x48.png" alt="Safari" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Safari |
+| [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/edge/edge_48x48.png" alt=" Edge" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>IE | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/edge/edge_48x48.png" alt=" Edge" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Edge | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png" alt="Firefox" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Firefox | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png" alt="Chrome" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Chrome | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/safari/safari_48x48.png" alt="Safari" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Safari |
 | :-: | :-: | :-: | :-: | :-: |
 | not support | last 2 versions | last 2 versions | last 2 versions | last 2 versions |
 
-## 许可证
+## 维护者
 
-[MIT](./LICENSE)
+[@Vben](https://github.com/anncwb)
+
+## 捐赠
+
+如果你觉得这个项目对你有帮助，你可以帮作者买一杯咖啡表示支持!
+
+![donate](https://unpkg.com/@vbenjs/static-source@0.1.6/source/sponsor.png)
+
+<a style="display: block;width: 100px;height: 50px;line-height: 50px; color: #fff;text-align: center; background: #408aed;border-radius: 4px;" href="https://www.paypal.com/paypalme/cvvben">Paypal Me</a>
+
+## 更新日志
+
+[CHANGELOG](https://github.com/vbenjs/vue-vben-admin/releases)
+
+## Contributor
+
+<a href="https://github.com/vbenjs/vue-vben-admin/graphs/contributors">
+  <img alt="Contributors"
+        src="https://opencollective.com/vbenjs/contributors.svg?button=false" />
+</a>
+
+## Discord
+
+- [Github Discussions](https://github.com/anncwb/vue-vben-admin/discussions)
+
+## License
+
+[MIT © Vben-2020](./LICENSE)
