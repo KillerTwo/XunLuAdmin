@@ -2,7 +2,7 @@
 // import { SmileOutlined, DownOutlined } from '@vben/icons';
 import type { TableProps } from 'ant-design-vue';
 
-import { computed, ref, watch, watchEffect } from 'vue';
+import {computed, reactive, ref, watch, watchEffect} from 'vue';
 
 // import {Table, Button} from "ant-design-vue";
 import { Page } from '@vben/common-ui';
@@ -67,7 +67,6 @@ type APIResult = {
 watchEffect(async () => {
   // 该 effect 会立即运行，
   // 并且在 currentBranch.value 改变时重新运行
-  console.log('watchEffect', current.value);
   const url = `http://localhost:5666/api/table/list?page=${current.value}`;
   const res = await requestClient.get<APIResult>(url);
   datasource.value = res.results;
@@ -81,14 +80,29 @@ const pagination = computed(() => ({
 
 const handleTableChange: TableProps['onChange'] = async (
   pag: { current: number; pageSize: number },
-  filters: any,
-  sorter: any,
+  /*  filters: any,
+  sorter: any,*/
 ) => {
   // datasource.value = await queryData({ page: current.value, results: 10 });
-  console.log(pag.current, filters, sorter);
   current.value = pag.current;
   pageSize.value = pag.pageSize;
 };
+
+type Key = number | string;
+
+const state = reactive<{
+  loading: boolean;
+  selectedRowKeys: Key[];
+}>({
+  loading: false,
+  selectedRowKeys: [], // Check here to configure the default column
+});
+
+const onSelectChange = (selectedRowKeys: Key[]) => {
+  console.log('selectedRowKeys changed:', selectedRowKeys);
+  state.selectedRowKeys = selectedRowKeys;
+};
+
 </script>
 
 <template>
@@ -107,11 +121,29 @@ const handleTableChange: TableProps['onChange'] = async (
       :loading="loading"
       :pagination="pagination"
       :row-key="(record) => record.id"
+      :row-selection="{
+        selectedRowKeys: state.selectedRowKeys,
+        onChange: onSelectChange,
+      }"
+      bordered
+      size="small"
       @change="handleTableChange"
     >
-      <!--      <template #bodyCell="{ column, text }">
-        <template v-if="column.dataIndex === 'name'">{{ text.first }} {{ text.last }}</template>
-      </template>-->
+      <template #bodyCell="{ column, text }">
+        <template v-if="column.key === 'action'">
+          <a-space>
+            <a-button>编辑</a-button>
+            <a-button>预览</a-button>
+            <a-button>生成代码</a-button>
+            <a-button>删除</a-button>
+            <a-button>同步</a-button>
+          </a-space>
+        </template>
+        <template v-else-if="column.key === 'tplCategory'">
+          <a-tag color="cyan">{{ text[0] }}</a-tag>
+        </template>
+        <template v-else>{{ text }}</template>
+      </template>
     </a-table>
   </Page>
 </template>
