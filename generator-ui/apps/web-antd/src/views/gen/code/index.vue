@@ -1,0 +1,117 @@
+<script lang="ts" setup>
+// import { SmileOutlined, DownOutlined } from '@vben/icons';
+import type { TableProps } from 'ant-design-vue';
+
+import { computed, ref, watch, watchEffect } from 'vue';
+
+// import {Table, Button} from "ant-design-vue";
+import { Page } from '@vben/common-ui';
+
+import { requestClient } from '#/api/request';
+
+const tableName = ref<string>('');
+
+const current = ref<number>(1);
+const pageSize = ref<number>(10);
+const datasource = ref<any[]>([]);
+const loading = ref<boolean>(false);
+
+watch(tableName, () => {
+  // console.log(tableName.value);
+});
+
+const columns = [
+  {
+    dataIndex: 'tableName',
+    key: 'tableName',
+    title: '表名',
+  },
+  {
+    dataIndex: 'tableComment',
+    key: 'tableComment',
+    title: '表说明',
+  },
+  {
+    dataIndex: 'className',
+    key: 'className',
+    title: '类名',
+  },
+  {
+    dataIndex: 'tplCategory',
+    key: 'tplCategory',
+    title: '生成类型',
+  },
+  {
+    key: 'action',
+    title: '操作',
+  },
+];
+/*
+type APIParams = {
+  results: number;
+  page?: number;
+  sortField?: string;
+  sortOrder?: number;
+  [key: string]: any;
+};*/
+
+type APIResult = {
+  results: {
+    className: string;
+    tableComment: string;
+    tableName: string;
+    tplCategory: string[];
+  }[];
+};
+
+watchEffect(async () => {
+  // 该 effect 会立即运行，
+  // 并且在 currentBranch.value 改变时重新运行
+  console.log('watchEffect', current.value);
+  const url = `http://localhost:5666/api/table/list?page=${current.value}`;
+  const res = await requestClient.get<APIResult>(url);
+  datasource.value = res.results;
+});
+
+const pagination = computed(() => ({
+  current: current.value,
+  pageSize: pageSize.value,
+  total: 200,
+}));
+
+const handleTableChange: TableProps['onChange'] = async (
+  pag: { current: number; pageSize: number },
+  filters: any,
+  sorter: any,
+) => {
+  // datasource.value = await queryData({ page: current.value, results: 10 });
+  console.log(pag.current, filters, sorter);
+  current.value = pag.current;
+  pageSize.value = pag.pageSize;
+};
+</script>
+
+<template>
+  <Page description="配置代码生成" title="代码生成">
+    <a-space style="margin-bottom: 10px">
+      <a-input v-model:value="tableName" placeholder="表名" />
+      <a-button>搜索</a-button>
+      <a-button type="primary">导入</a-button>
+      <a-button type="primary">生成代码</a-button>
+      <a-button danger>删除</a-button>
+    </a-space>
+
+    <a-table
+      :columns="columns"
+      :data-source="datasource"
+      :loading="loading"
+      :pagination="pagination"
+      :row-key="(record) => record.id"
+      @change="handleTableChange"
+    >
+      <!--      <template #bodyCell="{ column, text }">
+        <template v-if="column.dataIndex === 'name'">{{ text.first }} {{ text.last }}</template>
+      </template>-->
+    </a-table>
+  </Page>
+</template>

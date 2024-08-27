@@ -170,6 +170,37 @@ const createDemosMenus = (role: 'admin' | 'super' | 'user') => {
   ];
 };
 
+const tablesList = [
+  {
+    id: 1,
+    tableName: 'tb_user',
+    tableComment: '用户表',
+    className: 'User',
+    tplCategory: ['普通表'],
+  },
+  {
+    id: 2,
+    tableName: 'tb_role',
+    tableComment: '角色表',
+    className: 'Role',
+    tplCategory: ['普通表'],
+  },
+  {
+    id: 3,
+    tableName: 'tb_menu',
+    tableComment: '菜单表',
+    className: 'Menu',
+    tplCategory: ['普通表'],
+  },
+  {
+    id: 4,
+    tableName: 'tb_sub',
+    tableComment: '子表',
+    className: 'Sub01',
+    tplCategory: ['子表'],
+  },
+];
+
 export const MOCK_MENUS = [
   {
     menus: [...dashboardMenus, ...createDemosMenus('super')],
@@ -182,5 +213,11 @@ export const MOCK_MENUS = [
   {
     menus: [...dashboardMenus, ...createDemosMenus('user')],
     username: 'jack',
+  },
+];
+
+export const MOCK_TABLES = [
+  {
+    tabels: [...tablesList],
   },
 ];

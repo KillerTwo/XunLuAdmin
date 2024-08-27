@@ -5,10 +5,14 @@ import { initStores } from '@vben/stores';
 import '@vben/styles';
 import '@vben/styles/antd';
 
+import Antd from 'ant-design-vue';
+
 import { setupI18n } from '#/locales';
 
 import App from './app.vue';
 import { router } from './router';
+
+import 'ant-design-vue/dist/reset.css';
 
 async function bootstrap(namespace: string) {
   const app = createApp(App);
@@ -24,6 +28,7 @@ async function bootstrap(namespace: string) {
 
   // 配置路由及路由守卫
   app.use(router);
+  app.use(Antd);
 
   app.mount('#app');
 }

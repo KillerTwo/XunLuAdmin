@@ -42,9 +42,11 @@
     "@vben/utils": "workspace:*",
     "@vueuse/core": "^11.0.1",
     "ant-design-vue": "^4.2.3",
+    "axios": "^1.7.4",
     "dayjs": "^1.11.13",
     "pinia": "2.2.2",
     "vue": "^3.4.38",
+    "vue-request": "^2.0.4",
     "vue-router": "^4.4.3"
   }
 }

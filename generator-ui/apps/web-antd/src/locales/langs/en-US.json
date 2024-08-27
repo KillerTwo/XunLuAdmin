@@ -3,6 +3,11 @@
     "demos": {
       "title": "Demos",
       "antd": "Ant Design Vue"
+    },
+    "gen": {
+      "title": "code generator",
+      "code": "code",
+      "datasource": "datasource"
     }
   }
 }
