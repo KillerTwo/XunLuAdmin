@@ -26,6 +26,7 @@
     "#/*": "./src/*"
   },
   "dependencies": {
+    "@types/lodash-es": "^4.17.12",
     "@vben/access": "workspace:*",
     "@vben/chart-ui": "workspace:*",
     "@vben/common-ui": "workspace:*",
@@ -44,6 +45,8 @@
     "ant-design-vue": "^4.2.3",
     "axios": "^1.7.4",
     "dayjs": "^1.11.13",
+    "lodash": "^4.17.21",
+    "lodash-es": "^4.17.21",
     "pinia": "2.2.2",
     "vue": "^3.4.38",
     "vue-request": "^2.0.4",
