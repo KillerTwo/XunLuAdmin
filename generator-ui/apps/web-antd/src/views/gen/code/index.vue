@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 // import { SmileOutlined, DownOutlined } from '@vben/icons';
-import type { DrawerProps, SelectProps, TableProps } from 'ant-design-vue';
+import type { DrawerProps, SelectProps, TableProps, TabsProps } from 'ant-design-vue';
 
 import { computed, reactive, ref, watch, watchEffect } from 'vue';
 import type { Ref, UnwrapRef } from 'vue';
@@ -23,6 +23,15 @@ const loading = ref<boolean>(false);
 const placement = ref<DrawerProps['placement']>('right');
 const open = ref<boolean>(false);
 
+const previewOpen = ref<boolean>(false);
+const previewPlacement = ref<DrawerProps['placement']>('right');
+
+const mode = ref<TabsProps['tabPosition']>('left');
+const activeKey = ref(1);
+const callback: TabsProps['onTabScroll'] = (val) => {
+  console.log(val);
+};
+
 watch(tableName, () => {
   // console.log(tableName.value);
 });
@@ -41,6 +50,8 @@ interface ColumnType {
   javaType: string;
   sort: number;
   typeScriptType: string;
+  isQuery: string;
+  queryType: string;
 }
 
 const columns = [
@@ -74,9 +85,9 @@ const editColumns = [
   {
     dataIndex: 'columnId',
     key: 'columnId',
-    minWidth: 100,
+    minWidth: 50,
     title: '编号',
-    width: 100,
+    width: 50,
   },
   {
     dataIndex: 'columnName',
@@ -111,7 +122,7 @@ const editColumns = [
   {
     dataIndex: 'typeScriptType',
     key: 'typeScriptType',
-    title: 'TypeScript类型',
+    title: 'TS类型',
     width: 100,
   },
   {
@@ -139,6 +150,18 @@ const editColumns = [
     width: 100,
   },
   {
+    dataIndex: 'isQuery',
+    key: 'isQuery',
+    title: '查询',
+    width: 50,
+  },
+  {
+    dataIndex: 'queryType',
+    key: 'queryType',
+    title: '查询方式',
+    width: 100,
+  },
+  {
     dataIndex: 'dictType',
     key: 'dictType',
     title: '字典类型',
@@ -148,7 +171,7 @@ const editColumns = [
     dataIndex: 'sort',
     key: 'sort',
     title: '排序',
-    width: 100,
+    width: 50,
   },
 ];
 
@@ -162,9 +185,11 @@ const dataSource: Ref<ColumnType[]> = ref([
     htmlType: 'input',
     isIncrement: '否',
     isPk: '否',
+    isQuery: '1',
     isRequired: true,
     javaField: 'username',
     javaType: 'String',
+    queryType: 'EQ',
     sort: 1,
     typeScriptType: 'string',
   },
@@ -177,9 +202,11 @@ const dataSource: Ref<ColumnType[]> = ref([
     htmlType: 'input',
     isIncrement: '否',
     isPk: '否',
+    isQuery: '1',
     isRequired: true,
     javaField: 'password',
     javaType: 'String',
+    queryType: 'EQ',
     sort: 2,
     typeScriptType: 'string',
   },
@@ -192,9 +219,11 @@ const dataSource: Ref<ColumnType[]> = ref([
     htmlType: 'input',
     isIncrement: '否',
     isPk: '否',
+    isQuery: '1',
     isRequired: false,
     javaField: 'sex',
     javaType: 'String',
+    queryType: 'EQ',
     sort: 3,
     typeScriptType: 'string',
   },
@@ -207,9 +236,11 @@ const dataSource: Ref<ColumnType[]> = ref([
     htmlType: 'input',
     isIncrement: '否',
     isPk: '否',
+    isQuery: '0',
     isRequired: false,
     javaField: 'age',
     javaType: 'String',
+    queryType: 'EQ',
     sort: 4,
     typeScriptType: 'string',
   },
@@ -274,9 +305,16 @@ const onSelectChange = (selectedRowKeys: Key[]) => {
 const showDrawer = () => {
   open.value = true;
 };
+const showPreviewDrawer = () => {
+  previewOpen.value = true;
+};
 
 const onClose = () => {
   open.value = false;
+};
+
+const onPreviewClose = () => {
+  previewOpen.value = false;
 };
 
 const editableData: UnwrapRef<Record<string, ColumnType>> = reactive({});
@@ -306,6 +344,10 @@ const handleJavascriptTypeChange = (value: string) => {
 };
 
 const handleHtmlTypeChange = (value: string) => {
+  console.log(`selected ${value}`);
+};
+
+const handleQueryTypeChange = (value: string) => {
   console.log(`selected ${value}`);
 };
 
@@ -356,9 +398,35 @@ const htmlTypeOptions = ref<SelectProps['options']>([
   { label: '富文本控件', value: 'richtextarea' },
 ]);
 
-const htmlTypeFilter = (value: string) => {
+// EQ等于、NE不等于、GT大于、LT小于、LIKE模糊、BETWEEN范围
+const queryTypeOptions = ref<SelectProps['options']>([
+  { label: '等于', value: 'EQ' },
+  { label: '不等于', value: 'NE' },
+  { label: '大于', value: 'GT' },
+  { label: '小于', value: 'LT' },
+  { label: '模糊', value: 'LIKE' },
+  { label: '范围', value: 'BETWEEN' },
+]);
 
-}
+const htmlTypeFilter = (value: string) => {
+  for (const valueKey in htmlTypeOptions.value) {
+    const v = htmlTypeOptions.value[valueKey].value;
+    if (v === value) {
+      return htmlTypeOptions.value[valueKey].label;
+    }
+  }
+  return value;
+};
+
+const queryTypeFilter = (value: string) => {
+  for (const valueKey in queryTypeOptions.value) {
+    const v = queryTypeOptions.value[valueKey].value;
+    if (v === value) {
+      return queryTypeOptions.value[valueKey].label;
+    }
+  }
+  return value;
+};
 
 const filterOption = (input: string, option: any) => {
   return option.value.toLowerCase().includes(input.toLowerCase());
@@ -394,7 +462,7 @@ const filterOption = (input: string, option: any) => {
           <template v-if="column.key === 'action'">
             <a-space>
               <a-button @click="showDrawer">编辑</a-button>
-              <a-button>预览</a-button>
+              <a-button @click="showPreviewDrawer">预览</a-button>
               <a-button>生成代码</a-button>
               <a-button>删除</a-button>
               <a-button>同步</a-button>
@@ -601,8 +669,61 @@ const filterOption = (input: string, option: any) => {
               </div>
               <div v-else class="editable-cell-text-wrapper">
                 <a-space style="margin-bottom: 10px">
-                  {{ text || ' ' }}
+                  {{ htmlTypeFilter(text) || ' ' }}
                   <MaterialEdit @click="edit(record.columnId, 'htmlType')" />
+                </a-space>
+              </div>
+            </div>
+          </template>
+          <template v-else-if="column.key === 'isQuery'">
+            <div class="editable-cell">
+              <div
+                v-if="editableData[`${record.columnId}_isQuery`]"
+                class="editable-cell-input-wrapper"
+              >
+                <a-space style="margin-bottom: 10px">
+                  <a-checkbox
+                    v-model:checked="
+                      editableData[`${record.columnId}_isQuery`].isQuery
+                    "
+                  />
+                  <MaterialCheck @click="save(record.columnId, 'isQuery')" />
+                </a-space>
+              </div>
+              <div v-else class="editable-cell-text-wrapper">
+                <a-space style="margin-bottom: 10px">
+                  {{ text === '1' ? '是' : '否' }}
+                  <MaterialEdit @click="edit(record.columnId, 'isQuery')" />
+                </a-space>
+              </div>
+            </div>
+          </template>
+          <template v-else-if="column.key === 'queryType'">
+            <div class="editable-cell">
+              <div
+                v-if="editableData[`${record.columnId}_queryType`]"
+                class="editable-cell-input-wrapper"
+              >
+                <a-space style="margin-bottom: 10px">
+                  <a-select
+                    v-model:value="
+                      editableData[`${record.columnId}_queryType`].queryType
+                    "
+                    :filter-option="filterOption"
+                    :options="queryTypeOptions"
+                    placeholder="选择查询类型"
+                    show-search
+                    style="width: 100px"
+                    @change="handleQueryTypeChange"
+                    @press-enter="save(record.columnId, 'queryType')"
+                  />
+                  <MaterialCheck @click="save(record.columnId, 'queryType')" />
+                </a-space>
+              </div>
+              <div v-else class="editable-cell-text-wrapper">
+                <a-space style="margin-bottom: 10px">
+                  {{ queryTypeFilter(text) || ' ' }}
+                  <MaterialEdit @click="edit(record.columnId, 'queryType')" />
                 </a-space>
               </div>
             </div>
@@ -633,6 +754,45 @@ const filterOption = (input: string, option: any) => {
           </template>
         </template>
       </a-table>
+    </a-drawer>
+    <a-drawer
+      :closable="false"
+      :destroy-on-close="true"
+      :mask-closable="false"
+      :open="previewOpen"
+      :placement="previewPlacement"
+      size="large"
+      title="预览"
+      width="100%"
+      @close="onPreviewClose"
+    >
+      <template #extra>
+        <span
+          class="iconify"
+          data-icon="material-symbols:check"
+          data-inline="false"
+        ></span>
+        <a-button style="margin-right: 8px" @click="onPreviewClose">
+          取消
+        </a-button>
+        <a-button type="primary" @click="onPreviewClose">确定</a-button>
+      </template>
+      <a-tabs
+        v-model:activeKey="activeKey"
+        :style="{ height: '600px' }"
+        :tab-position="mode"
+        @tab-scroll="callback"
+      >
+        <a-tab-pane :key="1" tab="domain.java">Content of tab</a-tab-pane>
+        <a-tab-pane :key="2" tab="mapper.java">Content of tab</a-tab-pane>
+        <a-tab-pane :key="3" tab="service.java">Content of tab</a-tab-pane>
+        <a-tab-pane :key="4" tab="serviceImpl.java">Content of tab</a-tab-pane>
+        <a-tab-pane :key="5" tab="controller.java">Content of tab</a-tab-pane>
+        <a-tab-pane :key="6" tab="mapper.xml">Content of tab</a-tab-pane>
+        <a-tab-pane :key="7" tab="sql.xml">Content of tab</a-tab-pane>
+        <a-tab-pane :key="8" tab="api.ts">Content of tab</a-tab-pane>
+        <a-tab-pane :key="9" tab="index.vue">Content of tab</a-tab-pane>
+      </a-tabs>
     </a-drawer>
   </div>
 </template>
