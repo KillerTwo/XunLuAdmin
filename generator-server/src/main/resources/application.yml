@@ -5,7 +5,7 @@ gen:
   tablePrefix: sys_
 
 server:
-  port: 8080
+  port: 8091
 spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
