@@ -7,7 +7,7 @@ spring:
     nacos:
       config:
         #nacos 地址
-        server-addr: 192.168.1.2:8848
+        server-addr: 192.168.100.14:8848
         # 命名空间
         namespace: prod
         # 分组
