@@ -23,7 +23,7 @@ import org.wm.generator.util.StringUtils;
  * @date 2023/08/06 16:37
  * @since 1.0
 **/
-@RequiredArgsConstructor
+// @RequiredArgsConstructor
 @Slf4j
 @Configuration
 public class ResourceAutoConfiguration {
@@ -31,15 +31,17 @@ public class ResourceAutoConfiguration {
 
 
     // @Value(value = "${oauth2.client-id}")
-    private String clientId = "messaging-client";
+    // private String clientId = "messaging-client";
 
 
     // @Value("${oauth2.client-secret}")
-    private String clientSecret = "password";
+    // private String clientSecret = "password";
 
 
     @Bean
     public OpaqueTokenIntrospector introspector() {
+        String clientId = "messaging-client";
+        String clientSecret = "password";
         var url = "http://localhost:8080";
 
         var introspectionUri = StringUtils.format("{}/oauth2/introspect", url);
@@ -48,10 +50,9 @@ public class ResourceAutoConfiguration {
     }
 
     @Bean
-    public AuthenticationManagerResolver<HttpServletRequest> tokenAuthenticationManagerResolver
-            (OpaqueTokenIntrospector opaqueTokenIntrospector) {
+    public AuthenticationManagerResolver<HttpServletRequest> tokenAuthenticationManagerResolver() {
         // opaque token
-        var provider = new OpaqueTokenAuthenticationProvider(opaqueTokenIntrospector);
+        var provider = new OpaqueTokenAuthenticationProvider(introspector());
         provider.setAuthenticationConverter(new CustomOpaqueTokenAuthenticationConverter());
         // provider.setAuthenticationConverter();
         AuthenticationManager opaqueToken = new ProviderManager(

@@ -1,8 +1,8 @@
 package org.wm.generator.config;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.stream.Streams;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -14,6 +14,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+
+import java.util.Arrays;
 
 /**
  * 功能描述：<功能描述>
@@ -47,7 +49,9 @@ public class ResourceServerConfig {
                 .oauth2ResourceServer()
                 .jwt();*/
 
-        AntPathRequestMatcher[] requestMatchers = Streams.of(DEFAULT_IGNORE_URLS)
+
+
+        AntPathRequestMatcher[] requestMatchers = Arrays.stream(DEFAULT_IGNORE_URLS)
                 .map(AntPathRequestMatcher::new)
                 .toList()
                 .toArray(new AntPathRequestMatcher[]{});
