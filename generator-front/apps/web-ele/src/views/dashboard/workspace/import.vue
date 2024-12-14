@@ -117,9 +117,9 @@ const currentChangeHandle = () => {}
     >
     </el-pagination>
 
-    <import ref="importRef" @refresh-data-list="getDataList"></import>
+<!--    <import ref="importRef" @refresh-data-list="getDataList"></import>
     <preview ref="previewRef" @refresh-data-list="getDataList"></preview>
     <edit ref="editRef" @refresh-data-list="getDataList"></edit>
-    <generator ref="generatorRef" @refresh-data-list="getDataList"></generator>
+    <generator ref="generatorRef" @refresh-data-list="getDataList"></generator>-->
   </el-card>
 </template>
