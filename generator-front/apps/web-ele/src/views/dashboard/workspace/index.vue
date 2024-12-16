@@ -1,10 +1,19 @@
 <script lang="ts" setup>
-import { reactive, ref } from 'vue'
+import { reactive, ref } from 'vue';
+import { useGeneratorStore } from "#/store";
 
-import { ElMessage, ElMessageBox } from 'element-plus'
+const getDataList = async () => {
+  // console.log("getDataList");
 
-const getDataList = () => {
-  console.log("getDataList");
+  const generatorStore = useGeneratorStore();
+
+  const responseData = await generatorStore.fetchTableList({
+    tableName: state.queryForm.tableName,
+  });
+
+  state.dataList = responseData;
+
+  console.log("getDataList:", responseData);
 }
 
 const importHandle = () => {
@@ -38,7 +47,7 @@ const selectionChangeHandle = () => {
 }
 
 type QueryFormType = {
-  tableName: string
+  tableName?: string;
 };
 
 type IHooksOptions = {

@@ -184,3 +184,73 @@ export const MOCK_MENUS = [
     username: 'jack',
   },
 ];
+
+export interface TableInfo {
+  tableId: number;
+  tableName: string;
+  tableComment?: string;
+  className?: string;
+  packageName?: string;
+  moduleName?: string;
+  businessName?: string;
+  functionName?: string;
+  functionAuthor?: string;
+  genPath?: string;
+}
+
+export interface ColumnType {
+  columnComment: string;
+  columnId: number;
+  columnName: string;
+  columnType: string;
+  dictType: string;
+  htmlType: string;
+  isIncrement: string;
+  isPk: string;
+  isRequired: boolean;
+  javaField: string;
+  javaType: string;
+  sort: number;
+  typeScriptType: string;
+  isQuery: string;
+  queryType: string;
+}
+
+export const MOCK_TABLES: TableInfo[] = [
+  {
+    tableId: 1,
+    tableName: 'sys_user',
+    tableComment: '用户表',
+    className: 'SysUser',
+    packageName: 'org.test.domain',
+    moduleName: 'test',
+    businessName: '业务1',
+    functionName: '功能一',
+    functionAuthor: '@google',
+    genPath: '/home/test/',
+  },
+  {
+    tableId: 2,
+    tableName: 'sys_role',
+    tableComment: '角色表',
+    className: 'SysRole',
+    packageName: 'org.test.domain',
+    moduleName: 'test',
+    businessName: '业务1',
+    functionName: '功能一',
+    functionAuthor: '@google',
+    genPath: '/home/test/',
+  },
+  {
+    tableId: 3,
+    tableName: 'sys_menu',
+    tableComment: '菜单表',
+    className: 'SysMenu',
+    packageName: 'org.test.domain',
+    moduleName: 'test',
+    businessName: '业务1',
+    functionName: '功能一',
+    functionAuthor: '@google',
+    genPath: '/home/test/',
+  },
+];
