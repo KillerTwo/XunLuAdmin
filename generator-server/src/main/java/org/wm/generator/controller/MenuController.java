@@ -2,6 +2,8 @@ package org.wm.generator.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.wm.generator.domain.SysMenu;
 import org.wm.generator.response.ResponseResult;
@@ -32,6 +34,12 @@ public class MenuController {
     @GetMapping("/getPermCode")
     public ResponseResult<List<String>> getPermCode() {
         return ResponseResult.success(List.of("1000", "3000", "5000"));
+    }
+
+    @RequestMapping("/children/{parentId}")
+    public ResponseResult<List<SysMenu>> listMenuByParentId(@PathVariable("parentId") Long parentId) {
+        var list = sysMenuService.selectChildren(parentId);
+        return ResponseResult.success(list);
     }
 
 }
