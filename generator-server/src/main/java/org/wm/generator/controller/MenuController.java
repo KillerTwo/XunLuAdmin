@@ -1,10 +1,7 @@
 package org.wm.generator.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.wm.generator.domain.SysMenu;
 import org.wm.generator.response.ResponseResult;
 import org.wm.generator.service.ISysMenuService;
@@ -40,6 +37,17 @@ public class MenuController {
     public ResponseResult<List<SysMenu>> listMenuByParentId(@PathVariable("parentId") Long parentId) {
         var list = sysMenuService.selectChildren(parentId);
         return ResponseResult.success(list);
+    }
+
+    @PostMapping("/add/{parentId}")
+    public ResponseResult<List<SysMenu>> addMenu(@PathVariable("parentId") Long parentId, @RequestBody SysMenu sysMenu) {
+        var effect = sysMenuService.insertMenu(sysMenu);
+        if (effect > 0) {
+            var list = sysMenuService.selectChildren(parentId);
+            return ResponseResult.success(list);
+        }
+
+        return ResponseResult.error("add error");
     }
 
 }
