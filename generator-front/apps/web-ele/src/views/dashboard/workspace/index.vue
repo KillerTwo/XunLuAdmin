@@ -1,6 +1,12 @@
 <script lang="ts" setup>
 import { reactive, ref } from 'vue';
 import { useGeneratorStore } from "#/store";
+import type TableImport from "#/views/dashboard/workspace/TableImport.vue";
+
+const importRef = ref<InstanceType<typeof TableImport>>();
+const editRef = ref();
+const previewRef = ref();
+const generatorRef = ref();
 
 const getDataList = async () => {
   // console.log("getDataList");
@@ -16,9 +22,11 @@ const getDataList = async () => {
   console.log("getDataList:", responseData);
 }
 
-const importHandle = () => {
-
+const importHandle = (id?: number) => {
+  // importRef.value?.testChild();
+  importRef.value?.init(id);
 }
+
 
 const downloadBatchHandle = () => {
 
@@ -126,7 +134,7 @@ const currentChangeHandle = () => {}
     >
     </el-pagination>
 
-    <import ref="importRef" @refresh-data-list="getDataList"></import>
+    <TableImport ref="importRef" @refresh-data-list="getDataList"></TableImport>
     <preview ref="previewRef" @refresh-data-list="getDataList"></preview>
     <edit ref="editRef" @refresh-data-list="getDataList"></edit>
     <generator ref="generatorRef" @refresh-data-list="getDataList"></generator>
