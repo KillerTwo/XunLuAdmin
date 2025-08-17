@@ -1,0 +1,34 @@
+server:
+  port: 8080
+spring:
+  datasource:
+    # MySQL
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://mysql-8:3306/xun_lu_generator?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&nullCatalogMeansCurrent=true
+    username: root
+    password: 123456root
+    # Oracle
+    #    driver-class-name: oracle.jdbc.OracleDriver
+    #    url: jdbc:oracle:thin:@localhost:1521:xe
+    #    username: maku_generator
+    #    password: maku_generator
+    # SQLServer
+    #    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    #    url: jdbc:sqlserver://localhost:1433;DatabaseName=maku_generator;encrypt=true;trustServerCertificate=true
+    #    username: sa
+    #    password: 123456@maku
+    # postgresql
+    #    driver-class-name: org.postgresql.Driver
+    #    url: jdbc:postgresql://localhost:5432/postgres
+    #    username: postgres
+    #    password: 123456
+    # 达梦8
+    #    driver-class-name: dm.jdbc.driver.DmDriver
+    #    url: jdbc:dm://localhost:5236/maku_generator?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&nullCatalogMeansCurrent=true
+    #    username: maku_generator
+    #    password: 12345678
+    # 人大金仓
+#    driver-class-name: com.kingbase8.Driver
+#    url: jdbc:kingbase8://localhost:54321/maku_generator?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&nullCatalogMeansCurrent=true
+#    username: system
+#    password: 123456

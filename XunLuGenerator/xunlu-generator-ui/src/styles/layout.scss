@@ -1,0 +1,67 @@
+* {
+  margin: 0;
+  padding: 0;
+  outline: none !important;
+}
+
+html,
+body,
+#app {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  font-size: 14px;
+  overflow: hidden;
+  position: relative;
+}
+
+a,
+a:focus,
+a:hover {
+  cursor: pointer;
+  color: inherit;
+  text-decoration: none;
+}
+
+.layout-container {
+  width: 100%;
+  height: 100%;
+  .layout-sidebar {
+    background: var(--theme-menu-bg-color);
+    border-right: var(--theme-border-color-light) 1px solid;
+    height: inherit;
+    width: var(--theme-aside-width) !important;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden !important;
+    .el-scrollbar__view {
+      overflow: hidden;
+    }
+  }
+  .layout-header {
+    padding: 0 !important;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: var(--theme-header-height);
+  }
+  .layout-main {
+    padding: 0 !important;
+    overflow: hidden;
+    width: 100%;
+    background-color: var(--theme-main-bg-color);
+    .layout-card{
+      min-height: calc(100vh - 30px - var(--theme-header-height));
+    }
+  }
+  .layout-scrollbar {
+    height: calc(100vh - 30px - var(--theme-header-height));
+    padding: 15px;
+  }
+}

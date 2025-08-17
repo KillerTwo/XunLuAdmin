@@ -1,0 +1,63 @@
+{
+  "name": "xunlu-generator-ui",
+  "version": "3.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build:dev": "vite build --mode development",
+    "build:prod": "vite build --mode production",
+    "preview": "vite preview",
+    "lint": "eslint --fix --ext .vue,.jsx,.ts,.tsx ."
+  },
+  "dependencies": {
+    "@codemirror/lang-javascript": "^6.2.1",
+    "@element-plus/icons-vue": "2.3.1",
+    "@vueuse/core": "9.1.1",
+    "axios": "1.6.0",
+    "codemirror": "^6.0.1",
+    "crypto-js": "^4.1.1",
+    "element-plus": "2.7.6",
+    "jsencrypt": "^3.3.2",
+    "qs": "6.10.3",
+    "sortablejs": "^1.15.0",
+    "vue": "3.4.30",
+    "vue-codemirror": "^6.1.1",
+    "vue-router": "4.2.5",
+    "vxe-table": "^4.3.5",
+    "xe-utils": "^3.5.4"
+  },
+  "devDependencies": {
+    "@babel/types": "7.24.0",
+    "@types/crypto-js": "^4.2.2",
+    "@types/node": "20.11.28",
+    "@types/nprogress": "0.2.3",
+    "@types/qs": "6.9.12",
+    "@types/sm-crypto": "0.3.4",
+    "@types/sortablejs": "1.15.8",
+    "@vitejs/plugin-vue": "5.0.5",
+    "@vue/compiler-sfc": "3.4.30",
+    "@vue/eslint-config-prettier": "9.0.0",
+    "@vue/eslint-config-typescript": "13.0.0",
+    "@vue/tsconfig": "0.5.1",
+    "eslint": "8.57.0",
+    "eslint-plugin-vue": "9.23.0",
+    "prettier": "3.2.5",
+    "sass": "1.72.0",
+    "typescript": "5.4.2",
+    "vite": "5.3.1",
+    "vite-plugin-svg-icons": "2.0.1",
+    "vite-plugin-vue-setup-extend": "0.4.0",
+    "vue-tsc": "2.0.22"
+  },
+  "keywords": [
+    "vue",
+    "vue3",
+    "vuejs",
+    "vite",
+    "element-plus",
+    "generator",
+    "xunlu-generator"
+  ],
+  "license": "MIT",
+  "packageManager": "pnpm@9.12.2+sha512.22721b3a11f81661ae1ec68ce1a7b879425a1ca5b991c975b074ac220b187ce56c708fe5db69f4c962c989452eee76c82877f4ee80f474cebd61ee13461b6228"
+}

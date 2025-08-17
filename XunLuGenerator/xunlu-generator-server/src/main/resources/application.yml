@@ -1,0 +1,24 @@
+spring:
+  profiles:
+    active: dev
+
+# 需要指定对应的模板
+generator:
+  template: /template/xunlu-boot
+
+mybatis-plus:
+  mapper-locations: classpath:/mapper/*.xml
+  typeAliasesPackage: org.wm.generator.entity
+  global-config:
+    db-config:
+      id-type: AUTO
+    banner: false
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+    call-setters-on-nulls: true
+    jdbc-type-for-null: 'null'
+  configuration-properties:
+    prefix:
+    blobType: BLOB
+    boolValue: TRUE
