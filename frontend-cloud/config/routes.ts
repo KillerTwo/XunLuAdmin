@@ -34,6 +34,7 @@ export default [
       { path: '/system/dictData', component: './system/DictDataList' },
       { path: '/system/config', component: './system/ConfigList' },
       { path: '/system/notice', component: './system/NoticeList' },
+      { name: 'OAuth2客户端', path: '/system/oauth2Client', component: './system/OAuth2ClientList' },
       {
         path: '/system/log',
         routes: [

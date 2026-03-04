@@ -250,6 +250,34 @@ declare namespace SYSTEM {
     stopTime?: string;
   }
 
+  /**
+   * OAuth2客户端类型定义
+   * 参考GitHub OAuth Apps
+   */
+  type OAuth2Client = {
+    id?: string;
+    clientId?: string;
+    clientSecret?: string;
+    clientName?: string;
+    clientIdIssuedAt?: string;
+    clientAuthenticationMethods?: string;
+    authorizationGrantTypes?: string[];
+    redirectUris?: string;
+    scopes?: string[];
+  }
+
+  type OAuth2ClientResponse = {
+    code: number;
+    msg: string;
+    rows: OAuth2Client[];
+    total: number;
+  }
+
+  type OAuth2Enums = {
+    authorizationGrantTypes: string[];
+    clientAuthenticationMethods: string[];
+    scopes: string[];
+  }
 
 
 }

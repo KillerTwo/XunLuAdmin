@@ -22,7 +22,7 @@ public interface IOauth2RegisteredClientService {
 
     /**
      * 查询授权服务器客户端注册列表
-     * 
+     *
      * @param oauth2RegisteredClient 授权服务器客户端注册
      * @return 授权服务器客户端注册集合
      */

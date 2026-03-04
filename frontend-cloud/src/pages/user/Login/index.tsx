@@ -20,7 +20,7 @@ import Footer from '@/components/Footer';
 import { getCaptchaImage, getFakeCaptcha, login } from '@/services/system/login';
 import styles from './index.less';
 import { SYSTEM } from '@/services/system/typings';
-import { setToken } from '@/utils/auth';
+import { setToken, setRefreshToken, setAutoLogin, setTokenExpireTime } from '@/utils/auth';
 import Cookies from 'js-cookie';
 
 const Login: React.FC = () => {
@@ -35,15 +35,15 @@ const Login: React.FC = () => {
 
   const getCookies = () => {
     const username = Cookies.get('username');
-    const password = Cookies.get('password');
     const phone = Cookies.get('phone');
-    const rememberMe = Cookies.get('rememberMe'); // setLoginForm({username, password, rememberMe: rememberMe === "true"});
+    const rememberMe = Cookies.get('rememberMe');
 
     return {
       username,
-      password,
       rememberMe: rememberMe === 'true',
       phone,
+      // 安全修复：不再从Cookie读取密码
+      password: '',
     };
   };
 
@@ -91,26 +91,30 @@ const Login: React.FC = () => {
 
     let username = values.username;
     try {
+      // 安全修复：仅保存用户名，不保存密码
       if (values.autoLogin === true) {
         if (type === 'account') {
           Cookies.set('username', values.username || '', {
             expires: 30,
+            secure: window.location.protocol === 'https:',  // HTTPS下启用secure
+            sameSite: 'strict'  // 防CSRF
           });
-          Cookies.set('password', values.password || '', {
-            expires: 30,
-          });
+          // 已删除密码存储逻辑
         } else if (type === 'mobile') {
           Cookies.set('phone', values.phone || '', {
             expires: 30,
+            secure: window.location.protocol === 'https:',
+            sameSite: 'strict'
           });
         }
 
         Cookies.set('rememberMe', 'true', {
           expires: 30,
+          secure: window.location.protocol === 'https:',
+          sameSite: 'strict'
         });
       } else {
         Cookies.remove('username');
-        Cookies.remove('password');
         Cookies.remove('phone');
         Cookies.remove('rememberMe');
       } // 登录
@@ -137,6 +141,24 @@ const Login: React.FC = () => {
 
       if (msg?.access_token !== null) {
         setToken(msg?.access_token || '');
+
+        // 保存refresh_token和自动登录状态
+        if (msg?.refresh_token) {
+          setRefreshToken(msg.refresh_token);
+        }
+
+        // 保存token过期时间
+        if (msg?.expires_in) {
+          setTokenExpireTime(msg.expires_in);
+        }
+
+        // 保存自动登录状态到localStorage
+        if (values.autoLogin === true) {
+          setAutoLogin(true);
+        } else {
+          setAutoLogin(false);
+        }
+
         notification.success({ message: '登录成功'});
         await fetchUserInfo(); // 请求默认菜单
 

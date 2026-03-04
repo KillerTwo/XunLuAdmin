@@ -5,24 +5,21 @@ import {SYSTEM} from "@/services/system/typings";
 /** 登录接口 POST /api/login */
 export async function login(body: SYSTEM.LoginBody, options?: { [key: string]: any }) {
 
-
   const formData = new URLSearchParams();
-  formData.append('client_id', 'messaging-client-opaque');
+  formData.append('client_id', 'xunlu-admin-web');  // 使用公共客户端ID
   formData.append('grant_type', 'password');
   formData.append('username', body.username||'');
   formData.append('password', body.password||'');
   formData.append('uuid', body.uuid||'');
   formData.append('code', body.code||'');
-
+  formData.append('scope', 'openid profile email all');  // 添加scope以支持userinfo端点
 
   return request<SYSTEM.LoginResult>('/api/oauth2/token', {
     method: 'POST',
     headers: {
-      // 'Content-Type': 'application/json',
       'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-      'Authorization': 'Basic bWVzc2FnaW5nLWNsaWVudDpzZWNyZXQ='
+      // 公共客户端不需要Authorization header
     },
-    // data: {'client_id': 'messaging-client-opaque', 'grant_type': 'password', 'username': 'admin', 'password': 'admin123'},
     body: formData,
     ...(options || {}),
   });
@@ -70,5 +67,23 @@ export async function resetPassword(body: SYSTEM.ResetPasswordBody) {
       'Content-Type': 'application/json',
     },
     data: body,
+  });
+}
+
+/** 刷新token */
+export async function refreshToken(refreshTokenValue: string, options?: { [key: string]: any }) {
+  const formData = new URLSearchParams();
+  formData.append('client_id', 'xunlu-admin-web');
+  formData.append('grant_type', 'refresh_token');
+  formData.append('refresh_token', refreshTokenValue);
+
+  return request<SYSTEM.LoginResult>('/api/oauth2/token', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+    },
+    body: formData,
+    skipErrorHandler: true, // 跳过错误处理，避免重复提示
+    ...(options || {}),
   });
 }

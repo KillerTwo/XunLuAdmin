@@ -75,6 +75,8 @@ import org.springframework.security.web.authentication.session.SessionFixationPr
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.wm.authentication.client.PublicClientAuthenticationConverter;
+import org.wm.authentication.client.PublicClientAuthenticationProvider;
 import org.wm.authentication.filter.OAuth2UsernameLoginFilter;
 import org.wm.authentication.handler.AuthenticationEntryPointImpl;
 import org.wm.authentication.handler.OAuth2LoginSuccessHandler;
@@ -171,6 +173,12 @@ public class AuthorizationServerConfig {
 				.authorizationEndpoint(authorizationEndpoint ->
 						authorizationEndpoint.consentPage(CUSTOM_CONSENT_PAGE_URI));
 
+		// 配置公共客户端认证
+		authorizationServerConfigurer
+				.clientAuthentication(clientAuth ->
+						clientAuth.authenticationConverter(new PublicClientAuthenticationConverter())
+				);
+
 //		authorizationServerConfigurer.tokenGenerator(context -> {
 //			var tokenType = context.getTokenType();
 //
@@ -218,6 +226,10 @@ public class AuthorizationServerConfig {
 				// .requireExplicitSave(false)
 		);
 
+		// 注册公共客户端认证Provider
+		http.authenticationProvider(new PublicClientAuthenticationProvider(registeredClientRepository()));
+
+		// 注册密码模式认证Provider
 		http.authenticationProvider(new OAuth2AuthorizationPasswordRequestAuthenticationProvider(authManager,
 				auth2AuthorizationService(), tokenGenerator()));
 
@@ -280,39 +292,17 @@ public class AuthorizationServerConfig {
 		return failureHandler;
 	}
 
+	/**
+	 * 功能描述：注册客户端仓库
+	 * 使用JdbcRegisteredClientRepository从数据库读取客户端配置
+	 * 客户端通过ClientInitializer初始化或通过管理界面动态注册
+	 *
+	 * @return RegisteredClientRepository
+	 */
 	@Bean
 	public RegisteredClientRepository registeredClientRepository() {
-
-		var secret = passwordEncoder.encode("secret");
-
-		RegisteredClient registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
-				.clientId("messaging-client-opaque")
-				// .clientSecret("secret")
-				// .clientSecret("$2a$10$Xt5ahdi2KFfptijeHvkyqe9LghZRuanSSQxfsJ.fzoCWM3gB72/kq")
-				.clientSecret(secret)
-				.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-				.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-				.authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-				.authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-				// .redirectUri("http://127.0.0.1:8080")
-				// .redirectUri("http://127.0.0.1:8080/authorized")
-				.redirectUri("http://127.0.0.1:8080/login/oauth2/code/messaging-client-oidc")
-				.redirectUri("http://127.0.0.1:8080/authorized")
-				.scope(OidcScopes.OPENID)
-				.scope("message.read")
-				.scope("message.write")
-				.clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
-				// OAuth2TokenFormat.REFERENCE 表示生成 opaque token  OAuth2TokenFormat.SELF_CONTAINED表示生成 jwt token, 设置token过期时间为30分钟
-				.tokenSettings(TokenSettings.builder()
-						.accessTokenTimeToLive(Duration.ofMinutes(30))
-						.accessTokenFormat(OAuth2TokenFormat.REFERENCE).build())
-				.build();
-
-		// Save registered client in db as if in-memory
-		// var repository = new InMemoryRegisteredClientRepository(registeredClient);
-		var repository = new JdbcRegisteredClientRepository(jdbcTemplate);
-		// repository.save(registeredClient);
-		return repository;
+		// 使用JDBC存储，支持动态客户端注册
+		return new JdbcRegisteredClientRepository(jdbcTemplate);
 	}
 
 	// @formatter:on

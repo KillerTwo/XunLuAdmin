@@ -62,11 +62,16 @@ public class OAuth2PasswordAuthenticationConverter implements AuthenticationConv
             }
         });
 
-        var scopes = parameters.getFirst("scopes");
+        // 解析 scope 参数（OAuth2标准参数名是 "scope"，不是 "scopes"）
+        // 支持空格分隔的多个scope: "openid profile email"
+        var scope = parameters.getFirst(OAuth2ParameterNames.SCOPE);
         Set<String> scopesSet = new HashSet<>();
-        if (StringUtils.hasText(scopes)) {
-            var scopesArr = scopes.split(",");
-            scopesSet = Arrays.stream(scopesArr).collect(Collectors.toSet());
+        if (StringUtils.hasText(scope)) {
+            // scope可以用空格或逗号分隔
+            var scopesArr = scope.split("[\\s,]+");
+            scopesSet = Arrays.stream(scopesArr)
+                    .filter(StringUtils::hasText)
+                    .collect(Collectors.toSet());
         }
         return new PasswordOAuth2AuthorizationGrantAuthenticationToken(
                 AuthorizationGrantType.PASSWORD, clientPrincipal, additionalParameters, scopesSet);
